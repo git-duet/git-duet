@@ -14,14 +14,14 @@ import (
 type Configuration struct {
 	Namespace   string
 	AuthorsFile string
+	EmailLookup string
 }
 
-func NewConfiguration() (c *Configuration) {
-	c = &Configuration{}
-
+func NewConfiguration() *Configuration {
 	return &Configuration{
 		Namespace:   getenvDefault("GIT_DUET_CONFIG_NAMESPACE", "duet.env"),
 		AuthorsFile: getenvDefault("GIT_DUET_AUTHORS_FILE", path.Join(os.Getenv("HOME"), ".git-authors")),
+		EmailLookup: os.Getenv("GIT_DUET_EMAIL_LOOKUP_COMMAND"),
 	}
 }
 
@@ -59,7 +59,7 @@ func main() {
 	//TODO use these
 	_, _ = quiet, global
 
-	authors, err := duet.NewAuthorsFromFile(configuration.AuthorsFile)
+	authors, err := duet.NewAuthorsFromFile(configuration.AuthorsFile, configuration.EmailLookup)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(0)

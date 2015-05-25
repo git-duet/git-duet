@@ -33,7 +33,6 @@ load test_helper
 }
 
 @test "looks up external email" {
-  skip "TODO"
   GIT_DUET_EMAIL_LOOKUP_COMMAND=$GIT_DUET_TEST_LOOKUP git solo -q jd
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
   assert_success 'jane_doe@lookie.me.local'
