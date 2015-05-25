@@ -26,6 +26,12 @@ load test_helper
   assert_success 'jane@hamsters.biz.local'
 }
 
+@test "builds email from id" {
+  git solo al
+  run git config user.email
+  assert_success 'abe@hamster.info.local'
+}
+
 @test "looks up external email" {
   skip "TODO"
   GIT_DUET_EMAIL_LOOKUP_COMMAND=$GIT_DUET_TEST_LOOKUP git solo -q jd

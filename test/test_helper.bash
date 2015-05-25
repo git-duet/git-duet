@@ -14,6 +14,7 @@ setup() {
 pairs:
   jd: Jane Doe
   fb: Frances Bar
+  al: Abraham Lincoln; abe
   zp: Zubaz Pants
 
 email:

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"gopkg.in/yaml.v1"
 )
@@ -54,14 +55,19 @@ func NewAuthorsFromFile(filename string) (a *Authors, err error) {
 }
 
 func (a *Authors) ByInitials(initials string) (author *Author, err error) {
-	name, ok := a.file.Pairs[initials]
+	authorString, ok := a.file.Pairs[initials]
 	if !ok {
 		return nil, fmt.Errorf("unknown initials %s", initials)
 	}
 
+	authorParts := strings.SplitN(authorString, ";", 2)
+	name := strings.TrimSpace(authorParts[0])
+
 	email := ""
 	if e, ok := a.file.EmailAddresses[initials]; ok {
 		email = e
+	} else if len(authorParts) == 2 {
+		email = fmt.Sprintf("%s@%s", strings.TrimSpace(authorParts[1]), a.file.Email.Domain)
 	}
 
 	return &Author{
