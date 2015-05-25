@@ -1,0 +1,19 @@
+language: go
+env:
+  global:
+  - PATH=$PATH:$HOME/gopath/bin/
+go:
+  - 1.4
+  - tip
+before_install:
+- go get https://github.com/constabulary/gb/...
+install:
+- gb build
+before_script:
+- git clone https://github.com/sstephenson/bats.git
+- cd bats && sudo ./install.sh /usr/local
+script:
+- gb test
+- bats test/
+notifications:
+  email: jesse.szwedko@gmail.com
