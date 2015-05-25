@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path"
 
 	"code.google.com/p/getopt"
@@ -47,13 +46,19 @@ func main() {
 		os.Exit(0)
 	}
 
+	gitConfig := &duet.GitConfig{
+		Namespace: configuration.Namespace,
+		Global:    *global,
+	}
+
 	if getopt.NArgs() == 0 {
-		cmd := exec.Command("git", "config", "--get-regexp", configuration.Namespace)
-		cmd.Stdout = os.Stdout
-		if err := cmd.Run(); err != nil {
+		author, err := gitConfig.GetAuthor()
+		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+
+		printAuthor(author)
 		os.Exit(0)
 	}
 
@@ -69,11 +74,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(86)
-	}
-
-	gitConfig := &duet.GitConfig{
-		Namespace: configuration.Namespace,
-		Global:    *global,
 	}
 
 	if err = gitConfig.SetAuthor(author); err != nil {
