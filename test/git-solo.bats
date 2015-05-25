@@ -8,6 +8,21 @@ load test_helper
   assert_success 'Jane Doe'
 }
 
+@test "output is displayed" {
+  run git solo jd
+  assert_line "GIT_AUTHOR_NAME='Jane Doe'"
+  assert_line "GIT_AUTHOR_EMAIL='jane@hamsters.biz.local'"
+  run git config user.name
+  assert_success 'Jane Doe'
+}
+
+@test "output is not displayed when quieted" {
+  git solo jd -q
+  assert_success ""
+  run git config user.name
+  assert_success 'Jane Doe'
+}
+
 @test "sets the git user email" {
   git solo jd
   run git config user.email
