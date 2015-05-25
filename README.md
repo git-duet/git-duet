@@ -5,6 +5,7 @@
 Differences:
 - Running `git solo` or `git duet` with no initials outputs configuration in
   same format as when setting
+- Remove email template ERB in lieu of just using lookup command with awk/sed/etc.?
 
 [![Build Status](https://travis-ci.org/jszwedko/go-git-duet.png?branch=master)](https://travis-ci.org/jszwedko/go-git-duet)
 

@@ -22,6 +22,7 @@ email:
 
 email_addresses:
   jd: jane@hamsters.biz.local
+  fb: f.bar@hamster.info.local
 EOF
 
   cat > "$GIT_DUET_TEST_LOOKUP" <<EOF
