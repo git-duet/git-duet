@@ -64,13 +64,13 @@ load test_helper
 }
 
 @test "sets the git committer email globally" {
-  git duet -q jd fb
+  git duet -g -q jd fb
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-committer-name"
   assert_success 'Frances Bar'
 }
 
 @test "sets the git committer name globally" {
-  git duet -q jd fb
+  git duet -g -q jd fb
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-committer-email"
   assert_success 'f.bar@hamster.info.local'
 }

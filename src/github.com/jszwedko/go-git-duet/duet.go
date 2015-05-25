@@ -1,18 +1,39 @@
 package duet
 
-import (
-	"bytes"
-	"fmt"
-	"os/exec"
-	"strings"
-)
+import "os/exec"
 
-type GitConfig struct {
-	Namespace string
-	Global    bool
+type Runner interface {
+	Run() error
 }
 
-func runCommands(cmds ...*exec.Cmd) (err error) {
+type ignorableCommand struct {
+	*exec.Cmd
+	validFailureCodes []int
+}
+
+func newIgnorableCommand(cmd *exec.Cmd, validFailureCodes ...int) *ignorableCommand {
+	return &ignorableCommand{
+		Cmd:               cmd,
+		validFailureCodes: validFailureCodes,
+	}
+}
+
+func (cmd *ignorableCommand) Run() error {
+	switch err := cmd.Cmd.Run().(type) {
+	case *exec.ExitError:
+		code := exitCode(err)
+		for _, validFailureCode := range cmd.validFailureCodes {
+			if code == validFailureCode {
+				return nil
+			}
+		}
+		return err
+	default:
+		return err
+	}
+}
+
+func runMultiple(cmds ...Runner) (err error) {
 	for _, cmd := range cmds {
 		err = cmd.Run()
 		if err != nil {
@@ -21,79 +42,4 @@ func runCommands(cmds ...*exec.Cmd) (err error) {
 	}
 
 	return nil
-}
-
-func (gc *GitConfig) configCommand(args ...string) *exec.Cmd {
-	config := []string{"config"}
-	if gc.Global {
-		config = append(config, "--global")
-	}
-	config = append(config, args...)
-	return exec.Command("git", config...)
-}
-
-func (gc *GitConfig) ClearCommitter() (err error) {
-	return runCommands(
-		gc.configCommand("--unset-all", fmt.Sprintf("%s.git-committer-name", gc.Namespace)),
-		gc.configCommand("--unset-all", fmt.Sprintf("%s.git-committer-email", gc.Namespace)),
-	)
-}
-
-func (gc *GitConfig) SetAuthor(pair *Pair) (err error) {
-	return runCommands(
-		gc.configCommand("user.name", pair.Name),
-		gc.configCommand("user.email", pair.Email),
-		gc.configCommand(fmt.Sprintf("%s.git-author-name", gc.Namespace), pair.Name),
-		gc.configCommand(fmt.Sprintf("%s.git-author-email", gc.Namespace), pair.Email),
-	)
-}
-
-func (gc *GitConfig) SetCommitter(committer *Pair) (err error) {
-	return runCommands(
-		gc.configCommand(fmt.Sprintf("%s.git-committer-name", gc.Namespace), committer.Name),
-		gc.configCommand(fmt.Sprintf("%s.git-committer-email", gc.Namespace), committer.Email),
-	)
-}
-
-func runCommand(cmd *exec.Cmd) (out string, err error) {
-	output := new(bytes.Buffer)
-	cmd.Stdout = output
-	if err = cmd.Run(); err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(output.String()), nil
-}
-
-func (gc *GitConfig) GetAuthor() (pair *Pair, err error) {
-	name, err := runCommand(gc.configCommand(fmt.Sprintf("%s.git-author-name", gc.Namespace)))
-	if err != nil {
-		return nil, err
-	}
-
-	email, err := runCommand(gc.configCommand(fmt.Sprintf("%s.git-author-email", gc.Namespace)))
-	if err != nil {
-		return nil, err
-	}
-
-	return &Pair{
-		Name:  name,
-		Email: email,
-	}, nil
-}
-
-func (gc *GitConfig) GetCommitter() (pair *Pair, err error) {
-	name, err := runCommand(gc.configCommand(fmt.Sprintf("%s.git-committer-name", gc.Namespace)))
-	if err != nil {
-		return nil, err
-	}
-
-	email, err := runCommand(gc.configCommand(fmt.Sprintf("%s.git-committer-email", gc.Namespace)))
-	if err != nil {
-		return nil, err
-	}
-
-	return &Pair{
-		Name:  name,
-		Email: email,
-	}, nil
 }

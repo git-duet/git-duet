@@ -3,7 +3,6 @@
 load test_helper
 
 @test "lists the alpha of the duet as author in the log" {
-  skip "TODO"
   git duet -q jd fb
   add_file
   git duet-commit -q -m 'Testing set of alpha as author'
@@ -12,7 +11,6 @@ load test_helper
 }
 
 @test "lists the omega of the duet as committer in the log" {
-  skip "TODO"
   git duet -q jd fb
   add_file
   git duet-commit -q -m 'Testing set of omega as committer'
@@ -21,7 +19,6 @@ load test_helper
 }
 
 @test "lists the soloist as author in the log" {
-  skip "TODO"
   git solo -q jd
   add_file
   git duet-commit -q -m 'Testing set of soloist as author'
@@ -30,7 +27,6 @@ load test_helper
 }
 
 @test "lists the soloist as committer in the log" {
-  skip "TODO"
   git solo -q jd
   add_file
   git duet-commit -q -m 'Testing set of soloist as committer'
@@ -39,7 +35,6 @@ load test_helper
 }
 
 @test "does not inclued Signed-off-by whene soloing" {
-  skip "TODO"
   git solo -q jd
   add_file
   git duet-commit -q -m 'Testing omitting signoff'
@@ -48,7 +43,6 @@ load test_helper
 }
 
 @test "rejects commits with no author" {
-  skip "TODO"
   add_file
   run git duet-commit -q -m 'Testing commit with no author'
   assert_failure

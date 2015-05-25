@@ -39,7 +39,7 @@ load test_helper
 
 @test "builds email from id" {
   git solo al
-  run git config user.email
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
   assert_success 'abe@hamster.info.local'
 }
 

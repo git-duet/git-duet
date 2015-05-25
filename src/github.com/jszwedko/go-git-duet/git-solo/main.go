@@ -40,21 +40,24 @@ func main() {
 		os.Exit(0)
 	}
 
-	initials := getopt.Arg(0)
-
 	pairs, err := duet.NewPairsFromFile(configuration.PairsFile, configuration.EmailLookup)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(0)
 	}
 
-	author, err := pairs.ByInitials(initials)
+	author, err := pairs.ByInitials(getopt.Arg(0))
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(86)
 	}
 
 	if err = gitConfig.SetAuthor(author); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	if err = gitConfig.ClearCommitter(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
