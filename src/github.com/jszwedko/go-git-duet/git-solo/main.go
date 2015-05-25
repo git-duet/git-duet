@@ -50,7 +50,10 @@ func main() {
 	if getopt.NArgs() == 0 {
 		cmd := exec.Command("git", "config", "--get-regexp", configuration.Namespace)
 		cmd.Stdout = os.Stdout
-		cmd.Run()
+		if err := cmd.Run(); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 		os.Exit(0)
 	}
 
@@ -81,7 +84,11 @@ func main() {
 	}
 
 	if !*quiet {
-		fmt.Printf("GIT_AUTHOR_NAME='%s'\n", author.Name)
-		fmt.Printf("GIT_AUTHOR_EMAIL='%s'\n", author.Email)
+		printAuthor(author)
 	}
+}
+
+func printAuthor(author *duet.Author) {
+	fmt.Printf("GIT_AUTHOR_NAME='%s'\n", author.Name)
+	fmt.Printf("GIT_AUTHOR_EMAIL='%s'\n", author.Email)
 }

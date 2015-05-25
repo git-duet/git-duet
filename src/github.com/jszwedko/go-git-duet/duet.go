@@ -27,7 +27,7 @@ func (gc *GitConfig) ClearCommitter() (err error) {
 	)
 }
 
-func (gc *GitConfig) SetAuthor(author *Author, quiet bool) (err error) {
+func (gc *GitConfig) SetAuthor(author *Author) (err error) {
 	return runCommands(
 		exec.Command("git", "config", "user.name", author.Name),
 		exec.Command("git", "config", "user.email", author.Email),

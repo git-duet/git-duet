@@ -65,3 +65,11 @@ load test_helper
 
   clear_custom_email_template
 }
+
+@test "prints current config" {
+  git solo -q al
+  run git solo
+  assert_line "$GIT_DUET_CONFIG_NAMESPACE.git-author-name Abraham Lincoln"
+  assert_line "$GIT_DUET_CONFIG_NAMESPACE.git-author-email abe@hamster.info.local"
+  # TODO duet.env.mtime 1432578614
+}
