@@ -59,9 +59,6 @@ func main() {
 
 	initials := getopt.Arg(0)
 
-	//TODO use these
-	_ = global
-
 	authors, err := duet.NewAuthorsFromFile(configuration.AuthorsFile, configuration.EmailLookup)
 	if err != nil {
 		fmt.Println(err)
@@ -76,6 +73,7 @@ func main() {
 
 	gitConfig := &duet.GitConfig{
 		Namespace: configuration.Namespace,
+		Global:    *global,
 	}
 
 	if err = gitConfig.SetAuthor(author); err != nil {

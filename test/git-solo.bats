@@ -73,3 +73,15 @@ load test_helper
   assert_line "$GIT_DUET_CONFIG_NAMESPACE.git-author-email abe@hamster.info.local"
   # TODO duet.env.mtime 1432578614
 }
+
+@test "sets the git user email globally" {
+  git solo jd
+  run git config --global user.email
+  assert_success 'jane@hamsters.biz.local'
+}
+
+@test "sets the git user name globally" {
+  git solo -g -q jd
+  run git config --global user.name
+  assert_success 'Jane Doe'
+}
