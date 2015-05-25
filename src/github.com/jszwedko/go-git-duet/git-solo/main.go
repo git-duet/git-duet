@@ -12,14 +12,14 @@ import (
 
 type Configuration struct {
 	Namespace   string
-	AuthorsFile string
+	PairsFile   string
 	EmailLookup string
 }
 
 func NewConfiguration() *Configuration {
 	return &Configuration{
 		Namespace:   getenvDefault("GIT_DUET_CONFIG_NAMESPACE", "duet.env"),
-		AuthorsFile: getenvDefault("GIT_DUET_AUTHORS_FILE", path.Join(os.Getenv("HOME"), ".git-authors")),
+		PairsFile:   getenvDefault("GIT_DUET_AUTHORS_FILE", path.Join(os.Getenv("HOME"), ".git-authors")),
 		EmailLookup: os.Getenv("GIT_DUET_EMAIL_LOOKUP_COMMAND"),
 	}
 }
@@ -64,13 +64,13 @@ func main() {
 
 	initials := getopt.Arg(0)
 
-	authors, err := duet.NewAuthorsFromFile(configuration.AuthorsFile, configuration.EmailLookup)
+	pairs, err := duet.NewPairsFromFile(configuration.PairsFile, configuration.EmailLookup)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(0)
 	}
 
-	author, err := authors.ByInitials(initials)
+	author, err := pairs.ByInitials(initials)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(86)
@@ -86,7 +86,7 @@ func main() {
 	}
 }
 
-func printAuthor(author *duet.Author) {
+func printAuthor(author *duet.Pair) {
 	fmt.Printf("GIT_AUTHOR_NAME='%s'\n", author.Name)
 	fmt.Printf("GIT_AUTHOR_EMAIL='%s'\n", author.Email)
 }

@@ -11,17 +11,17 @@ import (
 	"gopkg.in/yaml.v1"
 )
 
-type Authors struct {
-	file        *authorsFile
+type Pairs struct {
+	file        *pairsFile
 	emailLookup string
 }
 
-type Author struct {
+type Pair struct {
 	Name  string
 	Email string
 }
 
-type authorsFile struct {
+type pairsFile struct {
 	Pairs          map[string]string `yaml:"pairs"`
 	Email          emailConfig       `yaml:"email"`
 	EmailAddresses map[string]string `yaml:"email_addresses"`
@@ -33,8 +33,8 @@ type emailConfig struct {
 	Domain string
 }
 
-func NewAuthorsFromFile(filename string, emailLookup string) (a *Authors, err error) {
-	af := &authorsFile{}
+func NewPairsFromFile(filename string, emailLookup string) (a *Pairs, err error) {
+	af := &pairsFile{}
 
 	file, err := os.Open(filename)
 	if err != nil {
@@ -52,18 +52,18 @@ func NewAuthorsFromFile(filename string, emailLookup string) (a *Authors, err er
 		return nil, err
 	}
 
-	return &Authors{
+	return &Pairs{
 		file:        af,
 		emailLookup: emailLookup,
 	}, nil
 }
 
-// buildEmail returns the email address for the given author
+// buildEmail returns the email address for the given pair
 // It returns the first email it finds while doing the following:
 // - Run external lookup if provided
 // - Pull from `email_addresses` map in config
 // - Build using username (if provided) and domain
-func (a *Authors) buildEmail(initials, name, username string) (email string, err error) {
+func (a *Pairs) buildEmail(initials, name, username string) (email string, err error) {
 	if a.emailLookup != "" {
 		var out bytes.Buffer
 
@@ -89,17 +89,17 @@ func (a *Authors) buildEmail(initials, name, username string) (email string, err
 	return email, nil
 }
 
-func (a *Authors) ByInitials(initials string) (author *Author, err error) {
-	authorString, ok := a.file.Pairs[initials]
+func (a *Pairs) ByInitials(initials string) (pair *Pair, err error) {
+	pairString, ok := a.file.Pairs[initials]
 	if !ok {
 		return nil, fmt.Errorf("unknown initials %s", initials)
 	}
 
-	authorParts := strings.SplitN(authorString, ";", 2)
-	name := strings.TrimSpace(authorParts[0])
+	pairParts := strings.SplitN(pairString, ";", 2)
+	name := strings.TrimSpace(pairParts[0])
 	username := ""
-	if len(authorParts) == 2 {
-		username = strings.TrimSpace(authorParts[1])
+	if len(pairParts) == 2 {
+		username = strings.TrimSpace(pairParts[1])
 	}
 
 	email, err := a.buildEmail(initials, name, username)
@@ -107,7 +107,7 @@ func (a *Authors) ByInitials(initials string) (author *Author, err error) {
 		return nil, err
 	}
 
-	return &Author{
+	return &Pair{
 		Name:  name,
 		Email: email,
 	}, nil

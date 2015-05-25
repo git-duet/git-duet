@@ -39,12 +39,12 @@ func (gc *GitConfig) ClearCommitter() (err error) {
 	)
 }
 
-func (gc *GitConfig) SetAuthor(author *Author) (err error) {
+func (gc *GitConfig) SetAuthor(pair *Pair) (err error) {
 	return runCommands(
-		gc.configCommand("user.name", author.Name),
-		gc.configCommand("user.email", author.Email),
-		gc.configCommand(fmt.Sprintf("%s.git-author-name", gc.Namespace), author.Name),
-		gc.configCommand(fmt.Sprintf("%s.git-author-email", gc.Namespace), author.Email),
+		gc.configCommand("user.name", pair.Name),
+		gc.configCommand("user.email", pair.Email),
+		gc.configCommand(fmt.Sprintf("%s.git-author-name", gc.Namespace), pair.Name),
+		gc.configCommand(fmt.Sprintf("%s.git-author-email", gc.Namespace), pair.Email),
 	)
 }
 
@@ -57,7 +57,7 @@ func runCommand(cmd *exec.Cmd) (out string, err error) {
 	return strings.TrimSpace(output.String()), nil
 }
 
-func (gc *GitConfig) GetAuthor() (author *Author, err error) {
+func (gc *GitConfig) GetAuthor() (pair *Pair, err error) {
 	name, err := runCommand(gc.configCommand(fmt.Sprintf("%s.git-author-name", gc.Namespace)))
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (gc *GitConfig) GetAuthor() (author *Author, err error) {
 		return nil, err
 	}
 
-	return &Author{
+	return &Pair{
 		Name:  name,
 		Email: email,
 	}, nil
