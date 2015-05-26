@@ -1,19 +1,21 @@
+---
+sudo: false
 language: go
-env:
-  global:
-  - PATH=$PATH:$HOME/gopath/bin/
 go:
   - 1.4
   - tip
+env:
+  global:
+  - PATH="$HOME/bin:$PATH:$HOME/gopath/bin/"
 before_install:
 - go get https://github.com/constabulary/gb/...
 install:
-- gb build
+- gb build ./...
 before_script:
 - git clone https://github.com/sstephenson/bats.git
-- cd bats && sudo ./install.sh /usr/local
+- cd bats && ./install.sh $HOME
 script:
-- gb test
-- bats test/
+- gb test ./...
+- bats test
 notifications:
   email: jesse.szwedko@gmail.com
