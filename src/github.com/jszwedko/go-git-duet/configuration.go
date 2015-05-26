@@ -12,6 +12,7 @@ type Configuration struct {
 	Namespace   string
 	PairsFile   string
 	EmailLookup string
+	Global      bool
 	StaleCutoff time.Duration
 }
 
@@ -26,6 +27,10 @@ func NewConfiguration() (config *Configuration, err error) {
 
 	cutoff, err := strconv.Atoi(getenvDefault("'GIT_DUET_SECONDS_AGO_STALE'", "1200"))
 	if err != nil {
+		return nil, err
+	}
+
+	if config.Global, err = strconv.ParseBool(getenvDefault(os.Getenv("GIT_DUET_GLOBAL"), "0")); err != nil {
 		return nil, err
 	}
 

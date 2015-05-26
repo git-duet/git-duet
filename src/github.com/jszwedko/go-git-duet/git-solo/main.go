@@ -31,7 +31,7 @@ func main() {
 
 	gitConfig := &duet.GitConfig{
 		Namespace: configuration.Namespace,
-		Global:    *global,
+		Global:    configuration.Global || *global,
 	}
 
 	if getopt.NArgs() == 0 {

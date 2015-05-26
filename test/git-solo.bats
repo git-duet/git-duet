@@ -43,6 +43,18 @@ load test_helper
   assert_success 'abe@hamster.info.local'
 }
 
+@test "builds email from name" {
+  git solo zp
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
+  assert_success 'z.pants@hamster.info.local'
+}
+
+@test "builds email from two names" {
+  git solo on
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
+  assert_success 'oscar@hamster.info.local'
+}
+
 @test "looks up external email" {
   GIT_DUET_EMAIL_LOOKUP_COMMAND=$GIT_DUET_TEST_LOOKUP git solo -q jd
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
@@ -62,8 +74,14 @@ load test_helper
   clear_custom_email_template
 }
 
+@test "respects GIT_DUET_GLOBAL" {
+  GIT_DUET_GLOBAL=1 git solo jd
+  run git config --global user.email
+  assert_success 'jane@hamsters.biz.local'
+}
+
 @test "sets the git user email globally" {
-  git solo jd
+  git solo -g jd
   run git config --global user.email
   assert_success 'jane@hamsters.biz.local'
 }

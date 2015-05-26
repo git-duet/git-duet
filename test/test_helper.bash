@@ -15,6 +15,7 @@ pairs:
   jd: Jane Doe
   fb: Frances Bar
   al: Abraham Lincoln; abe
+  on: Oscar
   zp: Zubaz Pants
 
 email:

@@ -84,6 +84,17 @@ func (a *Pairs) buildEmail(initials, name, username string) (email string, err e
 		email = e
 	} else if username != "" {
 		email = fmt.Sprintf("%s@%s", strings.TrimSpace(username), a.file.Email.Domain)
+	} else {
+		names := strings.SplitN(name, " ", 2)
+		if len(names) == 2 {
+			email = fmt.Sprintf(
+				"%c.%s@%s",
+				strings.ToLower(strings.TrimSpace(names[0]))[0],
+				strings.ToLower(strings.TrimSpace(names[1])),
+				a.file.Email.Domain)
+		} else {
+			email = fmt.Sprintf("%s@%s", strings.ToLower(strings.TrimSpace(names[0])), a.file.Email.Domain)
+		}
 	}
 
 	return email, nil
@@ -94,6 +105,8 @@ func (a *Pairs) buildEmail(initials, name, username string) (email string, err e
 // - Run external lookup if provided during initialization
 // - Pull from `email_addresses` map in config
 // - Build using username (if provided) and domain
+// - If two names, build using first initial followed by . followed by last name and domain
+// - If one name, build using name followed by last name and domain
 func (a *Pairs) ByInitials(initials string) (pair *Pair, err error) {
 	pairString, ok := a.file.Pairs[initials]
 	if !ok {
