@@ -4,7 +4,7 @@ go:
 - 1.4
 env:
   global:
-  - PATH="$HOME/bin:$PATH:$HOME/gopath/bin/"
+  - PATH="$HOME/bin:$PATH:$GOPATH/bin/:$TRAVIS_BUILD_DIR/bin"
 install:
 - go get github.com/constabulary/gb/...
 - go get github.com/mitchellh/gox
