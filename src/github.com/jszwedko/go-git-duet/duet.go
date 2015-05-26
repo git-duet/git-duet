@@ -2,10 +2,6 @@ package duet
 
 import "os/exec"
 
-type Runner interface {
-	Run() error
-}
-
 type ignorableCommand struct {
 	*exec.Cmd
 	validFailureCodes []int
@@ -31,15 +27,4 @@ func (cmd *ignorableCommand) Run() error {
 	default:
 		return err
 	}
-}
-
-func runMultiple(cmds ...Runner) (err error) {
-	for _, cmd := range cmds {
-		err = cmd.Run()
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
