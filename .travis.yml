@@ -7,12 +7,12 @@ install:
 - go get github.com/mitchellh/gox
 - git clone https://github.com/sstephenson/bats.git /tmp/bats && /tmp/bats/install.sh $HOME
 before_script:
-- export PATH="$PATH:$HOME/bin:$GOPATH/bin/:$TRAVIS_BUILD_DIR/bin"
+- export PATH="$PATH:$HOME/bin:$GOPATH/bin:$TRAVIS_BUILD_DIR/bin"
 - gox -build-toolchain -os linux -arch amd64
 - gb build ./...
 script:
 - gb test ./...
-- bats test
+- bats -t test
 - GOPATH=$PWD:$PWD/vendor gox -os linux -arch amd64 -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' github.com/jszwedko/go-git-duet/...
 before_deploy:
 - for build in dist/* ; do tar cvzf $build.tar.gz $build ; done
