@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -25,7 +26,7 @@ type Pair struct {
 }
 
 type pairsFile struct {
-	Pairs          map[string]string `yaml:"pairs"`
+	Pairs          map[string]string `yaml:"authors"`
 	Email          emailConfig       `yaml:"email"`
 	EmailAddresses map[string]string `yaml:"email_addresses"`
 	EmailTemplate  string            `yaml:"email_template"`
@@ -35,6 +36,8 @@ type emailConfig struct {
 	Prefix string
 	Domain string
 }
+
+var pairsKey = regexp.MustCompile(`^pairs:`)
 
 // NewPairsFromFile parses the given yml authors file (see README.md for file structure)
 // Uses emailLookup as external command to determine pair email address if set
@@ -51,6 +54,8 @@ func NewPairsFromFile(filename string, emailLookup string) (a *Pairs, err error)
 	if err != nil {
 		return nil, err
 	}
+
+	contents = pairsKey.ReplaceAll(contents, []byte("authors:"))
 
 	err = yaml.Unmarshal(contents, &af)
 	if err != nil {
