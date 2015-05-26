@@ -10,12 +10,12 @@ install:
 - go get github.com/mitchellh/gox
 - git clone https://github.com/sstephenson/bats.git /tmp/bats && /tmp/bats/install.sh $HOME
 before_script:
-- gox -build-toolchain
+- gox -build-toolchain -os linux -arch amd64
 - gb build ./...
 script:
 - gb test ./...
 - bats test
-- GOPATH=$PWD:$PWD/vendor gox -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' github.com/jszwedko/go-git-duet/...
+- GOPATH=$PWD:$PWD/vendor gox -os linux -arch amd64 -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' github.com/jszwedko/go-git-duet/...
 before_deploy:
 - for build in dist/* ; do tar cvzf $build.tar.gz $build ; done
 deploy:
