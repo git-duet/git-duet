@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"gopkg.in/yaml.v1"
+	"gopkg.in/yaml.v2"
 )
 
 type Pairs struct {
