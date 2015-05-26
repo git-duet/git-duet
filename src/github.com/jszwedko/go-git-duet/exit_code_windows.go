@@ -1,6 +1,6 @@
-package duet
-
 // +build windows
+
+package duet
 
 import (
 	"os/exec"
@@ -8,5 +8,5 @@ import (
 )
 
 func exitCode(err *exec.ExitError) int {
-	return err.Sys().(syscall.WaitStatus).ExitCode
+	return int(err.Sys().(syscall.WaitStatus).ExitCode)
 }

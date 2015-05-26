@@ -1,6 +1,6 @@
-package duet
-
 // +build !windows
+
+package duet
 
 import (
 	"os/exec"
