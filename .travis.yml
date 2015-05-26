@@ -1,9 +1,8 @@
----
 sudo: false
 language: go
 go:
-  - 1.4
-  - tip
+- 1.4
+- tip
 env:
   global:
   - PATH="$HOME/bin:$PATH:$HOME/gopath/bin/"
@@ -19,3 +18,11 @@ script:
 - bats test
 notifications:
   email: jesse.szwedko@gmail.com
+deploy:
+  provider: releases
+  api_key:
+    secure: NX280HEUBkHpuRMU+v9lYwmSLyHIbmTh/7ut6jrh6ya4XH3gUAXRHQotkKDJ4TxHyJS7+GpHtf+X+XX+d8RPBjhfwq7CxeWOdL3LDprROoh903zBW6RrWY9lc7cFLXbBJDnxcfyDYsjCVI1t2fYfdImEp9rbH+qtAoITsOIvOAxur+k6gYmpoXMrmAWJQDcMwEJXnaiCg4SjN0eEjkV9HmOTRTPF3Cs+C66P025WTk8KUTqCaAX2nfqnwobCo1nOhVH4BlyasEozxSvT6Iqo6gu2BdgXN/DsQtO2Iu0mi4Y3mbZZaI2h09s33H6HmTZcnRzP4m4r5O7TgJovZa9NlXhSd8t/QJyxvjKoQXjFk5gijDO4Lt46B8KWBwLyTINMg2c694/8eaXRH3KuMAG7l5acuiOeRxfBAftNQ90ywWaNhCobtKh6tDHHa2uiHDZsaWZ2B0wwSrw72+pRjxFB7CqHWkozHz1vG68Lbkz0PlspzvcYCm1trJImM4pvOWIZWEqXHgOMzS9Lqu3Xt2L1k5fXgj6uD3F6Fte+1kbTn/d0DN18Gm7zdGljFGKC9bWgqA8UkTT7Su04GbtHPCVZIboMHReqe2X8ubFcE8VjJFxb8CL8/Dm9YTRapTbT2LZjWYTfWDOA1QxpzKqMib5Cb0BUB01jHHuX83SRiN7C9zE=
+  file:
+  - README.md
+  on:
+    repo: jszwedko/go-git-duet
