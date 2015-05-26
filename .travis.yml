@@ -24,5 +24,6 @@ deploy:
   - dist/*.tar.gz
   on:
     repo: jszwedko/go-git-duet
+    tags: true
 notifications:
   email: jesse.szwedko@gmail.com
