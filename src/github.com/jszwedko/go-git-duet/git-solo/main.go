@@ -73,6 +73,10 @@ func main() {
 }
 
 func printAuthor(author *duet.Pair) {
+	if author == nil {
+		return
+	}
+
 	fmt.Printf("GIT_AUTHOR_NAME='%s'\n", author.Name)
 	fmt.Printf("GIT_AUTHOR_EMAIL='%s'\n", author.Email)
 }
