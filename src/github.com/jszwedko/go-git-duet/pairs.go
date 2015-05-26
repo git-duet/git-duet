@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"text/template"
 
 	"gopkg.in/yaml.v2"
 )
@@ -21,8 +22,10 @@ type Pairs struct {
 
 // Pair represents a single pair
 type Pair struct {
-	Name  string
-	Email string
+	Name     string
+	Email    string
+	Initials string
+	Username string
 }
 
 type pairsFile struct {
@@ -68,6 +71,13 @@ func NewPairsFromFile(filename string, emailLookup string) (a *Pairs, err error)
 	}, nil
 }
 
+var templateFuncs = template.FuncMap{
+	"toLower": strings.ToLower,
+	"toUpper": strings.ToUpper,
+	"split":   strings.Split,
+	"replace": strings.Replace,
+}
+
 func (a *Pairs) buildEmail(initials, name, username string) (email string, err error) {
 	if a.emailLookup != "" {
 		var out bytes.Buffer
@@ -87,6 +97,19 @@ func (a *Pairs) buildEmail(initials, name, username string) (email string, err e
 
 	if e, ok := a.file.EmailAddresses[initials]; ok {
 		email = e
+	} else if a.file.EmailTemplate != "" {
+		var out bytes.Buffer
+
+		t, err := template.New("email").Funcs(templateFuncs).Parse(a.file.EmailTemplate)
+		if err != nil {
+			return "", err
+		}
+
+		if err = t.Execute(&out, Pair{Initials: initials, Name: name, Username: username}); err != nil {
+			return "", err
+		}
+		email = out.String()
+
 	} else if username != "" {
 		email = fmt.Sprintf("%s@%s", strings.TrimSpace(username), a.file.Email.Domain)
 	} else {
@@ -109,6 +132,7 @@ func (a *Pairs) buildEmail(initials, name, username string) (email string, err e
 // The email is determined from the first non-empty value during the following steps:
 // - Run external lookup if provided during initialization
 // - Pull from `email_addresses` map in config
+// - Build using `email_template` if provided
 // - Build using username (if provided) and domain
 // - If two names, build using first initial followed by . followed by last name and domain
 // - If one name, build using name followed by last name and domain
@@ -131,7 +155,9 @@ func (a *Pairs) ByInitials(initials string) (pair *Pair, err error) {
 	}
 
 	return &Pair{
-		Name:  name,
-		Email: email,
+		Name:     name,
+		Email:    email,
+		Username: username,
+		Initials: initials,
 	}, nil
 }

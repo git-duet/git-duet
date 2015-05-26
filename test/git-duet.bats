@@ -39,14 +39,13 @@ load test_helper
 }
 
 @test "uses custom email template for author when provided" {
-  skip "TODO"
   local suffix=$RANDOM
 
-  set_custom_email_template "<%= \"#{author.split.first.downcase}#{author.split.last[0].chr.downcase}$suffix@mompopshop.local\" %>"
+  set_custom_email_template "{{with split .Name \" \"}}{{with index . 0}}{{toLower . }}{{end}}.{{with index . 1}}{{toLower . }}{{end}}{{end}}$suffix@mompopshop.local"
 
-  git duet zp fb
+  git duet -q zp fb
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
-  assert_success "zubazp$suffix@mompopshop.local"
+  assert_success "zubaz.pants$suffix@mompopshop.local"
 
   clear_custom_email_template
 }

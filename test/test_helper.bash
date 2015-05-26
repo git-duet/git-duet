@@ -51,7 +51,7 @@ add_file() {
 
 set_custom_email_template() {
   clear_custom_email_template
-  echo "email_template: $1" >> "$GIT_DUET_AUTHORS_FILE"
+  echo "email_template: '$1'" >> "$GIT_DUET_AUTHORS_FILE"
 }
 
 clear_custom_email_template() {

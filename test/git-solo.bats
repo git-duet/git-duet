@@ -62,14 +62,13 @@ load test_helper
 }
 
 @test "uses custom email template when provided" {
-  skip "TODO"
   local suffix=$RANDOM
 
-  set_custom_email_template "awk '{ print tolower(substr(\$1, 1, 1)) \".\" tolower(substr($2, 1))} \"$suffix@mompopshop.local\""
+  set_custom_email_template "{{with split .Name \" \"}}{{with index . 0}}{{toLower . }}{{end}}.{{with index . 1}}{{toLower . }}{{end}}{{end}}$suffix@mompopshop.local"
 
   git solo -q zp
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
-  assert_success "zubazp$suffix@mompopshop.local"
+  assert_success "zubaz.pants$suffix@mompopshop.local"
 
   clear_custom_email_template
 }

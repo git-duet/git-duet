@@ -132,16 +132,26 @@ git config duet.env.git-committer-email
 ```
 
 A custom email template may be provided via the `email_template` config
-variable.  The template should be a valid ERB string and the variables
-available are `author` which is the full first and last name value
-associated with each set of initials, `initials` which are the initials
-key, and `username` which is the part following `;` in the author value.
+variable.  The template should be a valid Go template string (see
+http://golang.org/pkg/text/template/). The object passed in has `.Name`,
+`.Username`, and `.Initials`.
+
+Additional functions available to template:
+- `toLower(s)`: lowercases string
+- `toUpper(s)`: uppercases string
+- `split(s, d)`: splits string on delimiter
+- `replace(s, old, new, n)`: replaces `old` in `s` with `new` `n` times (set `n` to `-1` to replace all)
+
+If you need more complex logic, consider using the lookup function described
+below and `awk`.
+
+Example:
 
 ``` yaml
 pairs:
   jd: Jane Doe
   fb: Frances Bar
-email_template: '<%= "#{author.gsub(/ /, "-").downcase}@hamster.local" =%>'
+email_template: '{{with replace .Name " " "-" -1}}{{toLower .}}{{end}}}}@hamster.local" =%>'
 ```
 
 After invoking:
@@ -214,8 +224,8 @@ email, it is important to note the order of precedence used by Git Duet:
 1. Email lookup executable configured via the
    `GIT_DUET_EMAIL_LOOKUP_COMMAND` environmental variable
 2. Email lookup from `email_addresses` in your configuration file
-3. Custom email address from ERB template defined in `email_template` in
-   your configuration file
+3. Custom email address from Go template defined in `email_template` in
+   your configuration file (see http://golang.org/pkg/text/template/)
 4. The username after the `;`, followed by `@` and the configured email
    domain
 5. The lower-cased first letter of the author or committer's first name,
@@ -281,7 +291,7 @@ See issue #8 for more details.
 ## Differences from meatballhat/git-duet
 - Running `git solo` or `git duet` with no initials outputs configuration in
   same format as when setting (env variables)
-- Remove email template ERB in lieu of just using lookup command with awk/sed/etc.?
+- Template format is now Go's `text/template`
 
 ## Contributing
 
