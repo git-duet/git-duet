@@ -9,11 +9,16 @@ import (
 	"time"
 )
 
+// GitConfig provides methods for interacting with git config
+// If Global is set, interacts with user git config (~/.gitconfig)
+// otherwise operates on repo config
+// Namespace determines the section under which configuration will be stored
 type GitConfig struct {
 	Namespace string
 	Global    bool
 }
 
+// ClearCommitter removes committer name/email from config
 func (gc *GitConfig) ClearCommitter() (err error) {
 	if err = gc.unsetKey("git-committer-name"); err != nil {
 		return err
@@ -24,6 +29,7 @@ func (gc *GitConfig) ClearCommitter() (err error) {
 	return nil
 }
 
+// SetAuthor sets the configuration for author name and email
 func (gc *GitConfig) SetAuthor(pair *Pair) (err error) {
 	if err = gc.setKey("git-author-name", pair.Name); err != nil {
 		return err
@@ -34,6 +40,7 @@ func (gc *GitConfig) SetAuthor(pair *Pair) (err error) {
 	return nil
 }
 
+// SetCommitter sets the configuration for committer name and email
 func (gc *GitConfig) SetCommitter(committer *Pair) (err error) {
 	if err = gc.setKey("git-committer-name", committer.Name); err != nil {
 		return err
@@ -44,6 +51,7 @@ func (gc *GitConfig) SetCommitter(committer *Pair) (err error) {
 	return nil
 }
 
+// GetAuthor returns the currently configured author (nil if none)
 func (gc *GitConfig) GetAuthor() (pair *Pair, err error) {
 	name, err := gc.getKey("git-author-name")
 	if err != nil {
@@ -65,6 +73,7 @@ func (gc *GitConfig) GetAuthor() (pair *Pair, err error) {
 	}, nil
 }
 
+// GetCommitter returns the currently configured committer (nil if none)
 func (gc *GitConfig) GetCommitter() (pair *Pair, err error) {
 	name, err := gc.getKey("git-committer-name")
 	if err != nil {
@@ -86,6 +95,8 @@ func (gc *GitConfig) GetCommitter() (pair *Pair, err error) {
 	}, nil
 }
 
+// GetMtime returns the last time the author/committer was written
+// Returns zero Time if key is missing
 func (gc *GitConfig) GetMtime() (mtime time.Time, err error) {
 	mtimeString, err := gc.getKey("mtime")
 	if err != nil {

@@ -11,11 +11,14 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Pairs wraps the git authors file with logic for looking up pairs based on initials
+// and building email addresses
 type Pairs struct {
 	file        *pairsFile
 	emailLookup string
 }
 
+// Pair represents a single pair
 type Pair struct {
 	Name  string
 	Email string
@@ -33,6 +36,8 @@ type emailConfig struct {
 	Domain string
 }
 
+// NewPairsFromFile parses the given yml authors file (see README.md for file structure)
+// Uses emailLookup as external command to determine pair email address if set
 func NewPairsFromFile(filename string, emailLookup string) (a *Pairs, err error) {
 	af := &pairsFile{}
 
@@ -58,11 +63,6 @@ func NewPairsFromFile(filename string, emailLookup string) (a *Pairs, err error)
 	}, nil
 }
 
-// buildEmail returns the email address for the given pair
-// It returns the first email it finds while doing the following:
-// - Run external lookup if provided
-// - Pull from `email_addresses` map in config
-// - Build using username (if provided) and domain
 func (a *Pairs) buildEmail(initials, name, username string) (email string, err error) {
 	if a.emailLookup != "" {
 		var out bytes.Buffer
@@ -89,6 +89,11 @@ func (a *Pairs) buildEmail(initials, name, username string) (email string, err e
 	return email, nil
 }
 
+// ByInitials returns the pair with the given initials
+// The email is determined from the first non-empty value during the following steps:
+// - Run external lookup if provided during initialization
+// - Pull from `email_addresses` map in config
+// - Build using username (if provided) and domain
 func (a *Pairs) ByInitials(initials string) (pair *Pair, err error) {
 	pairString, ok := a.file.Pairs[initials]
 	if !ok {

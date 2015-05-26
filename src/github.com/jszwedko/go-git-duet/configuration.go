@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// Configuration represents package configuration (shared by commands)
 type Configuration struct {
 	Namespace   string
 	PairsFile   string
@@ -14,6 +15,8 @@ type Configuration struct {
 	StaleCutoff time.Duration
 }
 
+// NewConfiguration initializes Configuration from the environment
+// Returns an error if it cannot parse the staleness timeout as an integer
 func NewConfiguration() (config *Configuration, err error) {
 	config = &Configuration{
 		Namespace:   getenvDefault("GIT_DUET_CONFIG_NAMESPACE", "duet.env"),
