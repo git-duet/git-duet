@@ -9,7 +9,11 @@ import (
 )
 
 func main() {
-	configuration := duet.NewConfiguration()
+	configuration, err := duet.NewConfiguration()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
 	gitConfig := &duet.GitConfig{
 		Namespace: configuration.Namespace,

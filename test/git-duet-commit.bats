@@ -48,8 +48,15 @@ load test_helper
   assert_failure
 }
 
+@test "writes mtime to config" {
+  git duet jd fb
+  add_file
+  git duet-commit -q -m 'Testing set of alpha as author'
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.mtime"
+  assert_success
+}
+
 @test "rejects commits with stale soloists with hook" {
-  skip "TODO"
   git solo -q jd
   git duet-install-hook -q
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
@@ -57,11 +64,10 @@ load test_helper
   run git duet-commit -q -m 'Testing stale hook fire'
 
   assert_failure
-  assert_line 0 "Your git duet settings are stale, human!"
+  assert_line "your git duet settings are stale"
 }
 
 @test "rejects commits with stale duetists with hook" {
-  skip "TODO"
   git duet -q jd fb
   git duet-install-hook -q
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
@@ -69,5 +75,5 @@ load test_helper
   run git duet-commit -q -m 'Testing stale hook fire'
 
   assert_failure
-  assert_line 0 "Your git duet settings are stale, human!"
+  assert_line "your git duet settings are stale"
 }

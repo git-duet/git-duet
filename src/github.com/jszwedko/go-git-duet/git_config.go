@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+	"strconv"
 	"strings"
+	"time"
 )
 
 type GitConfig struct {
@@ -84,6 +86,24 @@ func (gc *GitConfig) GetCommitter() (pair *Pair, err error) {
 	}, nil
 }
 
+func (gc *GitConfig) GetMtime() (mtime time.Time, err error) {
+	mtimeString, err := gc.getKey("mtime")
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	if mtimeString == "" {
+		return time.Time{}, nil
+	}
+
+	mtimeUnix, err := strconv.ParseInt(mtimeString, 10, 64)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return time.Unix(mtimeUnix, 0), nil
+}
+
 func (gc *GitConfig) getKey(key string) (value string, err error) {
 	output := new(bytes.Buffer)
 	cmd := gc.configCommand(fmt.Sprintf("%s.%s", gc.Namespace, key))
@@ -97,13 +117,29 @@ func (gc *GitConfig) getKey(key string) (value string, err error) {
 }
 
 func (gc *GitConfig) unsetKey(key string) (err error) {
-	return newIgnorableCommand(
+	if err = newIgnorableCommand(
 		gc.configCommand("--unset-all", fmt.Sprintf("%s.%s", gc.Namespace, key)),
-		5).Run()
+		5).Run(); err != nil {
+		return err
+	}
+	if err = gc.configCommand(
+		fmt.Sprintf("%s.%s", gc.Namespace, "mtime"),
+		strconv.FormatInt(time.Now().Unix(), 10)).Run(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (gc *GitConfig) setKey(key, value string) (err error) {
-	return gc.configCommand(fmt.Sprintf("%s.%s", gc.Namespace, key), value).Run()
+	if err = gc.configCommand(fmt.Sprintf("%s.%s", gc.Namespace, key), value).Run(); err != nil {
+		return err
+	}
+	if err = gc.configCommand(
+		fmt.Sprintf("%s.%s", gc.Namespace, "mtime"),
+		strconv.FormatInt(time.Now().Unix(), 10)).Run(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (gc *GitConfig) configCommand(args ...string) *exec.Cmd {

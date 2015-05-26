@@ -11,10 +11,9 @@ import (
 
 func main() {
 	var (
-		quiet         = getopt.BoolLong("quiet", 'q', "Silence output")
-		global        = getopt.BoolLong("global", 'g', "Change global config")
-		help          = getopt.BoolLong("help", 'h', "Help")
-		configuration = duet.NewConfiguration()
+		quiet  = getopt.BoolLong("quiet", 'q', "Silence output")
+		global = getopt.BoolLong("global", 'g', "Change global config")
+		help   = getopt.BoolLong("help", 'h', "Help")
 	)
 
 	getopt.Parse()
@@ -22,6 +21,12 @@ func main() {
 	if *help {
 		getopt.Usage()
 		os.Exit(0)
+	}
+
+	configuration, err := duet.NewConfiguration()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	gitConfig := &duet.GitConfig{

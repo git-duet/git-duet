@@ -12,7 +12,7 @@ import (
 )
 
 const hook = `
-#!/bin/bash
+#!/usr/bin/env bash
 exec git duet-pre-commit "$@"
 `
 
