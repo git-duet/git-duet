@@ -291,6 +291,8 @@ See issue #8 for more details.
 ## Differences from meatballhat/git-duet
 - Running `git solo` or `git duet` with no initials outputs configuration in
   same format as when setting (env variables)
+- Does not set `user.name` and `user.email` (instead only sets namespaced
+  variables) so that `git commit` continues to work as normal
 - Template format is now Go's `text/template`
 
 ## Contributing

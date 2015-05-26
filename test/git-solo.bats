@@ -2,12 +2,6 @@
 
 load test_helper
 
-@test "sets the git user name" {
-  git solo -q jd
-  run git config user.name
-  assert_success 'Jane Doe'
-}
-
 @test "output is displayed" {
   run git solo jd
   assert_line "GIT_AUTHOR_NAME='Jane Doe'"
@@ -17,12 +11,6 @@ load test_helper
 @test "output is not displayed when quieted" {
   git solo jd -q
   assert_success ""
-}
-
-@test "sets the git user email" {
-  git solo jd
-  run git config user.email
-  assert_success 'jane@hamsters.biz.local'
 }
 
 @test "caches the git user name as author name" {
@@ -75,19 +63,19 @@ load test_helper
 
 @test "respects GIT_DUET_GLOBAL" {
   GIT_DUET_GLOBAL=1 git solo jd
-  run git config --global user.email
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
   assert_success 'jane@hamsters.biz.local'
 }
 
 @test "sets the git user email globally" {
   git solo -g jd
-  run git config --global user.email
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
   assert_success 'jane@hamsters.biz.local'
 }
 
 @test "sets the git user name globally" {
   git solo -g -q jd
-  run git config --global user.name
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-name"
   assert_success 'Jane Doe'
 }
 

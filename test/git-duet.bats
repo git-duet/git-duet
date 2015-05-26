@@ -4,13 +4,13 @@ load test_helper
 
 @test "sets the git user name" {
   git duet -q jd fb
-  run git config user.name
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-name"
   assert_success 'Jane Doe'
 }
 
 @test "sets the git user email" {
   git duet -q jd fb
-  run git config user.email
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
   assert_success 'jane@hamsters.biz.local'
 }
 
@@ -52,13 +52,13 @@ load test_helper
 
 @test "sets the git user email globally" {
   git duet -g -q jd fb
-  run git config --global user.email
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
   assert_success 'jane@hamsters.biz.local'
 }
 
 @test "sets the git user name globally" {
   git duet -g -q jd fb
-  run git config --global user.name
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-name"
   assert_success 'Jane Doe'
 }
 

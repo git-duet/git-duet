@@ -30,7 +30,7 @@ func NewConfiguration() (config *Configuration, err error) {
 		return nil, err
 	}
 
-	if config.Global, err = strconv.ParseBool(getenvDefault(os.Getenv("GIT_DUET_GLOBAL"), "0")); err != nil {
+	if config.Global, err = strconv.ParseBool(getenvDefault("GIT_DUET_GLOBAL", "0")); err != nil {
 		return nil, err
 	}
 

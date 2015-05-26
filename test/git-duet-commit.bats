@@ -57,6 +57,12 @@ load test_helper
 }
 
 @test "rejects commits with stale soloists with hook" {
+  # if in CI, git-duet-pre-commit will not be in the PATH
+  # exposed to git hooks
+  if [ -n "$CI" ] ; then
+    skip "cannot test commit hook on CI without sudo"
+  fi
+
   git solo -q jd
   git duet-install-hook -q
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
@@ -68,6 +74,12 @@ load test_helper
 }
 
 @test "rejects commits with stale duetists with hook" {
+  # if in CI, git-duet-pre-commit will not be in the PATH
+  # exposed to git hooks
+  if [ -n "$CI" ] ; then
+    skip "cannot test commit hook on CI without sudo"
+  fi
+
   git duet -q jd fb
   git duet-install-hook -q
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
