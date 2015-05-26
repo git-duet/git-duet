@@ -8,14 +8,14 @@ env:
 install:
 - go get github.com/constabulary/gb/...
 - go get github.com/mitchellh/gox
-- git clone https://github.com/sstephenson/bats.git && ./bats/install.sh $HOME
+- git clone https://github.com/sstephenson/bats.git /tmp/bats && /tmp/bats/install.sh $HOME
 before_script:
 - gox -build-toolchain
 - gb build ./...
 script:
 - gb test ./...
 - bats test
-- GOPATH=$PWD:$PWD/vendor gox -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' github.com/jszwedko/go-git-duet/..
+- GOPATH=$PWD:$PWD/vendor gox -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' github.com/jszwedko/go-git-duet/...
 before_deploy:
 - for build in dist/* ; do tar cvzf $build.tar.gz $build ; done
 deploy:
