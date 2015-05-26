@@ -11,7 +11,7 @@ install:
 - go get github.com/mitchellh/gox
 - git clone https://github.com/sstephenson/bats.git && cd bats && ./install.sh $HOME
 before_script:
-- gox -os="darwin linux windows" -arch="386 amd64" -build-toolchain
+- gox -build-toolchain
 - gb build ./...
 script:
 - gb test ./...
