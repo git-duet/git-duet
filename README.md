@@ -2,11 +2,6 @@
 
 **WORK IN PROGRESS -- actively porting github.com/meatballhat/git-duet to Golang**
 
-Differences:
-- Running `git solo` or `git duet` with no initials outputs configuration in
-  same format as when setting
-- Remove email template ERB in lieu of just using lookup command with awk/sed/etc.?
-
 [![Build Status](https://travis-ci.org/jszwedko/go-git-duet.png?branch=master)](https://travis-ci.org/jszwedko/go-git-duet)
 
 Pair harmoniously!  Working in a pair doesn't mean you've both lost your
@@ -16,11 +11,7 @@ identities.
 
 ## Installation
 
-Install it with `gem`:
-
-``` bash
-gem install git-duet
-```
+See releases page for binary downloads, place in your `$PATH`.
 
 ## Usage
 
@@ -94,6 +85,20 @@ git solo -g jd
 ``` bash
 git duet --global jd fb
 ```
+If you do this habitually, you can set the `GIT_DUET_GLOBAL` environment
+variable to `true` to always operate on the global git config:
+
+``` bash
+export GIT_DUET_GLOBAL=true
+git solo jd
+```
+
+``` bash
+GIT_DUET_GLOBAL=true git duet jd fb
+```
+
+You can also set it to `false` to always operate on the local config, even if
+the global flag is used.
 
 ### Email Configuration
 
@@ -261,7 +266,7 @@ executions of `git commit`.  Such an executable is available in the Git
 Duet repository, and may be installed somewhere in your `$PATH` like so:
 
 ``` bash
-\curl -Ls -o ~/bin/rubymine-git-wrapper https://raw.github.com/modcloth/git-duet/master/bin/rubymine-git-wrapper
+\curl -Ls -o ~/scripts/rubymine-git-wrapper https://raw.github.com/modcloth/git-duet/master/scripts/rubymine-git-wrapper
 chmod +x ~/bin/rubymine-git-wrapper
 ```
 
@@ -272,17 +277,11 @@ above, you would then update your RubyMine setting in
  `~/bin/rubymine-git-wrapper` (with the `~` expanded).
 See issue #8 for more details.
 
-## Compatibility
 
-Git Duet has been tested on a bunch of platform/interpreter combinations
-provided by Travis CI *not including* Rubinius.
-
-While JRuby works it is not recommended as the VM startup time is
-usually longer than it takes most Git Duet commands to execute.
-
-If you experience badness, please [let us know via
-email](mailto:github@modcloth.com) or pretty please [create an issue on
-github](https://github.com/modcloth/git-duet/issues/new).
+## Differences from meatballhat/git-duet
+- Running `git solo` or `git duet` with no initials outputs configuration in
+  same format as when setting (env variables)
+- Remove email template ERB in lieu of just using lookup command with awk/sed/etc.?
 
 ## Contributing
 
