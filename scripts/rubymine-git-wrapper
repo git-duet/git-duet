@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if [[ "$1" == commit ]] ; then
+  shift
+  exec git duet-commit "$@"
+fi
+
+exec git "$@"
