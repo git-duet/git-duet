@@ -15,7 +15,7 @@ script:
 - bats -t test
 - GOPATH=$PWD:$PWD/vendor gox -os 'linux windows darwin' -arch '386 amd64' -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' github.com/jszwedko/go-git-duet/...
 before_deploy:
-- for build in dist/* ; do tar cvzf $build.tar.gz $build ; done
+- for build in $(find dist/* -type d) ; do tar cvzf $build.tar.gz -C $build . ; done
 deploy:
   provider: releases
   api_key:
