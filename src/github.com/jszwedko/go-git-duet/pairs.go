@@ -58,6 +58,7 @@ func NewPairsFromFile(filename string, emailLookup string) (a *Pairs, err error)
 		return nil, err
 	}
 
+	// Hack to also support `pairs:` as the key
 	contents = pairsKey.ReplaceAll(contents, []byte("authors:"))
 
 	err = yaml.Unmarshal(contents, &af)
@@ -135,7 +136,7 @@ func (a *Pairs) buildEmail(initials, name, username string) (email string, err e
 // - Build using `email_template` if provided
 // - Build using username (if provided) and domain
 // - If two names, build using first initial followed by . followed by last name and domain
-// - If one name, build using name followed by last name and domain
+// - If one name, build using name followed by domain
 func (a *Pairs) ByInitials(initials string) (pair *Pair, err error) {
 	pairString, ok := a.file.Pairs[initials]
 	if !ok {

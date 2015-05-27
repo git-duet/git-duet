@@ -287,8 +287,7 @@ above, you would then update your RubyMine setting in
  `~/bin/rubymine-git-wrapper` (with the `~` expanded).
 See issue #8 for more details.
 
-
-## Differences from meatballhat/git-duet
+## Differences from ruby [`git-duet`](http://github.com/meatballhat/git-duet)
 - Running `git solo` or `git duet` with no initials outputs configuration in
   same format as when setting (env variables)
 - Does not set `user.name` and `user.email` (instead only sets namespaced
@@ -302,3 +301,7 @@ See issue #8 for more details.
 3. Commit your changes (`git dci -am 'Added some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+### Building
+
+Uses [`gb`](http://getgb.io/) for building and vendor management.

@@ -17,7 +17,8 @@ type Configuration struct {
 }
 
 // NewConfiguration initializes Configuration from the environment
-// Returns an error if it cannot parse the staleness timeout as an integer
+// Returns an error if it cannot parse the staleness timeout as an integer or
+// the global var as a bool
 func NewConfiguration() (config *Configuration, err error) {
 	config = &Configuration{
 		Namespace:   getenvDefault("GIT_DUET_CONFIG_NAMESPACE", "duet.env"),
