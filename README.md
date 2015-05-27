@@ -1,8 +1,9 @@
 # Git Duet
 
-**WORK IN PROGRESS -- actively porting github.com/meatballhat/git-duet to Golang**
-
 [![Build Status](https://travis-ci.org/jszwedko/go-git-duet.png?branch=master)](https://travis-ci.org/jszwedko/go-git-duet)
+
+Port of [`git-duet`](https://github.com/meatballhat/git-duet) to Golang (see
+bottom for differences). Currently in beta.
 
 Pair harmoniously!  Working in a pair doesn't mean you've both lost your
 identity.  Git Duet helps with blaming/praising by using stuff that's
