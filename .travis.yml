@@ -24,7 +24,7 @@ deploy:
   file: 'dist/*.tar.gz'
   skip_cleanup: true
   on:
-    repo: jszwedko/go-git-duet
+    repo: hamfist/go-git-duet
     tags: true
 notifications:
   email: jesse.szwedko@gmail.com
