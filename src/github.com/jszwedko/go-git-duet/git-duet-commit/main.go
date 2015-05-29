@@ -42,12 +42,12 @@ func main() {
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
-	cmd.Env = []string{
+	cmd.Env = append(os.Environ(),
 		fmt.Sprintf("GIT_AUTHOR_NAME=%s", author.Name),
 		fmt.Sprintf("GIT_AUTHOR_EMAIL=%s", author.Email),
 		fmt.Sprintf("GIT_COMMITTER_NAME=%s", committer.Name),
 		fmt.Sprintf("GIT_COMMITTER_EMAIL=%s", committer.Email),
-	}
+	)
 	err = cmd.Run()
 	if err != nil {
 		fmt.Println(err)
