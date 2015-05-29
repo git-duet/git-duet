@@ -1,6 +1,6 @@
 # Git Duet
 
-[![Build Status](https://travis-ci.org/jszwedko/go-git-duet.png?branch=master)](https://travis-ci.org/jszwedko/go-git-duet)
+[![Build Status](https://travis-ci.org/hamfist/go-git-duet.png?branch=master)](https://travis-ci.org/hamfist/go-git-duet)
 
 Port of [`git-duet`](https://github.com/meatballhat/git-duet) to Golang (see
 bottom for differences). Currently in beta.
