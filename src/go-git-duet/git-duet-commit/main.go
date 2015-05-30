@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/exec"
 
-	duet "github.com/jszwedko/go-git-duet"
+	"go-git-duet"
 )
 
 func main() {
