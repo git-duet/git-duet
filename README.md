@@ -1,9 +1,6 @@
 # Git Duet
 
-[![Build Status](https://travis-ci.org/hamfist/go-git-duet.png?branch=master)](https://travis-ci.org/hamfist/go-git-duet)
-
-Port of [`git-duet`](https://github.com/meatballhat/git-duet) to Golang (see
-bottom for differences). Currently in beta.
+[![Build Status](https://travis-ci.org/git-duet/git-duet.png?branch=master)](https://travis-ci.org/git-duet/git-duet)
 
 Pair harmoniously!  Working in a pair doesn't mean you've both lost your
 identity.  Git Duet helps with blaming/praising by using stuff that's

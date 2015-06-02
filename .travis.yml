@@ -13,7 +13,7 @@ before_script:
 script:
 - gb test ./...
 - bats -t test
-- GOPATH=$PWD:$PWD/vendor gox -os 'linux windows darwin' -arch '386 amd64' -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' github.com/jszwedko/go-git-duet/...
+- GOPATH=$PWD:$PWD/vendor gox -os 'linux windows darwin' -arch '386 amd64' -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' github.com/git-duet/git-duet/...
 before_deploy:
 - for build in $(find dist/* -type d) ; do tar cvzf $build.tar.gz -C $build . ; done
 deploy:
@@ -24,7 +24,7 @@ deploy:
   file: 'dist/*.tar.gz'
   skip_cleanup: true
   on:
-    repo: hamfist/go-git-duet
+    repo: git-duet/git-duet
     tags: true
 notifications:
   email: jesse.szwedko@gmail.com
