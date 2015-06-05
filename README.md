@@ -5,6 +5,7 @@
 Pair harmoniously!  Working in a pair doesn't mean you've both lost your
 identity.  Git Duet helps with blaming/praising by using stuff that's
 already in `git` without littering your repo history with fictitous user
+identities by using both `git`'s author and committer fields with real user
 identities.
 
 ## Installation
@@ -56,7 +57,11 @@ Set the author and committer via `git duet`:
 git duet jd fb
 ```
 
-When you're ready to commit, use `git duet-commit` or `git dci`
+This sets `git-duet`s configuration to use the user associated with `jd` as the
+author and `fb` as the committer.
+
+When you're ready to commit, use `git duet-commit` (or add an alias like
+a normal person. Something like `dci` = `duet-commit` should work.)
 
 ``` bash
 git duet-commit -v [any other git options]
@@ -68,6 +73,19 @@ When you're done pairing, set the author back to yourself with `git solo`:
 
 ``` bash
 git solo jd
+```
+
+*Note:* `git-duet` only sets the configuration to use via `git duet-commit`,
+using `git solo` (or `git duet`) will not effect the configured `user.name` and
+`user.email`.  This allows `git commit` to be used normally outside of
+`git-duet`.
+
+Committing:
+
+``` bash
+git duet-commit -v [any other git options]
+# or...
+git dci -v [any other git options]
 ```
 
 ### Global Config Support
