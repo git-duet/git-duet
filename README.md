@@ -167,7 +167,7 @@ Example:
 pairs:
   jd: Jane Doe
   fb: Frances Bar
-email_template: '{{with replace .Name " " "-" -1}}{{toLower .}}{{end}}}}@hamster.local" =%>'
+email_template: '{{with replace .Name " " "-" -1}}{{toLower .}}{{end}}@hamster.local'
 ```
 
 After invoking:
