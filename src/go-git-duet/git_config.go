@@ -3,6 +3,7 @@ package duet
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -159,5 +160,9 @@ func (gc *GitConfig) configCommand(args ...string) *exec.Cmd {
 		config = append(config, "--global")
 	}
 	config = append(config, args...)
-	return exec.Command("git", config...)
+	cmd := exec.Command("git", config...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd
 }
