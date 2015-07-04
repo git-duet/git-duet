@@ -61,6 +61,13 @@ load test_helper
   clear_custom_email_template
 }
 
+@test "unsets git committer email after duet" {
+  git duet -q jd fb
+  git solo -q jd
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-committer-email"
+  assert_equal 1 $status
+}
+
 @test "respects GIT_DUET_GLOBAL" {
   GIT_DUET_GLOBAL=1 git solo jd
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
@@ -77,6 +84,13 @@ load test_helper
   git solo -g -q jd
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-name"
   assert_success 'Jane Doe'
+}
+
+@test "unsets git committer email after duet globally" {
+  git duet -g -q jd fb
+  git solo -g -q jd
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-committer-email"
+  assert_equal 1 $status
 }
 
 @test "prints current config" {

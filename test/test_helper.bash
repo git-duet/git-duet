@@ -3,6 +3,9 @@ setup() {
 
   mkdir "$GIT_DUET_TEST_DIR"
 
+  unset GIT_DUET_GLOBAL
+  unset GIT_DUET_ROTATE_AUTHOR
+
   export GIT_DUET_CONFIG_NAMESPACE='foo.bar'
   export GIT_DUET_AUTHORS_FILE="${GIT_DUET_TEST_DIR}/.git-authors"
   export GIT_DUET_TEST_LOOKUP="${GIT_DUET_TEST_DIR}/email-lookup"
@@ -43,8 +46,13 @@ teardown() {
 }
 
 add_file() {
-  touch file.txt
-  git add file.txt
+  if [ $# -eq 0 ]; then
+    touch file.txt
+    git add file.txt
+  else
+    touch $1
+    git add $1
+  fi
 }
 
 set_custom_email_template() {
