@@ -24,7 +24,7 @@ func (gc *GitConfig) ClearCommitter() (err error) {
 	if err = gc.unsetKey("git-committer-name"); err != nil {
 		return err
 	}
-	if err = gc.unsetKey("git-committer-name"); err != nil {
+	if err = gc.unsetKey("git-committer-email"); err != nil {
 		return err
 	}
 	return nil
