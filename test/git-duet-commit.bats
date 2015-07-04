@@ -18,6 +18,66 @@ load test_helper
   assert_success 'Frances Bar <f.bar@hamster.info.local>'
 }
 
+@test "does not rotate author by default" {
+  git duet -q jd fb
+
+  add_file first.txt
+  git duet-commit -q -m 'Testing jd as author, fb as committer'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+
+  add_file second.txt
+  git duet-commit -q -m 'Testing jd remains author, fb remains committer'
+  git log -1 --format='%an <%ae>'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+}
+
+@test "respects GIT_DUET_ROTATE_AUTHOR" {
+  git duet -q jd fb
+
+  add_file first.txt
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit -q -m 'Testing jd as author, fb as committer'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+
+  add_file second.txt
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit -q -m 'Testing fb as author, jd as committer'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+}
+
+@test "GIT_DUET_ROTATE_AUTHOR updates the correct config" {
+  git duet -q -g jd fb
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
+  assert_success 'jane@hamsters.biz.local'
+
+  add_file first.txt
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit -q -m 'Testing jd as author, fb as committer'
+  assert_success
+
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
+  assert_success 'f.bar@hamster.info.local'
+}
+
+@test "does not update mtime when rotating committer" {
+  git duet -q jd fb
+  git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
+  add_file
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit -q -m 'Testing mtime not set'
+  assert_success
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.mtime"
+  assert_equal 1 $status
+}
+
 @test "lists the soloist as author in the log" {
   git solo -q jd
   add_file
@@ -34,7 +94,7 @@ load test_helper
   assert_success 'Jane Doe <jane@hamsters.biz.local>'
 }
 
-@test "does not inclued Signed-off-by whene soloing" {
+@test "does not include Signed-off-by when soloing" {
   git solo -q jd
   add_file
   git duet-commit -q -m 'Testing omitting signoff'

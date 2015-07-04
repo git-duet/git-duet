@@ -9,11 +9,12 @@ import (
 
 // Configuration represents package configuration (shared by commands)
 type Configuration struct {
-	Namespace   string
-	PairsFile   string
-	EmailLookup string
-	Global      bool
-	StaleCutoff time.Duration
+	Namespace    string
+	PairsFile    string
+	EmailLookup  string
+	Global       bool
+	RotateAuthor bool
+	StaleCutoff  time.Duration
 }
 
 // NewConfiguration initializes Configuration from the environment
@@ -32,6 +33,10 @@ func NewConfiguration() (config *Configuration, err error) {
 	}
 
 	if config.Global, err = strconv.ParseBool(getenvDefault("GIT_DUET_GLOBAL", "0")); err != nil {
+		return nil, err
+	}
+
+	if config.RotateAuthor, err = strconv.ParseBool(getenvDefault("GIT_DUET_ROTATE_AUTHOR", "0")); err != nil {
 		return nil, err
 	}
 
