@@ -17,6 +17,7 @@ import (
 type GitConfig struct {
 	Namespace string
 	Global    bool
+	Local     bool
 }
 
 // ClearCommitter removes committer name/email from config
@@ -24,18 +25,21 @@ func (gc *GitConfig) ClearCommitter() (err error) {
 	if err = gc.unsetKey("git-committer-name"); err != nil {
 		return err
 	}
-	if err = gc.unsetKey("git-committer-name"); err != nil {
+	if err = gc.unsetKey("git-committer-email"); err != nil {
+		return err
+	}
+	if err = gc.updateMtime(); err != nil {
 		return err
 	}
 	return nil
 }
 
 // SetAuthor sets the configuration for author name and email
-func (gc *GitConfig) SetAuthor(pair *Pair) (err error) {
-	if err = gc.setKey("git-author-name", pair.Name); err != nil {
+func (gc *GitConfig) SetAuthor(author *Pair) (err error) {
+	if err = gc.setAuthor(author); err != nil {
 		return err
 	}
-	if err = gc.setKey("git-author-email", pair.Email); err != nil {
+	if err = gc.updateMtime(); err != nil {
 		return err
 	}
 	return nil
@@ -43,6 +47,47 @@ func (gc *GitConfig) SetAuthor(pair *Pair) (err error) {
 
 // SetCommitter sets the configuration for committer name and email
 func (gc *GitConfig) SetCommitter(committer *Pair) (err error) {
+	if err = gc.setCommitter(committer); err != nil {
+		return err
+	}
+	if err = gc.updateMtime(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (gc *GitConfig) RotateAuthor() (err error) {
+	var author, committer *Pair
+	if author, err = gc.GetAuthor(); err != nil {
+		return err
+	}
+	if committer, err = gc.GetCommitter(); err != nil {
+		return err
+	}
+
+	if committer != nil {
+		if err = gc.setAuthor(committer); err != nil {
+			return err
+		}
+		if err = gc.setCommitter(author); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (gc *GitConfig) setAuthor(author *Pair) (err error) {
+	if err = gc.setKey("git-author-name", author.Name); err != nil {
+		return err
+	}
+	if err = gc.setKey("git-author-email", author.Email); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (gc *GitConfig) setCommitter(committer *Pair) (err error) {
 	if err = gc.setKey("git-committer-name", committer.Name); err != nil {
 		return err
 	}
@@ -134,11 +179,6 @@ func (gc *GitConfig) unsetKey(key string) (err error) {
 		5).Run(); err != nil {
 		return err
 	}
-	if err = gc.configCommand(
-		fmt.Sprintf("%s.%s", gc.Namespace, "mtime"),
-		strconv.FormatInt(time.Now().Unix(), 10)).Run(); err != nil {
-		return err
-	}
 	return nil
 }
 
@@ -146,6 +186,10 @@ func (gc *GitConfig) setKey(key, value string) (err error) {
 	if err = gc.configCommand(fmt.Sprintf("%s.%s", gc.Namespace, key), value).Run(); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (gc *GitConfig) updateMtime() (err error) {
 	if err = gc.configCommand(
 		fmt.Sprintf("%s.%s", gc.Namespace, "mtime"),
 		strconv.FormatInt(time.Now().Unix(), 10)).Run(); err != nil {
@@ -158,6 +202,8 @@ func (gc *GitConfig) configCommand(args ...string) *exec.Cmd {
 	config := []string{"config"}
 	if gc.Global {
 		config = append(config, "--global")
+	} else if gc.Local {
+		config = append(config, "--local")
 	}
 	config = append(config, args...)
 	cmd := exec.Command("git", config...)
