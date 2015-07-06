@@ -95,3 +95,13 @@ load test_helper
   assert_line "GIT_COMMITTER_NAME='Frances Bar'"
   assert_line "GIT_COMMITTER_EMAIL='f.bar@hamster.info.local'"
 }
+
+@test "honors source when printing config" {
+  git duet -q -g fb jd
+  git solo fb
+  run git duet
+  assert_line "GIT_AUTHOR_NAME='Frances Bar'"
+  assert_line "GIT_AUTHOR_EMAIL='f.bar@hamster.info.local'"
+  assert_line "GIT_COMMITTER_NAME='Frances Bar'"
+  assert_line "GIT_COMMITTER_EMAIL='f.bar@hamster.info.local'"
+}

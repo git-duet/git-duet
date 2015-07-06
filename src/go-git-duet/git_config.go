@@ -2,6 +2,7 @@ package duet
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -11,13 +12,34 @@ import (
 )
 
 // GitConfig provides methods for interacting with git config
-// If Global is set, interacts with user git config (~/.gitconfig)
-// otherwise operates on repo config
+// If Global is set, interacts with user git config (~/.gitconfig),
+// If Local is set, interacts with repo config,
+// Otherwise 'SetXXX' operates on repo config and 'GetXXX' looks in repo then global
 // Namespace determines the section under which configuration will be stored
 type GitConfig struct {
 	Namespace string
 	Global    bool
 	Local     bool
+}
+
+// GetAuthorConfig returns the config source for git author information.
+func GetAuthorConfig(namespace string) (config *GitConfig, err error) {
+	configs := []*GitConfig{
+		&GitConfig{Namespace: namespace, Local: true},
+		&GitConfig{Namespace: namespace, Global: true},
+	}
+
+	for _, config := range configs {
+		author, err := config.GetAuthor()
+		if err != nil {
+			return nil, err
+		}
+		if author != nil {
+			return config, nil
+		}
+	}
+
+	return nil, errors.New("git-author not set")
 }
 
 // ClearCommitter removes committer name/email from config
