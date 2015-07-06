@@ -31,7 +31,6 @@ func main() {
 
 	gitConfig := &duet.GitConfig{
 		Namespace: configuration.Namespace,
-		Global:    configuration.Global || *global,
 	}
 
 	if getopt.NArgs() == 0 {
@@ -44,6 +43,8 @@ func main() {
 		printAuthor(author)
 		os.Exit(0)
 	}
+
+	gitConfig.Global = configuration.Global || *global
 
 	pairs, err := duet.NewPairsFromFile(configuration.PairsFile, configuration.EmailLookup)
 	if err != nil {

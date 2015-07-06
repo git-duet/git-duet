@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -16,7 +15,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	gitConfig, err := getGitConfig(configuration.Namespace)
+	gitConfig, err := duet.GetAuthorConfig(configuration.Namespace)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -68,23 +67,4 @@ func main() {
 			os.Exit(1)
 		}
 	}
-}
-
-func getGitConfig(namespace string) (config *duet.GitConfig, err error) {
-	configs := []*duet.GitConfig{
-		&duet.GitConfig{Namespace: namespace, Local: true},
-		&duet.GitConfig{Namespace: namespace, Global: true},
-	}
-
-	for _, config := range configs {
-		author, err := config.GetAuthor()
-		if err != nil {
-			return nil, err
-		}
-		if author != nil {
-			return config, nil
-		}
-	}
-
-	return nil, errors.New("git-author not set")
 }
