@@ -10,7 +10,11 @@ identities.
 
 ## Installation
 
-See releases page for binary downloads, place in your `$PATH`.
+Options:
+
+0. See releases page for binary downloads, place in your `$PATH`.
+0. Install using Homebrew from the [git-duet homebrew tap](https://github.com/git-duet/homebrew-tap)
+0. Build from source (see [Building](#building))
 
 ## Usage
 
