@@ -25,6 +25,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	if author == nil {
+		fmt.Println("no duet set")
+		os.Exit(1)
+	}
+
 	committer, err := gitConfig.GetCommitter()
 	if err != nil {
 		fmt.Println(err)
