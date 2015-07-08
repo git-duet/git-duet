@@ -42,6 +42,16 @@ load test_helper
   assert_failure ''
 }
 
+@test "does not read committer from global if local author is set" {
+  git duet -g -q jd fb
+  git solo -q on
+  add_file
+  git duet-commit -q -m 'Testing omitting signoff'
+  cat .git/COMMIT_EDITMSG
+  run grep 'Signed-off-by' .git/COMMIT_EDITMSG
+  assert_equal 1 $status
+}
+
 @test "rejects commits with no author" {
   add_file
   run git duet-commit -q -m 'Testing commit with no author'

@@ -21,10 +21,10 @@ type GitConfig struct {
 
 // ClearCommitter removes committer name/email from config
 func (gc *GitConfig) ClearCommitter() (err error) {
-	if err = gc.unsetKey("git-committer-name"); err != nil {
+	if err = gc.setKey("git-committer-name", ""); err != nil {
 		return err
 	}
-	if err = gc.unsetKey("git-committer-name"); err != nil {
+	if err = gc.setKey("git-committer-email", ""); err != nil {
 		return err
 	}
 	return nil
@@ -126,20 +126,6 @@ func (gc *GitConfig) getKey(key string) (value string, err error) {
 		return "", err
 	}
 	return strings.TrimSpace(output.String()), nil
-}
-
-func (gc *GitConfig) unsetKey(key string) (err error) {
-	if err = newIgnorableCommand(
-		gc.configCommand("--unset-all", fmt.Sprintf("%s.%s", gc.Namespace, key)),
-		5).Run(); err != nil {
-		return err
-	}
-	if err = gc.configCommand(
-		fmt.Sprintf("%s.%s", gc.Namespace, "mtime"),
-		strconv.FormatInt(time.Now().Unix(), 10)).Run(); err != nil {
-		return err
-	}
-	return nil
 }
 
 func (gc *GitConfig) setKey(key, value string) (err error) {
