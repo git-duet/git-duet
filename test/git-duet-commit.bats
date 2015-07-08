@@ -56,6 +56,12 @@ load test_helper
   assert_success
 }
 
+@test "does not panic if no duet pair set" {
+  add_file
+  run git duet-commit -q -m 'Testing set of alpha as author'
+  assert_line "no duet set"
+}
+
 @test "rejects commits with stale soloists with hook" {
   # if in CI, git-duet-pre-commit will not be in the PATH
   # exposed to git hooks
