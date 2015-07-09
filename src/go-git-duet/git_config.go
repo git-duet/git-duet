@@ -11,22 +11,30 @@ import (
 	"time"
 )
 
+type scope int
+
+const (
+	Default scope = iota
+	Local
+	Global
+)
+
 // GitConfig provides methods for interacting with git config
-// If Global is set, interacts with user git config (~/.gitconfig),
-// If Local is set, interacts with repo config,
-// Otherwise 'SetXXX' operates on repo config and 'GetXXX' looks in repo then global
+// If scope is Global, interacts with user git config (~/.gitconfig)
+// If scope is Local, interacts with repo config
+// If scope is Default 'SetXXX' operates on repo config and 'GetXXX' looks in
+// repo then global (similar to `git config`)
 // Namespace determines the section under which configuration will be stored
 type GitConfig struct {
 	Namespace string
-	Global    bool
-	Local     bool
+	Scope     scope
 }
 
 // GetAuthorConfig returns the config source for git author information.
 func GetAuthorConfig(namespace string) (config *GitConfig, err error) {
 	configs := []*GitConfig{
-		&GitConfig{Namespace: namespace, Local: true},
-		&GitConfig{Namespace: namespace, Global: true},
+		&GitConfig{Namespace: namespace, Scope: Local},
+		&GitConfig{Namespace: namespace, Scope: Global},
 	}
 
 	for _, config := range configs {
@@ -222,15 +230,15 @@ func (gc *GitConfig) updateMtime() (err error) {
 
 func (gc *GitConfig) configCommand(args ...string) *exec.Cmd {
 	config := []string{"config"}
-	if gc.Global {
+	switch gc.Scope {
+	case Global:
 		config = append(config, "--global")
-	} else if gc.Local {
+	case Local:
 		config = append(config, "--local")
 	}
 	config = append(config, args...)
 	cmd := exec.Command("git", config...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-
 	return cmd
 }
