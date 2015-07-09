@@ -29,11 +29,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	gitConfig := &duet.GitConfig{
-		Namespace: configuration.Namespace,
-	}
-
 	if getopt.NArgs() == 0 {
+		gitConfig, err := duet.GetAuthorConfig(configuration.Namespace)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
 		author, err := gitConfig.GetAuthor()
 		if err != nil {
 			fmt.Println(err)
@@ -44,7 +46,12 @@ func main() {
 		os.Exit(0)
 	}
 
-	gitConfig.Global = configuration.Global || *global
+	gitConfig := &duet.GitConfig{
+		Namespace: configuration.Namespace,
+	}
+	if configuration.Global || *global {
+		gitConfig.Scope = duet.Global
+	}
 
 	pairs, err := duet.NewPairsFromFile(configuration.PairsFile, configuration.EmailLookup)
 	if err != nil {

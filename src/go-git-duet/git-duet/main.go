@@ -58,7 +58,9 @@ func main() {
 
 	gitConfig := &duet.GitConfig{
 		Namespace: configuration.Namespace,
-		Global:    configuration.Global || *global,
+	}
+	if configuration.Global || *global {
+		gitConfig.Scope = duet.Global
 	}
 
 	if getopt.NArgs() != 2 {
