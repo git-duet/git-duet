@@ -29,12 +29,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	gitConfig := &duet.GitConfig{
-		Namespace: configuration.Namespace,
-		Global:    configuration.Global || *global,
-	}
-
 	if getopt.NArgs() == 0 {
+		gitConfig, err := duet.GetAuthorConfig(configuration.Namespace)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
 		author, err := gitConfig.GetAuthor()
 		if err != nil {
 			fmt.Println(err)
@@ -46,9 +47,21 @@ func main() {
 			os.Exit(1)
 		}
 
+		if committer == nil {
+			committer = author
+		}
+
 		printAuthor(author)
 		printCommitter(committer)
 		os.Exit(0)
+	}
+
+	gitConfig := &duet.GitConfig{
+		Namespace: configuration.Namespace,
+	}
+
+	if configuration.Global || *global {
+		gitConfig.Scope = duet.Global
 	}
 
 	if getopt.NArgs() != 2 {

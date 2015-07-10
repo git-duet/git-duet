@@ -15,18 +15,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	gitConfig := &duet.GitConfig{
-		Namespace: configuration.Namespace,
-	}
-
-	author, err := gitConfig.GetAuthor()
+	gitConfig, err := duet.GetAuthorConfig(configuration.Namespace)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	if author == nil {
-		fmt.Println("no duet set")
+	author, err := gitConfig.GetAuthor()
+	if err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
@@ -57,5 +54,12 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
+	}
+
+	if configuration.RotateAuthor {
+		if err = gitConfig.RotateAuthor(); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 }
