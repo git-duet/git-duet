@@ -120,6 +120,16 @@ GIT_DUET_GLOBAL=true git duet jd fb
 You can also set it to `false` to always operate on the local config, even if
 the global flag is used.
 
+### Rotating author/committer support
+
+Sometimes while pairing you want to share the authorship love between the
+pairs. If you set `GIT_DUET_ROTATE_AUTHOR=1` it will swap the author and
+committer (if there is one) on every `git duet-commit` (after the commit).
+
+This operates on whichever config the authorship was drawn from (e.g. if the
+author/committer was set in the repository git config, it will rotate these
+even if `GIT_DUET_GLOBAL` is specified).
+
 ### Email Configuration
 
 By default, email addresses are constructed from the first initial and
