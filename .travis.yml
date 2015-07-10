@@ -13,14 +13,13 @@ before_script:
 script:
 - gb test ./...
 - bats -t test
-- GOPATH=$PWD:$PWD/vendor gox -os 'linux windows darwin' -arch '386 amd64' -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' github.com/git-duet/git-duet/...
 before_deploy:
+- GOPATH=$PWD:$PWD/vendor gox -os 'linux windows darwin' -arch '386 amd64' -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' github.com/git-duet/git-duet/...
 - for build in $(find dist/* -type d) ; do tar cvzf $build.tar.gz -C $build . ; done
 deploy:
   provider: releases
   api_key:
-    secure: NX280HEUBkHpuRMU+v9lYwmSLyHIbmTh/7ut6jrh6ya4XH3gUAXRHQotkKDJ4TxHyJS7+GpHtf+X+XX+d8RPBjhfwq7CxeWOdL3LDprROoh903zBW6RrWY9lc7cFLXbBJDnxcfyDYsjCVI1t2fYfdImEp9rbH+qtAoITsOIvOAxur+k6gYmpoXMrmAWJQDcMwEJXnaiCg4SjN0eEjkV9HmOTRTPF3Cs+C66P025WTk8KUTqCaAX2nfqnwobCo1nOhVH4BlyasEozxSvT6Iqo6gu2BdgXN/DsQtO2Iu0mi4Y3mbZZaI2h09s33H6HmTZcnRzP4m4r5O7TgJovZa9NlXhSd8t/QJyxvjKoQXjFk5gijDO4Lt46B8KWBwLyTINMg2c694/8eaXRH3KuMAG7l5acuiOeRxfBAftNQ90ywWaNhCobtKh6tDHHa2uiHDZsaWZ2B0wwSrw72+pRjxFB7CqHWkozHz1vG68Lbkz0PlspzvcYCm1trJImM4pvOWIZWEqXHgOMzS9Lqu3Xt2L1k5fXgj6uD3F6Fte+1kbTn/d0DN18Gm7zdGljFGKC9bWgqA8UkTT7Su04GbtHPCVZIboMHReqe2X8ubFcE8VjJFxb8CL8/Dm9YTRapTbT2LZjWYTfWDOA1QxpzKqMib5Cb0BUB01jHHuX83SRiN7C9zE=
-  file_glob: true
+    secure: kbMX7hp8Fx4FSS4et4XsHkCCAa7rHvy3ZIjZe5ATMmLXGSh11g0FHq8jGue6Mnu6rDmDmeVc1h74VA7f9vqdYTqfxmEAKsQvV+oJLvqg29tvY/6B5GuyVSRatKM0r3QPKOqlhLYGnsI9LT995gzPQBywgucg0DGDqURxgx0yr9WdUYNnlxJ/rcJCcF7mNpI1/R3R7PJejcUHw8bxzHqqGw6JHd3cDhNFXUwZIl7Bsy5s9MdiQrNz+pFzkRC0N2wN8LY2cN3hI/odSshhqZHuJnXQKQIq+S0PVhJHMBdrAZi+dLmPCXUYwI9wsv9n8JGcKNVYYhPK65anbYMXuZV4szoSVYV2JhuWixjFsO7u6WUb2lAJYkekJSzwt7EcpvWG6ouR65Oz+Gw8awp+FOyJ7BXPMXWCNNtU2fn47GCbN/sPeKbazEOCMbv5+LdxNV+hh7zgyEl+w+DbgGtltaJWI5aNZBLyqqXjoyqBklV7FHBCodWJZpzQEOe+3yBm1mKnLoMa0Ru+0WDgLDk0uRU1sIgG164lnINaJ1pI52TaSRI77QkWRtkdGiRdUIVtWF2gWa9evqY3PEb37ZdP0eDvHo7cOEi8ZFj7sJy3nMg3Y7qXq3mf0GmB5whfEdpd2dh0qplMzUy83vabj+wvbbHzCCMc7ltEyCfd5wHhfuRpe6A=
   file: 'dist/*.tar.gz'
   skip_cleanup: true
   on:
