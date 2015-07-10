@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"go-git-duet"
+	"git-duet"
 )
 
 func main() {
