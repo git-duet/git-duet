@@ -8,12 +8,12 @@ install:
 - git clone https://github.com/sstephenson/bats.git /tmp/bats && /tmp/bats/install.sh $HOME
 before_script:
 - export PATH="$PATH:$HOME/bin:$GOPATH/bin:$TRAVIS_BUILD_DIR/bin"
-- gox -build-toolchain -os 'linux windows darwin' -arch '386 amd64'
 - gb build ./...
 script:
 - gb test ./...
 - bats -t test
 before_deploy:
+- gox -build-toolchain -os 'linux windows darwin' -arch '386 amd64'
 - GOPATH=$PWD:$PWD/vendor gox -os 'linux windows darwin' -arch '386 amd64' -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' github.com/git-duet/git-duet/...
 - for build in $(find dist/* -type d) ; do tar cvzf $build.tar.gz -C $build . ; done
 deploy:
