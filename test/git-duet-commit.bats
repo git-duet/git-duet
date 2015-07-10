@@ -119,7 +119,7 @@ load test_helper
 @test "does not panic if no duet pair set" {
   add_file
   run git duet-commit -q -m 'Testing set of alpha as author'
-  assert_line "no duet set"
+  assert_line "git-author not set"
 }
 
 @test "rejects commits with stale soloists with hook" {
