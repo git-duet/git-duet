@@ -13,6 +13,9 @@ import (
 
 type scope int
 
+// Default uses the default search order and writes to the local config
+// Local reads and writes from the local git config
+// Global reads and writes from the user git config
 const (
 	Default scope = iota
 	Local
@@ -86,6 +89,7 @@ func (gc *GitConfig) SetCommitter(committer *Pair) (err error) {
 	return nil
 }
 
+// RotateAuthor flips the committer and author if committer is set
 func (gc *GitConfig) RotateAuthor() (err error) {
 	var author, committer *Pair
 	if author, err = gc.GetAuthor(); err != nil {
