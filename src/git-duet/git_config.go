@@ -55,6 +55,9 @@ func GetAuthorConfig(namespace string) (config *GitConfig, err error) {
 
 // ClearCommitter removes committer name/email from config
 func (gc *GitConfig) ClearCommitter() (err error) {
+	if err = gc.unsetKey("git-committer-initials"); err != nil {
+		return err
+	}
 	if err = gc.unsetKey("git-committer-name"); err != nil {
 		return err
 	}

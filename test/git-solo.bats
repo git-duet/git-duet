@@ -74,6 +74,13 @@ load test_helper
   assert_equal 1 $status
 }
 
+@test "unsets git committer initials after duet" {
+  git duet -q jd fb
+  git solo -q jd
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-committer-initials"
+  assert_equal 1 $status
+}
+
 @test "respects GIT_DUET_GLOBAL" {
   GIT_DUET_GLOBAL=1 git solo jd
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
