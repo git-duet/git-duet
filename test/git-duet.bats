@@ -2,6 +2,12 @@
 
 load test_helper
 
+@test "sets the git user initials" {
+  git duet -q jd fb
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-initials"
+  assert_success 'jd'
+}
+
 @test "sets the git user name" {
   git duet -q jd fb
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-name"
@@ -12,6 +18,12 @@ load test_helper
   git duet -q jd fb
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
   assert_success 'jane@hamsters.biz.local'
+}
+
+@test "sets the git committer initials" {
+  git duet -q jd fb
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-committer-initials"
+  assert_success 'fb'
 }
 
 @test "caches the git committer name" {
@@ -56,6 +68,12 @@ load test_helper
   assert_success 'jane@hamsters.biz.local'
 }
 
+@test "sets the git user initials globally" {
+  git duet -g -q jd fb
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-initials"
+  assert_success 'jd'
+}
+
 @test "sets the git user name globally" {
   git duet -g -q jd fb
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-name"
@@ -66,6 +84,12 @@ load test_helper
   git duet -g -q jd fb
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-committer-name"
   assert_success 'Frances Bar'
+}
+
+@test "sets the git committer initials globally" {
+  git duet -g -q jd fb
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-committer-initials"
+  assert_success 'fb'
 }
 
 @test "sets the git committer name globally" {

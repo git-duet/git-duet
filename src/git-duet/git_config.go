@@ -112,6 +112,9 @@ func (gc *GitConfig) RotateAuthor() (err error) {
 }
 
 func (gc *GitConfig) setAuthor(author *Pair) (err error) {
+	if err = gc.setKey("git-author-initials", author.Initials); err != nil {
+		return err
+	}
 	if err = gc.setKey("git-author-name", author.Name); err != nil {
 		return err
 	}
@@ -122,6 +125,9 @@ func (gc *GitConfig) setAuthor(author *Pair) (err error) {
 }
 
 func (gc *GitConfig) setCommitter(committer *Pair) (err error) {
+	if err = gc.setKey("git-committer-initials", committer.Initials); err != nil {
+		return err
+	}
 	if err = gc.setKey("git-committer-name", committer.Name); err != nil {
 		return err
 	}
@@ -133,6 +139,11 @@ func (gc *GitConfig) setCommitter(committer *Pair) (err error) {
 
 // GetAuthor returns the currently configured author (nil if none)
 func (gc *GitConfig) GetAuthor() (pair *Pair, err error) {
+	initials, err := gc.getKey("git-author-initials")
+	if err != nil {
+		return nil, err
+	}
+
 	name, err := gc.getKey("git-author-name")
 	if err != nil {
 		return nil, err
@@ -143,11 +154,12 @@ func (gc *GitConfig) GetAuthor() (pair *Pair, err error) {
 		return nil, err
 	}
 
-	if name == "" || email == "" {
+	if name == "" || initials == "" || email == "" {
 		return nil, nil
 	}
 
 	return &Pair{
+		Initials: initials,
 		Name:  name,
 		Email: email,
 	}, nil
@@ -155,6 +167,11 @@ func (gc *GitConfig) GetAuthor() (pair *Pair, err error) {
 
 // GetCommitter returns the currently configured committer (nil if none)
 func (gc *GitConfig) GetCommitter() (pair *Pair, err error) {
+	initials, err := gc.getKey("git-committer-initials")
+	if err != nil {
+		return nil, err
+	}
+
 	name, err := gc.getKey("git-committer-name")
 	if err != nil {
 		return nil, err
@@ -165,11 +182,12 @@ func (gc *GitConfig) GetCommitter() (pair *Pair, err error) {
 		return nil, err
 	}
 
-	if name == "" || email == "" {
+	if name == "" || initials == "" || email == "" {
 		return nil, nil
 	}
 
 	return &Pair{
+		Initials: initials,
 		Name:  name,
 		Email: email,
 	}, nil
@@ -213,6 +231,7 @@ func (gc *GitConfig) unsetKey(key string) (err error) {
 		5).Run(); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -220,6 +239,7 @@ func (gc *GitConfig) setKey(key, value string) (err error) {
 	if err = gc.configCommand(fmt.Sprintf("%s.%s", gc.Namespace, key), value).Run(); err != nil {
 		return err
 	}
+
 	return nil
 }
 
