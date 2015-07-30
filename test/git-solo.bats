@@ -13,6 +13,12 @@ load test_helper
   assert_success ""
 }
 
+@test "caches the git user initials as author initials" {
+  git solo -q jd
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-initials"
+  assert_success 'jd'
+}
+
 @test "caches the git user name as author name" {
   git solo -q jd
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-name"
@@ -65,6 +71,13 @@ load test_helper
   git duet -q jd fb
   git solo -q jd
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-committer-email"
+  assert_equal 1 $status
+}
+
+@test "unsets git committer initials after duet" {
+  git duet -q jd fb
+  git solo -q jd
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-committer-initials"
   assert_equal 1 $status
 }
 
