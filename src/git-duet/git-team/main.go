@@ -6,7 +6,7 @@ import (
 
 	"code.google.com/p/getopt"
 
-	"git-duet"
+	duet "git-duet"
 )
 
 func main() {
@@ -63,8 +63,8 @@ func main() {
 		gitConfig.Scope = duet.Global
 	}
 
-	if getopt.NArgs() != 2 {
-		fmt.Println("must specify two sets of initials")
+	if getopt.NArgs() <= 2 {
+		fmt.Println("must specify more than two sets of initials")
 		os.Exit(1)
 	}
 
@@ -79,9 +79,23 @@ func main() {
 		fmt.Println(err)
 		os.Exit(86)
 	}
+
 	if err = gitConfig.SetAuthor(author); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
+	}
+
+	number_of_committers := getopt.NArgs() - 1
+	committers := make([]*duet.Pair, number_of_committers)
+
+	for i := 1; i < getopt.NArgs(); i++ {
+		committer, err := pairs.ByInitials(getopt.Arg(i))
+		if err == nil {
+			committers[i-1] = committer
+		} else {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 
 	committer, err := pairs.ByInitials(getopt.Arg(1))
