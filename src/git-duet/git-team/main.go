@@ -98,11 +98,8 @@ func main() {
 		}
 	}
 
-	committer, err := pairs.ByInitials(getopt.Arg(1))
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(86)
-	}
+	committer := makeTeamCommitter(committers)
+
 	if err = gitConfig.SetCommitter(committer); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -130,4 +127,20 @@ func printCommitter(committer *duet.Pair) {
 
 	fmt.Printf("GIT_COMMITTER_NAME='%s'\n", committer.Name)
 	fmt.Printf("GIT_COMMITTER_EMAIL='%s'\n", committer.Email)
+}
+
+func makeTeamCommitter(arrayOfCommitters []*duet.Pair) (committer *duet.Pair) {
+	var returnCommitter duet.Pair
+	for index, pointerToPair := range arrayOfCommitters {
+		tempCommitter := *pointerToPair
+		if index > 0 {
+			returnCommitter.Initials += ", "
+			returnCommitter.Name += ", "
+			returnCommitter.Email += ", "
+		}
+		returnCommitter.Initials += tempCommitter.Initials
+		returnCommitter.Name += tempCommitter.Name
+		returnCommitter.Email += tempCommitter.Email
+	}
+	return &returnCommitter
 }
