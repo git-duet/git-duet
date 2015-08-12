@@ -103,15 +103,50 @@ func (gc *GitConfig) RotateAuthor() (err error) {
 	}
 
 	if committer != nil {
-		if err = gc.setAuthor(committer); err != nil {
+		var newAuthor, newCommitter *Pair
+		if strings.Contains(committer.Initials, ",") {
+			newAuthor, newCommitter = makeRotatedTeam(author, committer)
+		} else {
+			newAuthor = committer
+			newCommitter = author
+		}
+
+		if err = gc.setAuthor(newAuthor); err != nil {
 			return err
 		}
-		if err = gc.setCommitter(author); err != nil {
+		if err = gc.setCommitter(newCommitter); err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+func makeRotatedTeam(teamAuthor *Pair, teamCommitter *Pair) (newAuthor *Pair, newCommitter *Pair) {
+	authorInitials := teamAuthor.Initials
+	authorName := teamAuthor.Name
+	authorEmail := teamAuthor.Email
+	committerInitialsList := strings.Split(teamCommitter.Initials, ", ")
+	committerNamesList := strings.Split(teamCommitter.Name, ", ")
+	committerEmailsList := strings.Split(teamCommitter.Email, ", ")
+	InitialsList := append(committerInitialsList, authorInitials)
+	EmailsList := append(committerEmailsList, authorEmail)
+	NamesList := append(committerNamesList, authorName)
+	newAuthorInitials, newTeamCommitterInitials := InitialsList[0], strings.Join(InitialsList[1:], ", ")
+	newAuthorName, newTeamCommitterName := NamesList[0], strings.Join(NamesList[1:], ", ")
+	newAuthorEmail, newTeamCommitterEmail := EmailsList[0], strings.Join(EmailsList[1:], ", ")
+	newAuthor = &Pair{
+		Name:     newAuthorName,
+		Email:    newAuthorEmail,
+		Username: "Hello World",
+		Initials: newAuthorInitials}
+	newCommitter = &Pair{
+		Name:     newTeamCommitterName,
+		Email:    newTeamCommitterEmail,
+		Username: "Hello World",
+		Initials: newTeamCommitterInitials,
+	}
+	return newAuthor, newCommitter
 }
 
 func (gc *GitConfig) setAuthor(author *Pair) (err error) {

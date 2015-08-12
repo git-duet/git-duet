@@ -68,6 +68,28 @@ load test_helper
   assert_success 'f.bar@hamster.info.local'
 }
 
+@test "GIT_DUET_ROTATE_AUTHOR can understand and rotate teams" {
+  git team -q -g jd fb on
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
+  assert_success 'jane@hamsters.biz.local'
+
+  add_file first.txt
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit -q -m 'Testing jd as author, fb and on as team committers'
+  assert_success
+
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
+  assert_success 'f.bar@hamster.info.local'
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-committer-email"
+  assert_success 'oscar@hamster.info.local, jane@hamsters.biz.local'
+
+  add_file second.txt
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit -q -m 'Testing fb as author, on and jd as team committers'
+  assert_success
+
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
+  assert_success 'oscar@hamster.info.local'
+}
+
 @test "does not update mtime when rotating committer" {
   git duet -q jd fb
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
