@@ -1,3 +1,14 @@
+## 0.3.0
+
+IMPROVEMENTS:
+
+* `git-duet-revert` is introduced to allow you to also set the committer when reverting
+
+BUG FIXES:
+
+* `git-duet` did not support `~/.git-authors` files where the root key was
+  `pairs:` when it was not the first line
+
 ## 0.2.0
 
 IMPROVEMENTS:
