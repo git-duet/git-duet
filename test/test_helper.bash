@@ -12,6 +12,7 @@ setup() {
   export GIT_DUET_TEST_REPO="${GIT_DUET_TEST_DIR}/repo"
 
   cat > "$GIT_DUET_AUTHORS_FILE" <<EOF
+---
 pairs:
   jd: Jane Doe
   fb: Frances Bar

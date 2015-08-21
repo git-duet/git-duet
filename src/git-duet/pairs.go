@@ -40,7 +40,7 @@ type emailConfig struct {
 	Domain string
 }
 
-var pairsKey = regexp.MustCompile(`^pairs:`)
+var pairsKey = regexp.MustCompile(`(?m)^pairs:`)
 
 // NewPairsFromFile parses the given yml authors file (see README.md for file structure)
 // Uses emailLookup as external command to determine pair email address if set
