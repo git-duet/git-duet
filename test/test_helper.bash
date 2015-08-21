@@ -38,6 +38,11 @@ EOF
   chmod +x "$GIT_DUET_TEST_LOOKUP"
   git init -q "$GIT_DUET_TEST_REPO"
   cd "$GIT_DUET_TEST_REPO"
+  touch foo
+  git add foo
+  git config user.name 'Test User'
+  git config user.email 'test@example.com'
+  git commit -m 'test commit for reverting'
 }
 
 teardown() {
