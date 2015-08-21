@@ -1,12 +1,50 @@
-# Git Duet
+# git-duet
 
 [![Build Status](https://travis-ci.org/git-duet/git-duet.png?branch=master)](https://travis-ci.org/git-duet/git-duet)
 
 Pair harmoniously!  Working in a pair doesn't mean you've both lost your
-identity.  Git Duet helps with blaming/praising by using stuff that's
-already in `git` without littering your repo history with fictitous user
-identities by using both `git`'s author and committer fields with real user
-identities.
+identity.  `git-duet` helps with blaming/praising by using stuff that's already
+in `git` without littering your repo history with fictitous user identities. It
+does so by utilizing `git`s commit committer attributes to store the identity
+of the second pair.
+
+Example:
+```
+$ cat <<-EOF > ~/.git-authors
+authors:
+  jd: Jane Doe; jane
+  fb: Frances Bar
+email:
+  domain: awesometown.local
+EOF
+
+$ git duet jd fb
+GIT_AUTHOR_NAME='Jane Doe'
+GIT_AUTHOR_EMAIL='j.doe@awesometown.local'
+GIT_COMMITTER_NAME='Fraces Bar'
+GIT_COMMITTER_EMAIL='f.bar@awesometown.local'
+
+$ touch foo
+
+$ git duet-commit -a -m 'initial commit'
+[master (root-commit) ce78563] initial commit
+ Author: Jane Doe <j.doe@awesometown.local>
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 foo
+
+$ git show --format=full
+commit ce7856371e3e3a6d05f1b66af96f086df071e783
+Author: Jane Doe <j.doe@awesometown.local>
+Commit: Fraces Bar <f.bar@awesometown.local>
+
+    initial commit
+
+    Signed-off-by: Fraces Bar <f.bar@awesometown.local>
+
+diff --git a/foo b/foo
+new file mode 100644
+index 0000000..e69de29
+```
 
 ## Installation
 
@@ -33,7 +71,7 @@ email:
 ```
 
 `git duet` will use the `git pair` YAML structure if it has to (the
-difference is the top-level key being `pairs` instead of `authors`,) e.g.:
+difference is the top-level key being `pairs` instead of `authors`) e.g.:
 
 ``` yaml
 pairs:
@@ -44,7 +82,7 @@ email:
 ```
 
 If you want your authors file to live somwhere else, just tell
-Git Duet about it via the `GIT_DUET_AUTHORS_FILE` environmental
+`git-duet` about it via the `GIT_DUET_AUTHORS_FILE` environmental
 variable, e.g.:
 
 ``` bash
@@ -53,44 +91,43 @@ export GIT_DUET_AUTHORS_FILE=$HOME/.secret-squirrel/git-authors
 git duet jd am
 ```
 
-### Workflow stuff
+### Workflow
 
-Set the author and committer via `git duet`:
+Set two authors (pairing):
 
 ``` bash
 git duet jd fb
 ```
 
-This sets `git-duet`s configuration to use the user associated with `jd` as the
-author and `fb` as the committer.
-
-When you're ready to commit, use `git duet-commit` (or add an alias like
-a normal person. Something like `dci` = `duet-commit` should work.)
-
-``` bash
-git duet-commit -v [any other git options]
-# or...
-git dci -v [any other git options]
-```
-
-When you're done pairing, set the author back to yourself with `git solo`:
+Set one author (soloing):
 
 ``` bash
 git solo jd
 ```
 
-*Note:* `git-duet` only sets the configuration to use via `git duet-commit`,
-using `git solo` (or `git duet`) will not effect the configured `user.name` and
-`user.email`.  This allows `git commit` to be used normally outside of
-`git-duet`.
-
-Committing:
+Committing (needed to set `--signoff` and export environment variables):
 
 ``` bash
-git duet-commit -v [any other git options]
-# or...
-git dci -v [any other git options]
+$ git duet-commit -v [any other git options]
 ```
+
+Reverting (needed to set `--signoff` and export environment variables):
+
+``` bash
+git duet-revert -v [any other git options]
+```
+
+Suggested aliases:
+
+```
+dci = duet-commit
+drv = duet-revert
+```
+
+**Note:** `git-duet` only sets the configuration to use via `git duet-commit`
+and `git duet-revert`. Using `git solo` (or `git duet`) will not effect the
+configured `user.name` and `user.email`.  This allows `git commit` to be used
+normally outside of `git-duet`.
 
 ### Global Config Support
 
@@ -100,21 +137,15 @@ config:
 
 ``` bash
 git solo -g jd
-```
-
-``` bash
 git duet --global jd fb
 ```
+
 If you do this habitually, you can set the `GIT_DUET_GLOBAL` environment
 variable to `true` to always operate on the global git config:
 
 ``` bash
-export GIT_DUET_GLOBAL=true
+export GIT_DUET_GLOBAL=true # consider adding this to your shell profile
 git solo jd
-```
-
-``` bash
-GIT_DUET_GLOBAL=true git duet jd fb
 ```
 
 You can also set it to `false` to always operate on the local config, even if
@@ -249,7 +280,7 @@ to the decisions described above.
 #### Order of Precedence
 
 Since there are multiple ways to determine an author or committer's
-email, it is important to note the order of precedence used by Git Duet:
+email, it is important to note the order of precedence used by `git-duet`:
 
 1. Email lookup executable configured via the
    `GIT_DUET_EMAIL_LOOKUP_COMMAND` environmental variable
