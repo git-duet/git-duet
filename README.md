@@ -1,6 +1,6 @@
 # git-duet
 
-[![Build Status](https://travis-ci.org/git-duet/git-duet.png?branch=master)](https://travis-ci.org/git-duet/git-duet)
+[![Build Status](https://travis-ci.org/git-duet/git-duet.svg?branch=master)](https://travis-ci.org/git-duet/git-duet)
 
 Pair harmoniously!  Working in a pair doesn't mean you've both lost your
 identity.  `git-duet` helps with blaming/praising by using stuff that's already
