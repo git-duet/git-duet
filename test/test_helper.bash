@@ -61,6 +61,29 @@ add_file() {
   fi
 }
 
+create_branch_commit() {
+  if [ $# -eq 0 ]; then
+    git checkout -b new_branch
+  else
+    git checkout -b $1
+  fi
+
+  if [ $# -lt 2 ]; then
+    add_file branch_file.txt
+  else
+    add_file $2
+  fi
+
+  git commit -q -m 'Adding a branch commit'
+  git checkout master
+}
+
+assert_head_is_merge () {
+    msha=$(git rev-list --merges HEAD~1..HEAD)
+    [ -z "$msha" ] && return 1
+    return 0
+}
+
 set_custom_email_template() {
   clear_custom_email_template
   echo "email_template: '$1'" >> "$GIT_DUET_AUTHORS_FILE"

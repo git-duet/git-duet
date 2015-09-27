@@ -14,8 +14,33 @@ import (
 	"git-duet"
 )
 
-// ExecuteWithSignoff executes a signoff-able git command
-func ExecuteWithSignoff(subcommand string) error {
+type Command struct {
+	Signoff bool
+	Subcommand string
+	Args []string
+}
+
+func New(subcommand string, args ...string) Command {
+	cmd := Command{}
+	cmd.Subcommand = subcommand
+
+	if len(args) == 0 {
+		cmd.Args = os.Args[1:]
+	} else {
+		cmd.Args = args
+	}
+
+	return cmd
+}
+
+func NewWithSignoff(subcommand string, args ...string) Command {
+	cmd := New(subcommand, args...)
+	cmd.Signoff = true
+
+	return cmd
+}
+
+func (duetcmd Command) Execute() error {
 	configuration, err := duet.NewConfiguration()
 	if err != nil {
 		return err
@@ -40,14 +65,13 @@ func ExecuteWithSignoff(subcommand string) error {
 		return err
 	}
 
-	args := os.Args[1:]
-	if committer != nil {
-		args = append([]string{"--signoff"}, args...)
+	if committer != nil && duetcmd.Signoff {
+		duetcmd.Args = append([]string{"--signoff"}, duetcmd.Args...)
 	} else {
 		committer = author
 	}
 
-	cmd := exec.Command("git", append([]string{subcommand}, args...)...)
+	cmd := exec.Command("git", append([]string{duetcmd.Subcommand}, duetcmd.Args...)...)
 	cmd.Stdin = os.Stdin
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
@@ -62,10 +86,5 @@ func ExecuteWithSignoff(subcommand string) error {
 		return err
 	}
 
-	if configuration.RotateAuthor {
-		if err = gitConfig.RotateAuthor(); err != nil {
-			return err
-		}
-	}
 	return nil
 }
