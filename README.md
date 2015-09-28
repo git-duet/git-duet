@@ -81,7 +81,7 @@ email:
   domain: awesometown.local
 ```
 
-If you want your authors file to live somwhere else, just tell
+If you want your authors file to live somewhere else, just tell
 `git-duet` about it via the `GIT_DUET_AUTHORS_FILE` environmental
 variable, e.g.:
 
@@ -117,17 +117,24 @@ Reverting (needed to set `--signoff` and export environment variables):
 git duet-revert -v [any other git options]
 ```
 
+Merging (needed to set `--signoff` and export environment variables):
+
+``` bash
+git duet-merge -v [any other git options]
+```
+
 Suggested aliases:
 
 ```
 dci = duet-commit
 drv = duet-revert
+dmg = duet-merge
 ```
 
-**Note:** `git-duet` only sets the configuration to use via `git duet-commit`
-and `git duet-revert`. Using `git solo` (or `git duet`) will not effect the
-configured `user.name` and `user.email`.  This allows `git commit` to be used
-normally outside of `git-duet`.
+**Note:** `git-duet` only sets the configuration to use via `git duet-commit`,
+`git duet-revert`, and `git duet-merge`. Using `git solo` (or `git duet`) will
+not effect the configured `user.name` and `user.email`.  This allows
+`git commit` to be used normally outside of `git-duet`.
 
 ### Global Config Support
 
