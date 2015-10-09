@@ -9,7 +9,10 @@ import (
 )
 
 func main() {
-	err := cmdrunner.Execute(cmd.NewWithSignoff("revert"))
+	err := cmdrunner.Execute(
+		cmd.New("merge"),
+		cmd.NewWithSignoff("commit", "--amend", "--no-edit"))
+
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
