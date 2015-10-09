@@ -24,6 +24,8 @@ func New(subcommand string, args ...string) Command {
 	cmd := Command{}
 	cmd.Subcommand = subcommand
 
+	// If we're explicitly providing args, use them.
+	// Otherwise, we're forwarding from user input.
 	if len(args) == 0 {
 		cmd.Args = os.Args[1:]
 	} else {
