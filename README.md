@@ -20,7 +20,7 @@ EOF
 
 $ git duet jd fb
 GIT_AUTHOR_NAME='Jane Doe'
-GIT_AUTHOR_EMAIL='j.doe@awesometown.local'
+GIT_AUTHOR_EMAIL='jane@awesometown.local'
 GIT_COMMITTER_NAME='Fraces Bar'
 GIT_COMMITTER_EMAIL='f.bar@awesometown.local'
 
@@ -28,13 +28,13 @@ $ touch foo
 
 $ git duet-commit -a -m 'initial commit'
 [master (root-commit) ce78563] initial commit
- Author: Jane Doe <j.doe@awesometown.local>
+ Author: Jane Doe <jane@awesometown.local>
  1 file changed, 0 insertions(+), 0 deletions(-)
  create mode 100644 foo
 
 $ git show --format=full
 commit ce7856371e3e3a6d05f1b66af96f086df071e783
-Author: Jane Doe <j.doe@awesometown.local>
+Author: Jane Doe <jane@awesometown.local>
 Commit: Fraces Bar <f.bar@awesometown.local>
 
     initial commit
