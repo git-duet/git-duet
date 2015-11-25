@@ -26,6 +26,12 @@ load test_helper
   assert_success 'fb'
 }
 
+@test "sets the git story id" {
+  git duet -q jd fb 201612
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-story-id"
+  assert_success '201612'
+}
+
 @test "caches the git committer name" {
   git duet -q jd fb
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-committer-name"
@@ -62,6 +68,13 @@ load test_helper
   clear_custom_email_template
 }
 
+@test "usets the story id after duet" {
+  git duet -q jd fb 201612
+  git duet -q jd fb
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-story-id"
+  assert_equal 1 $status
+}
+
 @test "sets the git user email globally" {
   git duet -g -q jd fb
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
@@ -96,6 +109,19 @@ load test_helper
   git duet -g -q jd fb
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-committer-email"
   assert_success 'f.bar@hamster.info.local'
+}
+
+@test "sets the git story id globally" {
+  git duet -g -q jd fb 201612
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-story-id"
+  assert_success '201612'
+}
+
+@test "usets the story id after duet" {
+  git duet -g -q jd fb 201612
+  git duet -g -q jd fb
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-story-id"
+  assert_equal 1 $status
 }
 
 @test "output is displayed" {

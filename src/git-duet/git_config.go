@@ -11,7 +11,22 @@ import (
 	"time"
 )
 
-type scope int
+type (
+	scope int
+	// StoryID represents a current working story id
+	StoryID string
+)
+
+// NewStoryID create a *StoryID from string
+func NewStoryID(id string) *StoryID {
+	storyID := StoryID(id)
+	return &storyID
+}
+
+// String converts the StoryID to a string
+func (id *StoryID) String() string {
+	return string(*id)
+}
 
 // Default uses the default search order and writes to the local config
 // Local reads and writes from the local git config
@@ -70,6 +85,17 @@ func (gc *GitConfig) ClearCommitter() (err error) {
 	return nil
 }
 
+// ClearStoryID removes story id from config
+func (gc *GitConfig) ClearStoryID() error {
+	if err := gc.unsetKey("git-story-id"); err != nil {
+		return err
+	}
+	if err := gc.updateMtime(); err != nil {
+		return err
+	}
+	return nil
+}
+
 // SetAuthor sets the configuration for author name and email
 func (gc *GitConfig) SetAuthor(author *Pair) (err error) {
 	if err = gc.setAuthor(author); err != nil {
@@ -87,6 +113,17 @@ func (gc *GitConfig) SetCommitter(committer *Pair) (err error) {
 		return err
 	}
 	if err = gc.updateMtime(); err != nil {
+		return err
+	}
+	return nil
+}
+
+// SetStoryID sets the configuration for story id
+func (gc *GitConfig) SetStoryID(id *StoryID) error {
+	if err := gc.setStoryID(id); err != nil {
+		return err
+	}
+	if err := gc.updateMtime(); err != nil {
 		return err
 	}
 	return nil
@@ -140,6 +177,13 @@ func (gc *GitConfig) setCommitter(committer *Pair) (err error) {
 	return nil
 }
 
+func (gc *GitConfig) setStoryID(id *StoryID) (err error) {
+	if err = gc.setKey("git-story-id", string(*id)); err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetAuthor returns the currently configured author (nil if none)
 func (gc *GitConfig) GetAuthor() (pair *Pair, err error) {
 	initials, err := gc.getKey("git-author-initials")
@@ -163,8 +207,8 @@ func (gc *GitConfig) GetAuthor() (pair *Pair, err error) {
 
 	return &Pair{
 		Initials: initials,
-		Name:  name,
-		Email: email,
+		Name:     name,
+		Email:    email,
 	}, nil
 }
 
@@ -191,9 +235,20 @@ func (gc *GitConfig) GetCommitter() (pair *Pair, err error) {
 
 	return &Pair{
 		Initials: initials,
-		Name:  name,
-		Email: email,
+		Name:     name,
+		Email:    email,
 	}, nil
+}
+
+// GetStoryID returns the currently configured story id (nil if none)
+func (gc *GitConfig) GetStoryID() (*StoryID, error) {
+	id, err := gc.getKey("git-story-id")
+	if err != nil {
+		return nil, err
+	}
+
+	storyID := StoryID(id)
+	return &storyID, nil
 }
 
 // GetMtime returns the last time the author/committer was written

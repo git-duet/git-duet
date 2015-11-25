@@ -29,7 +29,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	if getopt.NArgs() == 0 {
+	nArgs := getopt.NArgs()
+	if nArgs == 0 {
 		gitConfig, err := duet.GetAuthorConfig(configuration.Namespace)
 		if err != nil {
 			fmt.Println(err)
@@ -71,6 +72,16 @@ func main() {
 	}
 
 	if err = gitConfig.ClearCommitter(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	if nArgs == 2 {
+		if err = gitConfig.SetStoryID(duet.NewStoryID(getopt.Arg(1))); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	} else if err = gitConfig.ClearStoryID(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

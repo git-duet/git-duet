@@ -31,6 +31,12 @@ load test_helper
   assert_success 'jane@hamsters.biz.local'
 }
 
+@test "caches the git story id" {
+  git solo -q jd 201512
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-story-id"
+  assert_success '201512'
+}
+
 @test "builds email from id" {
   git solo al
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
@@ -81,6 +87,13 @@ load test_helper
   assert_equal 1 $status
 }
 
+@test "unsets git story id after duet" {
+  git duet -q jd fb 201512
+  git solo -q jd
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-story-id"
+  assert_equal 1 $status
+}
+
 @test "respects GIT_DUET_GLOBAL" {
   GIT_DUET_GLOBAL=1 git solo jd
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
@@ -99,10 +112,30 @@ load test_helper
   assert_success 'Jane Doe'
 }
 
+@test "sets the git story id globally" {
+  git solo -g -q jd 201512
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-story-id"
+  assert_success '201512'
+}
+
 @test "unsets git committer email after duet globally" {
   git duet -g -q jd fb
   git solo -g -q jd
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-committer-email"
+  assert_equal 1 $status
+}
+
+@test "unsets git story id after duet globally" {
+  git duet -g -q jd fb 201512
+  git solo -g -q jd
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-story-id"
+  assert_equal 1 $status
+}
+
+@test "unsets git story id after duet globally" {
+  git duet -g -q jd fb 201512
+  git solo -g -q jd
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-story-id"
   assert_equal 1 $status
 }
 

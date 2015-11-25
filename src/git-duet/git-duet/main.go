@@ -29,7 +29,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	if getopt.NArgs() == 0 {
+	nArgs := getopt.NArgs()
+
+	if nArgs == 0 {
 		gitConfig, err := duet.GetAuthorConfig(configuration.Namespace)
 		if err != nil {
 			fmt.Println(err)
@@ -63,7 +65,7 @@ func main() {
 		gitConfig.Scope = duet.Global
 	}
 
-	if getopt.NArgs() != 2 {
+	if nArgs < 2 || nArgs > 3 {
 		fmt.Println("must specify two sets of initials")
 		os.Exit(1)
 	}
@@ -90,6 +92,16 @@ func main() {
 		os.Exit(86)
 	}
 	if err = gitConfig.SetCommitter(committer); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	if nArgs == 3 {
+		if err = gitConfig.SetStoryID(duet.NewStoryID(getopt.Arg(2))); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	} else if err = gitConfig.ClearStoryID(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

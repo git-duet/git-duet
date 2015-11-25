@@ -83,6 +83,7 @@ func (duetcmd Command) Execute() error {
 		fmt.Sprintf("GIT_COMMITTER_NAME=%s", committer.Name),
 		fmt.Sprintf("GIT_COMMITTER_EMAIL=%s", committer.Email),
 	)
+
 	err = cmd.Run()
 	if err != nil {
 		return err
