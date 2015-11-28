@@ -59,6 +59,7 @@ func main() {
 
 	hooks := []*Hook{
 		&Hook{Name: "pre-commit"},
+		&Hook{Name: "prepare-commit-msg"},
 	}
 
 	for _, hook := range hooks {
