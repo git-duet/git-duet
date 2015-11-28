@@ -11,10 +11,28 @@ import (
 	"code.google.com/p/getopt"
 )
 
-const hook = `
-#!/usr/bin/env bash
-exec git duet-pre-commit "$@"
-`
+type Hook struct {
+	Name string
+}
+
+func (h *Hook) Install(dest string) error {
+	hookPath := path.Join(dest, ".git", "hooks", h.Name)
+	hookFile, err := os.OpenFile(hookPath, os.O_CREATE|os.O_EXCL|os.O_WRONLY, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer hookFile.Close()
+
+	if _, err = fmt.Fprintln(hookFile, "#!/usr/bin/env bash"); err != nil {
+		return err
+	}
+
+	if _, err = fmt.Fprintf(hookFile, `exec git duet-%s "$@"`, h.Name); err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func main() {
 	var (
@@ -37,21 +55,20 @@ func main() {
 		os.Exit(1)
 	}
 
-	hookPath := path.Join(strings.TrimSpace(output.String()), ".git", "hooks", "pre-commit")
+	hookPath := strings.TrimSpace(output.String())
 
-	hookFile, err := os.OpenFile(hookPath, os.O_CREATE|os.O_EXCL|os.O_WRONLY, os.ModePerm)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	defer hookFile.Close()
-
-	if _, err = hookFile.WriteString(hook); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	hooks := []*Hook{
+		&Hook{Name: "pre-commit"},
 	}
 
-	if !*quiet {
-		fmt.Printf("git-duet-install-hook: Installed hook to %s\n", hookPath)
+	for _, hook := range hooks {
+		if err := hook.Install(hookPath); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		if !*quiet {
+			fmt.Printf("git-duet-install-hook: Installed %s hook to %s\n", hook.Name, hookPath)
+		}
 	}
 }
