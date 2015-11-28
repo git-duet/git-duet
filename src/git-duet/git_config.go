@@ -247,8 +247,11 @@ func (gc *GitConfig) GetStoryID() (*StoryID, error) {
 		return nil, err
 	}
 
-	storyID := StoryID(id)
-	return &storyID, nil
+	if id == "" {
+		return nil, nil
+	}
+
+	return NewStoryID(id), nil
 }
 
 // GetMtime returns the last time the author/committer was written
