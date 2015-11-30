@@ -99,10 +99,29 @@ Set two authors (pairing):
 git duet jd fb
 ```
 
+Set two authors (pairing) and story id:
+
+``` bash
+git duet jd fb 56735
+```
+
 Set one author (soloing):
 
 ``` bash
 git solo jd
+```
+
+Set one author (soloing) and story id:
+
+``` bash
+git solo jd 56735
+```
+
+Then the configured story id will show up like this:
+
+``` bash
+git config duet.env.git-story-id
+# -> 56735
 ```
 
 Committing (needed to set `--signoff` and export environment variables):
@@ -145,6 +164,20 @@ config:
 ``` bash
 git solo -g jd
 git duet --global jd fb
+```
+
+Setting story id globally:
+
+``` bash
+git solo -g jd 56735
+git duet --global jd fb 56735
+
+```
+Then the configured story id will show up like this:
+
+``` bash
+git config --global duet.env.git-story-id
+# -> 56735
 ```
 
 If you do this habitually, you can set the `GIT_DUET_GLOBAL` environment
@@ -326,15 +359,43 @@ git commit -v
 # ... pre-commit hook fires
 ```
 
-If you want to use the default hook (as shown above), install it while
+If you'd like to regularly remind yourself to set the solo or duet
+initials, use `git duet-prepare-commit-msg` in your prepare-commit-msg hook:
+
+*(in $REPO_ROOT/.git/hooks/prepare-commit-msg)*
+
+``` bash
+#!/bin/bash
+exec git duet-prepare-commit-msg
+```
+
+The `duet-prepare-commit-msg` command will append the story id to your commit
+messages for you. This makes an easy integration with trackers as GitHub, JIRA
+and etc.
+``` bash
+git solo jb 57632
+git ci -m "Fix issue in API HTTP handler"
+```
+
+ The commit message is modified only if the story id is not presented
+in it. It has the following format:
+
+```
+Fix issue in API HTTP handler
+
+[#57632]
+```
+
+If you want to use the default hooks (as shown above), install it while
 in your repo like so:
 
 ``` bash
 git duet-install-hook
 ```
 
-Don't worry if you forgot you already had a `pre-commit` hook installed.
-The `git duet-install-hook` command will refuse to overwrite it.
+Don't worry if you forgot you already had a `pre-commit` or
+`prepare-commit-msg` hooks installed.  The `git duet-install-hook` command will
+refuse to overwrite them.
 
 ### RubyMine integration
 
