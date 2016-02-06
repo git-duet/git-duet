@@ -123,12 +123,19 @@ Merging (needed to set `--signoff` and export environment variables):
 git duet-merge -v [any other git options]
 ```
 
+Rebasing (resets the author/committer to the current pair):
+
+```bash
+git rebase -i --exec 'git duet-commit --amend --reset-author'
+```
+
 Suggested aliases:
 
 ```
 dci = duet-commit
 drv = duet-revert
 dmg = duet-merge
+drb = rebase -i --exec 'git duet-commit --amend --reset-author'
 ```
 
 **Note:** `git-duet` only sets the configuration to use via `git duet-commit`,
