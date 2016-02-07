@@ -1,19 +1,19 @@
 sudo: false
 language: go
 go:
-- 1.4
+- 1.5.3
+env:
+- GO15VENDOREXPERIMENT=1
 install:
-- go get github.com/constabulary/gb/...
 - go get github.com/mitchellh/gox
 - git clone https://github.com/sstephenson/bats.git /tmp/bats && /tmp/bats/install.sh $HOME
 before_script:
 - export PATH="$PATH:$HOME/bin:$GOPATH/bin:$TRAVIS_BUILD_DIR/bin"
-- gb build ./...
+- go install $(go list ./... | grep -v '/vendor/')
 script:
-- gb test ./...
+- go test $(go list ./... | grep -v '/vendor/')
 - bats -t test
 before_deploy:
-- gox -build-toolchain -os 'linux windows darwin' -arch '386 amd64'
 - GOPATH=$PWD:$PWD/vendor gox -os 'linux windows darwin' -arch '386 amd64' -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' git-duet/...
 - for build in $(find dist/* -type d) ; do tar cvzf $build.tar.gz -C $build . ; done
 deploy:

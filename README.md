@@ -371,4 +371,6 @@ See issue #8 for more details.
 
 ### Building
 
-Uses [`gb`](http://getgb.io/) for building and vendor management.
+Requires Go 1.5 (using `GOVENDOREXPERIMENT=1`).
+
+Using [`gvt`](https://github.com/FiloSottile/gvt) to manage dependencies.
