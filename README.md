@@ -52,7 +52,7 @@ Options:
 
 0. See releases page for binary downloads, place in your `$PATH`.
 0. Install using Homebrew from the [git-duet homebrew tap](https://github.com/git-duet/homebrew-tap)
-0. Build from source (see [Building](#building))
+0. Build from source: `GOVENDOREXPERIMENT=1 go get github.com/git-duet/git-duet/...`
 
 ## Usage
 
@@ -369,8 +369,6 @@ See issue #8 for more details.
   variables) so that `git commit` continues to work as normal
 - Template format is now Go's `text/template`
 
-### Building
+### Developing
 
-Requires Go 1.5 (using `GOVENDOREXPERIMENT=1`).
-
-Using [`gvt`](https://github.com/FiloSottile/gvt) to manage dependencies.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
