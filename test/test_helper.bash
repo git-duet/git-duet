@@ -19,6 +19,7 @@ pairs:
   al: Abraham Lincoln; abe
   on: Oscar
   zp: Zubaz Pants
+  zs: Zubaz Shirts
 
 email:
   domain: hamster.info.local
@@ -26,6 +27,7 @@ email:
 email_addresses:
   jd: jane@hamsters.biz.local
   fb: f.bar@hamster.info.local
+  zs: z.shirts@pika.info.local
 EOF
 
   cat > "$GIT_DUET_TEST_LOOKUP" <<EOF

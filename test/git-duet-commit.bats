@@ -55,6 +55,31 @@ load test_helper
   assert_success 'Jane Doe <jane@hamsters.biz.local>'
 }
 
+@test "respects GIT_DUET_ROTATE_AUTHOR with three contributors" {
+  git duet -q jd fb zs
+
+  add_file first.txt
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit -q -m 'Testing jd as author, fb as committer'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+
+  add_file second.txt
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit -q -m 'Testing fb as author, zs as committer'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
+
+  add_file third.txt
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit -q -m 'Testing zs as author, jd as committer'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+}
+
 @test "GIT_DUET_ROTATE_AUTHOR updates the correct config" {
   git duet -q -g jd fb
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"

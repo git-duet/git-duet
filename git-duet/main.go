@@ -41,18 +41,18 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		committer, err := gitConfig.GetCommitter()
+		committers, err := gitConfig.GetCommitters()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
-		if committer == nil {
-			committer = author
+		if committers == nil {
+			committers = []*duet.Pair{author}
 		}
 
 		printAuthor(author)
-		printCommitter(committer)
+		printNextComitter(committers)
 		os.Exit(0)
 	}
 
@@ -63,8 +63,8 @@ func main() {
 		gitConfig.Scope = duet.Global
 	}
 
-	if getopt.NArgs() != 2 {
-		fmt.Println("must specify two sets of initials")
+	if getopt.NArgs() < 2 {
+		fmt.Println("must specify at least two sets of initials")
 		os.Exit(1)
 	}
 
@@ -84,19 +84,26 @@ func main() {
 		os.Exit(1)
 	}
 
-	committer, err := pairs.ByInitials(getopt.Arg(1))
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(86)
+	var committers []*duet.Pair
+
+	for _, initials := range getopt.Args()[1:] {
+		committer, err := pairs.ByInitials(initials)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(86)
+		}
+
+		committers = append(committers, committer)
 	}
-	if err = gitConfig.SetCommitter(committer); err != nil {
+
+	if err = gitConfig.SetCommitters(committers); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	if !*quiet {
 		printAuthor(author)
-		printCommitter(committer)
+		printNextComitter(committers)
 	}
 }
 
@@ -109,11 +116,11 @@ func printAuthor(author *duet.Pair) {
 	fmt.Printf("GIT_AUTHOR_EMAIL='%s'\n", author.Email)
 }
 
-func printCommitter(committer *duet.Pair) {
-	if committer == nil {
+func printNextComitter(committers []*duet.Pair) {
+	if committers == nil {
 		return
 	}
 
-	fmt.Printf("GIT_COMMITTER_NAME='%s'\n", committer.Name)
-	fmt.Printf("GIT_COMMITTER_EMAIL='%s'\n", committer.Email)
+	fmt.Printf("GIT_COMMITTER_NAME='%s'\n", committers[0].Name)
+	fmt.Printf("GIT_COMMITTER_EMAIL='%s'\n", committers[0].Email)
 }
