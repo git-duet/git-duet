@@ -108,7 +108,7 @@ func (gc *GitConfig) RotateAuthor() (err error) {
 		return err
 	}
 
-	if committers != nil {
+	if committers != nil && len(committers) > 0 {
 		if err = gc.setAuthor(committers[0]); err != nil {
 			return err
 		}

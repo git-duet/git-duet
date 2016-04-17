@@ -117,7 +117,7 @@ func printAuthor(author *duet.Pair) {
 }
 
 func printNextComitter(committers []*duet.Pair) {
-	if committers == nil {
+	if committers == nil || len(committers) == 0 {
 		return
 	}
 

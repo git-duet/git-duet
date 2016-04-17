@@ -64,7 +64,7 @@ func (duetcmd Command) Execute() error {
 	}
 
 	var committer *duet.Pair
-	if committers != nil && duetcmd.Signoff {
+	if committers != nil && len(committers) > 0 && duetcmd.Signoff {
 		duetcmd.Args = append([]string{"--signoff"}, duetcmd.Args...)
 		committer = committers[0]
 	} else {
