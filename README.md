@@ -21,7 +21,7 @@ EOF
 $ git duet jd fb
 GIT_AUTHOR_NAME='Jane Doe'
 GIT_AUTHOR_EMAIL='jane@awesometown.local'
-GIT_COMMITTER_NAME='Fraces Bar'
+GIT_COMMITTER_NAME='Frances Bar'
 GIT_COMMITTER_EMAIL='f.bar@awesometown.local'
 
 $ touch foo
@@ -35,11 +35,11 @@ $ git duet-commit -a -m 'initial commit'
 $ git show --format=full
 commit ce7856371e3e3a6d05f1b66af96f086df071e783
 Author: Jane Doe <jane@awesometown.local>
-Commit: Fraces Bar <f.bar@awesometown.local>
+Commit: Frances Bar <f.bar@awesometown.local>
 
     initial commit
 
-    Signed-off-by: Fraces Bar <f.bar@awesometown.local>
+    Signed-off-by: Frances Bar <f.bar@awesometown.local>
 
 diff --git a/foo b/foo
 new file mode 100644
