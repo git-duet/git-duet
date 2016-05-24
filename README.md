@@ -143,6 +143,12 @@ drb = rebase -i --exec 'git duet-commit --amend --reset-author'
 not effect the configured `user.name` and `user.email`.  This allows
 `git commit` to be used normally outside of `git-duet`.
 
+Another option for `git rebase`ing with `git-duet` is to use
+[git-duet-rebase.sh](scripts/git-duet-rebase.sh) courtesy of @pivotaljohn. This
+script uses `git filter-branch` to update the names of all of the
+authors/committers to the currently set pair. It acts on your active branch
+(using the passed ref as the start point).
+
 ### Global Config Support
 
 If you're jumping between projects and don't want to think about
