@@ -196,6 +196,9 @@ set then git-duet will rotate with each commit. The first commit will have
 jd as the author, and fb as the committer. The second commit will have fb
 as the author and zp as the committer and so on.
 
+*Note:* This feature uses `,` as the delimiter which will fail to parse
+properly if the user's name or e-mail address contains a `,`.
+
 ### Email Configuration
 
 By default, email addresses are constructed from the first initial and
