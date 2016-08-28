@@ -49,6 +49,29 @@ load test_helper
   assert_success 'Jane Doe <jane@hamsters.biz.local>'
 }
 
+@test "respects GIT_DUET_ROTATE_AUTHOR with three contributors" {
+  git duet -q jd fb zs
+
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-revert --no-edit HEAD
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-revert --no-edit HEAD
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
+
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-revert --no-edit HEAD
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+}
+
+
 @test "GIT_DUET_ROTATE_AUTHOR updates the correct config" {
   git duet -q -g jd fb
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"

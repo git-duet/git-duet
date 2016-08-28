@@ -58,13 +58,15 @@ func (duetcmd Command) Execute() error {
 		return err
 	}
 
-	committer, err := gitConfig.GetCommitter()
+	committers, err := gitConfig.GetCommitters()
 	if err != nil {
 		return err
 	}
 
-	if committer != nil && duetcmd.Signoff {
+	var committer *duet.Pair
+	if committers != nil && len(committers) > 0 && duetcmd.Signoff {
 		duetcmd.Args = append([]string{"--signoff"}, duetcmd.Args...)
+		committer = committers[0]
 	} else {
 		committer = author
 	}

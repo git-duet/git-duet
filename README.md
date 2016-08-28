@@ -181,6 +181,21 @@ This operates on whichever config the authorship was drawn from (e.g. if the
 author/committer was set in the repository git config, it will rotate these
 even if `GIT_DUET_GLOBAL` is specified).
 
+### Mobbing support
+
+Git duet supports more than 2 people working at a time by specifying more sets
+of initials:
+
+``` bash
+git duet jd fb zp
+```
+
+If you do not set `GIT_DUET_ROTATE_AUTHOR`, then git-duet will use jd and fb
+as the author and committer respectively. If you have `GIT_DUET_ROTATE_AUTHOR`
+set then git-duet will rotate with each commit. The first commit will have
+jd as the author, and fb as the committer. The second commit will have fb
+as the author and zp as the committer and so on.
+
 ### Email Configuration
 
 By default, email addresses are constructed from the first initial and

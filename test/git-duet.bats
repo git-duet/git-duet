@@ -2,6 +2,17 @@
 
 load test_helper
 
+@test "requires 2 or more users" {
+  run git duet jd
+  assert_failure 'must specify at least two sets of initials'
+}
+
+@test "allows 3 users" {
+  git duet -q jd fb zs
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-initials"
+  assert_success 'jd'
+}
+
 @test "sets the git user initials" {
   git duet -q jd fb
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-initials"

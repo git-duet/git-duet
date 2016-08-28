@@ -83,6 +83,40 @@ load test_helper
   assert_success 'Jane Doe <jane@hamsters.biz.local>'
 }
 
+@test "respects GIT_DUET_ROTATE_AUTHOR with three contributors" {
+  git duet -q jd fb zs
+
+  create_branch_commit branch_one branch_file_one
+  add_file another_commit.txt
+  git commit -q -m 'Avoid fast-forward'
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-merge branch_one -q
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+
+  create_branch_commit branch_two branch_file_two
+  add_file yet_another_commit.txt
+  git commit -q -m 'Avoid fast-forward'
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-merge branch_two -q
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
+
+  create_branch_commit branch_three branch_file_three
+  add_file still_committing.txt
+  git commit -q -m 'Avoid fast-forward'
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-merge branch_three -q
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+}
+
 @test "GIT_DUET_ROTATE_AUTHOR updates the correct config" {
   git duet -q -g jd fb
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"

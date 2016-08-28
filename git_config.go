@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+// This wacky delimiter is here so that the git author
+// bash prompt looks correct when mobbing.
+const delim = ", +"
+
 type scope int
 
 // Default uses the default search order and writes to the local config
@@ -81,9 +85,9 @@ func (gc *GitConfig) SetAuthor(author *Pair) (err error) {
 	return nil
 }
 
-// SetCommitter sets the configuration for committer name and email
-func (gc *GitConfig) SetCommitter(committer *Pair) (err error) {
-	if err = gc.setCommitter(committer); err != nil {
+// SetCommitters sets the configuration for committers names and emails
+func (gc *GitConfig) SetCommitters(committers []*Pair) (err error) {
+	if err = gc.setCommitters(committers); err != nil {
 		return err
 	}
 	if err = gc.updateMtime(); err != nil {
@@ -94,19 +98,23 @@ func (gc *GitConfig) SetCommitter(committer *Pair) (err error) {
 
 // RotateAuthor flips the committer and author if committer is set
 func (gc *GitConfig) RotateAuthor() (err error) {
-	var author, committer *Pair
+	var author *Pair
+	var committers []*Pair
+
 	if author, err = gc.GetAuthor(); err != nil {
 		return err
 	}
-	if committer, err = gc.GetCommitter(); err != nil {
+	if committers, err = gc.GetCommitters(); err != nil {
 		return err
 	}
 
-	if committer != nil {
-		if err = gc.setAuthor(committer); err != nil {
+	if committers != nil && len(committers) > 0 {
+		if err = gc.setAuthor(committers[0]); err != nil {
 			return err
 		}
-		if err = gc.setCommitter(author); err != nil {
+
+		committers = append(committers, author)
+		if err = gc.setCommitters(committers[1:]); err != nil {
 			return err
 		}
 	}
@@ -127,16 +135,26 @@ func (gc *GitConfig) setAuthor(author *Pair) (err error) {
 	return nil
 }
 
-func (gc *GitConfig) setCommitter(committer *Pair) (err error) {
-	if err = gc.setKey("git-committer-initials", committer.Initials); err != nil {
+func (gc *GitConfig) setCommitters(committers []*Pair) (err error) {
+	var listOfInitials, listOfNames, listOfEmails []string
+	for _, p := range committers {
+		listOfInitials = append(listOfInitials, p.Initials)
+		listOfNames = append(listOfNames, p.Name)
+		listOfEmails = append(listOfEmails, p.Email)
+	}
+
+	if err = gc.setKey("git-committer-initials", strings.Join(listOfInitials, delim)); err != nil {
 		return err
 	}
-	if err = gc.setKey("git-committer-name", committer.Name); err != nil {
+
+	if err = gc.setKey("git-committer-name", strings.Join(listOfNames, delim)); err != nil {
 		return err
 	}
-	if err = gc.setKey("git-committer-email", committer.Email); err != nil {
+
+	if err = gc.setKey("git-committer-email", strings.Join(listOfEmails, delim)); err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -163,37 +181,44 @@ func (gc *GitConfig) GetAuthor() (pair *Pair, err error) {
 
 	return &Pair{
 		Initials: initials,
-		Name:  name,
-		Email: email,
+		Name:     name,
+		Email:    email,
 	}, nil
 }
 
-// GetCommitter returns the currently configured committer (nil if none)
-func (gc *GitConfig) GetCommitter() (pair *Pair, err error) {
+// GetCommitters returns the currently configured committers (nil if none)
+func (gc *GitConfig) GetCommitters() (pairs []*Pair, err error) {
 	initials, err := gc.getKey("git-committer-initials")
 	if err != nil {
 		return nil, err
 	}
-
-	name, err := gc.getKey("git-committer-name")
+	names, err := gc.getKey("git-committer-name")
 	if err != nil {
 		return nil, err
 	}
 
-	email, err := gc.getKey("git-committer-email")
+	emails, err := gc.getKey("git-committer-email")
 	if err != nil {
 		return nil, err
 	}
 
-	if name == "" || initials == "" || email == "" {
+	if initials == "" || names == "" || emails == "" {
 		return nil, nil
 	}
 
-	return &Pair{
-		Initials: initials,
-		Name:  name,
-		Email: email,
-	}, nil
+	listOfInitials := strings.Split(initials, delim)
+	listOfNames := strings.Split(names, delim)
+	listOfEmails := strings.Split(emails, delim)
+	for i, n := range listOfInitials {
+		p := &Pair{
+			Initials: n,
+			Name:     listOfNames[i],
+			Email:    listOfEmails[i],
+		}
+		pairs = append(pairs, p)
+	}
+
+	return pairs, nil
 }
 
 // GetMtime returns the last time the author/committer was written
