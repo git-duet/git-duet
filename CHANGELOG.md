@@ -1,3 +1,12 @@
+## Unrleased
+
+IMPROVEMENTS:
+
+* Add support for "mobbing" (more than 2 people pairing). This is supported by
+  allowing the specification of 3 or more initials whereby after each commit
+  the active pair is rotated to spread ownership evenly (requires
+  `$GIT_DUET_ROTATE_AUTHOR` to be set).
+
 ## 0.3.0
 
 IMPROVEMENTS:
