@@ -120,6 +120,22 @@ load test_helper
   assert_line "GIT_COMMITTER_EMAIL='f.bar@hamster.info.local'"
 }
 
+@test "does not sets git user.name and user.email by default" {
+  git duet -q jd fb
+  run git config "user.name"
+  assert_success 'Test User'
+  run git config "user.email"
+  assert_success 'test@example.com'
+}
+
+@test "sets git user.name and user.email if GIT_DUET_SET_GIT_USER_CONFIG" {
+  GIT_DUET_SET_GIT_USER_CONFIG=1 git duet -q jd fb
+  run git config "user.name"
+  assert_success 'Jane Doe'
+  run git config "user.email"
+  assert_success 'jane@hamsters.biz.local'
+}
+
 @test "output is displayed" {
   run git duet jd fb
   assert_line "GIT_AUTHOR_NAME='Jane Doe'"

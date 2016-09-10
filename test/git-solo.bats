@@ -114,6 +114,22 @@ load test_helper
   assert_line "GIT_AUTHOR_EMAIL='jane@hamsters.biz.local'"
 }
 
+@test "does not sets git user.name and user.email by default" {
+  git solo -q jd
+  run git config "user.name"
+  assert_success 'Test User'
+  run git config "user.email"
+  assert_success 'test@example.com'
+}
+
+@test "sets git user.name and user.email if GIT_DUET_SET_GIT_USER_CONFIG" {
+  GIT_DUET_SET_GIT_USER_CONFIG=1 git solo -q jd
+  run git config "user.name"
+  assert_success 'Jane Doe'
+  run git config "user.email"
+  assert_success 'jane@hamsters.biz.local'
+}
+
 @test "prints current config" {
   git solo -q al
   run git solo
@@ -123,7 +139,13 @@ load test_helper
 
 @test "prints error output when commands fail" {
   cd /tmp
+
+  run git config user.name foo
+  expected_output="$output"
+
   run git solo al
   assert_failure
-  assert_line "error: could not lock config file .git/config: No such file or directory"
+  echo "output $output"
+  echo "expected output $expected_output"
+  assert_line "$expected_output"
 }

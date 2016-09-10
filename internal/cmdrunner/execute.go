@@ -14,9 +14,13 @@ func Execute(commands ...cmd.Command) error {
 
 	var gitConfig *duet.GitConfig
 	if configuration.Global {
-		gitConfig = &duet.GitConfig{Namespace: configuration.Namespace, Scope: duet.Global}
+		gitConfig = &duet.GitConfig{
+			Namespace:     configuration.Namespace,
+			Scope:         duet.Global,
+			SetUserConfig: configuration.SetGitUserConfig,
+		}
 	} else {
-		gitConfig, err = duet.GetAuthorConfig(configuration.Namespace)
+		gitConfig, err = duet.GetAuthorConfig(configuration.Namespace, configuration.SetGitUserConfig)
 		if err != nil {
 			return err
 		}

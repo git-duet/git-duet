@@ -29,7 +29,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	gitConfig := &duet.GitConfig{Namespace: configuration.Namespace}
+	gitConfig := &duet.GitConfig{Namespace: configuration.Namespace, SetUserConfig: configuration.SetGitUserConfig}
 	if *global || configuration.Global {
 		gitConfig.Scope = duet.Global
 	}

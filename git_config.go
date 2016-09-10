@@ -32,16 +32,20 @@ const (
 // If scope is Default 'SetXXX' operates on repo config and 'GetXXX' looks in
 // repo then global (similar to `git config`)
 // Namespace determines the section under which configuration will be stored
+// SetUserConfig determines whether user.name and user.email are set in
+// addition to the git-duet namespaced configuration for the author
 type GitConfig struct {
 	Namespace string
 	Scope     scope
+
+	SetUserConfig bool
 }
 
 // GetAuthorConfig returns the config source for git author information.
-func GetAuthorConfig(namespace string) (config *GitConfig, err error) {
+func GetAuthorConfig(namespace string, setUserConfig bool) (config *GitConfig, err error) {
 	configs := []*GitConfig{
-		&GitConfig{Namespace: namespace, Scope: Local},
-		&GitConfig{Namespace: namespace, Scope: Global},
+		&GitConfig{Namespace: namespace, SetUserConfig: setUserConfig, Scope: Local},
+		&GitConfig{Namespace: namespace, SetUserConfig: setUserConfig, Scope: Global},
 	}
 
 	for _, config := range configs {
@@ -103,7 +107,7 @@ func (gc *GitConfig) RotateAuthor() (err error) {
 	gitConfig := gc
 	if gitConfig.Scope == Default {
 		// find source of configuration
-		if gitConfig, err = GetAuthorConfig(gc.Namespace); err != nil {
+		if gitConfig, err = GetAuthorConfig(gc.Namespace, gc.SetUserConfig); err != nil {
 			return err
 		}
 	}
@@ -133,6 +137,17 @@ func (gc *GitConfig) RotateAuthor() (err error) {
 }
 
 func (gc *GitConfig) setAuthor(author *Pair) (err error) {
+	if gc.SetUserConfig {
+		if err = gc.setUnnamespacedKey("user.name", author.Name); err != nil {
+			return err
+		}
+		if err = gc.setUnnamespacedKey("user.email", author.Email); err != nil {
+			return err
+		}
+	}
+	if err = gc.setKey("git-author-initials", author.Initials); err != nil {
+		return err
+	}
 	if err = gc.setKey("git-author-initials", author.Initials); err != nil {
 		return err
 	}
@@ -267,6 +282,14 @@ func (gc *GitConfig) unsetKey(key string) (err error) {
 	if err = newIgnorableCommand(
 		gc.configCommand("--unset-all", fmt.Sprintf("%s.%s", gc.Namespace, key)),
 		5).Run(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (gc *GitConfig) setUnnamespacedKey(key, value string) (err error) {
+	if err = gc.configCommand(key, value).Run(); err != nil {
 		return err
 	}
 

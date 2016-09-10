@@ -132,6 +132,24 @@ load test_helper
   assert_success 'f.bar@hamster.info.local'
 }
 
+@test "GIT_DUET_ROTATE_AUTHOR respects GIT_DUET_SET_GIT_USER_CONFIG" {
+  GIT_DUET_SET_GIT_USER_CONFIG=1 git duet -g jd fb
+  run git config --global "user.email"
+  assert_success 'jane@hamsters.biz.local'
+
+  create_branch_commit branch_one branch_file_one
+  add_file another_commit.txt
+  git commit -q -m 'Avoid fast-forward'
+  GIT_DUET_SET_GIT_USER_CONFIG=1 GIT_DUET_ROTATE_AUTHOR=1 git duet-merge branch_one -q
+  assert_success
+
+  run git config --global "user.name"
+  assert_success 'Frances Bar'
+  run git config --global "user.email"
+  assert_success 'f.bar@hamster.info.local'
+}
+
+
 @test "does not update mtime when rotating committer" {
   git duet -q jd fb
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
