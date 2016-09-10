@@ -171,6 +171,11 @@ git solo jd
 You can also set it to `false` to always operate on the local config, even if
 the global flag is used.
 
+**Note:** This feature behaves the same as `git config` with respect to its
+treatement `--global`. For example, even if you use `--global` it will read the
+locally set `git-duet` author and committer (if it exists), before looking at
+the global `~/.gitconfig`.
+
 ### Rotating author/committer support
 
 Sometimes while pairing you want to share the authorship love between the
