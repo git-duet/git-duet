@@ -59,13 +59,15 @@ func GetAuthorConfig(namespace string) (config *GitConfig, err error) {
 
 // ClearCommitter removes committer name/email from config
 func (gc *GitConfig) ClearCommitter() (err error) {
-	if err = gc.unsetKey("git-committer-initials"); err != nil {
+	if err = gc.setKey("git-committer-initials", ""); err != nil {
 		return err
 	}
-	if err = gc.unsetKey("git-committer-name"); err != nil {
+
+	if err = gc.setKey("git-committer-name", ""); err != nil {
 		return err
 	}
-	if err = gc.unsetKey("git-committer-email"); err != nil {
+
+	if err = gc.setKey("git-committer-email", ""); err != nil {
 		return err
 	}
 	if err = gc.updateMtime(); err != nil {
@@ -86,7 +88,7 @@ func (gc *GitConfig) SetAuthor(author *Pair) (err error) {
 }
 
 // SetCommitters sets the configuration for committers names and emails
-func (gc *GitConfig) SetCommitters(committers []*Pair) (err error) {
+func (gc *GitConfig) SetCommitters(committers ...*Pair) (err error) {
 	if err = gc.setCommitters(committers); err != nil {
 		return err
 	}
@@ -98,6 +100,14 @@ func (gc *GitConfig) SetCommitters(committers []*Pair) (err error) {
 
 // RotateAuthor flips the committer and author if committer is set
 func (gc *GitConfig) RotateAuthor() (err error) {
+	gitConfig := gc
+	if gitConfig.Scope == Default {
+		// find source of configuration
+		if gitConfig, err = GetAuthorConfig(gc.Namespace); err != nil {
+			return err
+		}
+	}
+
 	var author *Pair
 	var committers []*Pair
 
@@ -109,12 +119,12 @@ func (gc *GitConfig) RotateAuthor() (err error) {
 	}
 
 	if committers != nil && len(committers) > 0 {
-		if err = gc.setAuthor(committers[0]); err != nil {
+		if err = gitConfig.setAuthor(committers[0]); err != nil {
 			return err
 		}
 
 		committers = append(committers, author)
-		if err = gc.setCommitters(committers[1:]); err != nil {
+		if err = gitConfig.setCommitters(committers[1:]); err != nil {
 			return err
 		}
 	}

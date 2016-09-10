@@ -109,6 +109,17 @@ load test_helper
   assert_success 'f.bar@hamster.info.local'
 }
 
+@test "reads configuration globally" {
+  git duet -g -q jd fb
+  git duet fb on
+  run git duet -g
+  assert_success
+  assert_line "GIT_AUTHOR_NAME='Jane Doe'"
+  assert_line "GIT_AUTHOR_EMAIL='jane@hamsters.biz.local'"
+  assert_line "GIT_COMMITTER_NAME='Frances Bar'"
+  assert_line "GIT_COMMITTER_EMAIL='f.bar@hamster.info.local'"
+}
+
 @test "output is displayed" {
   run git duet jd fb
   assert_line "GIT_AUTHOR_NAME='Jane Doe'"
@@ -132,7 +143,7 @@ load test_helper
 }
 
 @test "honors source when printing config" {
-  git duet -q -g fb jd
+  git duet -q -g on jd
   git solo fb
   run git duet
   assert_line "GIT_AUTHOR_NAME='Frances Bar'"

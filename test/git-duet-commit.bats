@@ -103,6 +103,20 @@ load test_helper
   assert_equal 1 $status
 }
 
+@test "respects GIT_DUET_GLOBAL" {
+  git duet -q -g zs jd
+  git duet -q jd fb
+
+  add_file first.txt
+  GIT_DUET_GLOBAL=1 git duet-commit -q -m 'Testing jd as author, fb as committer'
+  assert_success
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+}
+
 @test "lists the soloist as author in the log" {
   git solo -q jd
   add_file
