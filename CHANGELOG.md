@@ -6,6 +6,14 @@ IMPROVEMENTS:
   allowing the specification of 3 or more initials whereby after each commit
   the active pair is rotated to spread ownership evenly (requires
   `$GIT_DUET_ROTATE_AUTHOR` to be set).
+* `git-duet-(commit|merge|revert)` now respect `GIT_DUET_GLOBAL` in that, if it
+  is set, they will only pull the `git-duet` configuration from the global git
+  config rather than looking at the repo config first
+
+BUG FIXES:
+
+* `git-duet` and `git-solo` now correctly respect `GIT_DUET_GLOBAL` and `-g`
+  when displaying configuration
 
 ## 0.3.0
 
