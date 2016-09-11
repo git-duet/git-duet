@@ -108,7 +108,7 @@ load test_helper
   git duet -q jd fb
 
   add_file first.txt
-  GIT_DUET_GLOBAL=1 git duet-commit -q -m 'Testing jd as author, fb as committer'
+  GIT_DUET_GLOBAL=1 git duet-commit -q -m 'Testing zs as author, jd as committer'
   assert_success
 
   run git log -1 --format='%an <%ae>'
