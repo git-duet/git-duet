@@ -146,6 +146,22 @@ load test_helper
   assert_equal 1 $status
 }
 
+@test "respects GIT_DUET_GLOBAL" {
+  git duet -q -g zs jd
+  git duet -q fb on
+
+  create_branch_commit branch_one branch_file_one
+  add_file another_commit.txt
+  git commit -q -m 'Avoid fast-forward'
+  GIT_DUET_GLOBAL=1 git duet-merge branch_one -q
+  assert_success
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+}
+
 @test "lists the soloist as author in the log" {
   git solo -q jd
 

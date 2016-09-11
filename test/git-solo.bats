@@ -71,14 +71,14 @@ load test_helper
   git duet -q jd fb
   git solo -q jd
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-committer-email"
-  assert_equal 1 $status
+  assert_success ""
 }
 
 @test "unsets git committer initials after duet" {
   git duet -q jd fb
   git solo -q jd
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-committer-initials"
-  assert_equal 1 $status
+  assert_success ""
 }
 
 @test "respects GIT_DUET_GLOBAL" {
@@ -103,7 +103,15 @@ load test_helper
   git duet -g -q jd fb
   git solo -g -q jd
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-committer-email"
-  assert_equal 1 $status
+  assert_success ""
+}
+@test "reads configuration globally" {
+  git solo -g -q jd
+  git solo fb
+  run git duet -g
+  assert_success
+  assert_line "GIT_AUTHOR_NAME='Jane Doe'"
+  assert_line "GIT_AUTHOR_EMAIL='jane@hamsters.biz.local'"
 }
 
 @test "prints current config" {

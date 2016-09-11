@@ -44,9 +44,19 @@ func (duetcmd Command) Execute() error {
 		return err
 	}
 
-	gitConfig, err := duet.GetAuthorConfig(configuration.Namespace)
+	var gitConfig *duet.GitConfig
+	if configuration.Global {
+		gitConfig = &duet.GitConfig{Namespace: configuration.Namespace, Scope: duet.Global}
+	} else {
+		gitConfig, err = duet.GetAuthorConfig(configuration.Namespace)
+		if err != nil {
+			return err
+		}
+	}
+
 	if err != nil {
-		return err
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	author, err := gitConfig.GetAuthor()

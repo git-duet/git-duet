@@ -12,9 +12,14 @@ func Execute(commands ...cmd.Command) error {
 		return err
 	}
 
-	gitConfig, err := duet.GetAuthorConfig(configuration.Namespace)
-	if err != nil {
-		return err
+	var gitConfig *duet.GitConfig
+	if configuration.Global {
+		gitConfig = &duet.GitConfig{Namespace: configuration.Namespace, Scope: duet.Global}
+	} else {
+		gitConfig, err = duet.GetAuthorConfig(configuration.Namespace)
+		if err != nil {
+			return err
+		}
 	}
 
 	for _, command := range commands {
@@ -24,7 +29,7 @@ func Execute(commands ...cmd.Command) error {
 	}
 
 	if configuration.RotateAuthor {
-		if err = gitConfig.RotateAuthor(); err != nil {
+		if err := gitConfig.RotateAuthor(); err != nil {
 			return err
 		}
 	}
