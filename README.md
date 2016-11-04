@@ -140,8 +140,10 @@ drb = rebase -i --exec 'git duet-commit --amend --reset-author'
 
 **Note:** `git-duet` only sets the configuration to use via `git duet-commit`,
 `git duet-revert`, and `git duet-merge`. Using `git solo` (or `git duet`) will
-not effect the configured `user.name` and `user.email`.  This allows
-`git commit` to be used normally outside of `git-duet`.
+not effect the configured `user.name` and `user.email`.  This allows `git
+commit` to be used normally outside of `git-duet`. You can set an environment
+variable, `GIT_DUET_SET_GIT_USER_CONFIG` to `1` to override this behavior and
+set the `user.name` and `user.email` fields.
 
 Another option for `git rebase`ing with `git-duet` is to use
 [git-duet-rebase.sh](scripts/git-duet-rebase.sh) courtesy of @pivotaljohn. This
