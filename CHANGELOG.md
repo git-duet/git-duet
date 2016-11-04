@@ -1,7 +1,13 @@
-## Unrleased
+## 0.4.0
 
 IMPROVEMENTS:
 
+* You can now set `GIT_DUET_SET_GIT_USER_CONFIG` to `1` to change the behavior
+  of `git (solo|duet)` to also set `user.name` and `user.email` to allow for
+  the use of normal `git` commands that look for these fields. Note that the
+  `committer` will not be set when `git duet`ing unless you use the `git
+  duet-*` wrappers.
+* `git-duet-merge` was added to correctly add the `--signoff` during merges
 * Add support for "mobbing" (more than 2 people pairing). This is supported by
   allowing the specification of 3 or more initials whereby after each commit
   the active pair is rotated to spread ownership evenly (requires
