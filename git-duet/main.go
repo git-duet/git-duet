@@ -46,7 +46,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		if committers == nil {
+		if committers == nil && author != nil {
 			committers = []*duet.Pair{author}
 		}
 
