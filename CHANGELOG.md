@@ -21,6 +21,12 @@ BUG FIXES:
 * `git-duet` and `git-solo` now correctly respect `GIT_DUET_GLOBAL` and `-g`
   when displaying configuration
 
+## 0.3.1
+
+BUG FIXES:
+
+* Build using Golang 1.7.1 to fix issues with running on Mac OSX Sierra
+
 ## 0.3.0
 
 IMPROVEMENTS:

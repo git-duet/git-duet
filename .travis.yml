@@ -1,9 +1,7 @@
 sudo: false
 language: go
 go:
-- 1.5.3
-env:
-- GO15VENDOREXPERIMENT=1
+- 1.7.1
 install:
 - go get github.com/mitchellh/gox
 - git clone https://github.com/sstephenson/bats.git /tmp/bats && /tmp/bats/install.sh $HOME
@@ -19,7 +17,7 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-    secure: dsGPkfGUp83UWl4s+v9pAtS7UCFemOGCsWYr8Lm4ktL37YTVuCJmoogNiZjc941HxJ1l3ZTrWxj2tUFi/18g95ZllihhlxhbS3Imi/0YCMgXBJHpj9udOLSC7BTfzN22vowHbzdoqzwDDtusWsOCmzEyB8/eR2B6wdLqjWyY4c1IcsFzgE01CcDsAEcLs4sDVuefOX7NuOr9x8MOrPSWs9IwIa7prwkWJ7DhZGi/m0YS/lrHm6mLKuqVASu/2ent6/NabJahzeSkARZmCVeSVO0uChkbAHww12Wgti7liJCaZqiXmLGoBQpIPKsc6JWBE9Xz/HT1M6do8lCudcQ2uy48VCOFX72D1t1Cx2YP+ZaU7gYQA8vj6QU1DvMClIi5LxVxdQmxMI4UxxnW7MpJYftDEGAdBELpEgyJSSkvVRYdTYL6CYNbTNBCFxqsyNUUcDzg3lyPm8sqa5OEOUGQSAy6qK35nwICNlHxXQTpdXZcktEJ6d5+khLuvd01Etcn1TLu4WJbqQ6x92Vgsjrxecxsv9JHYNoqWEfrZU0Br1X6VogRmA6rNqowe6+ZBAwyOWFSZWvvhC6OAsmKlD2RredQxrQ0cY6uYMKSkxqrdBUiiunZKmd9RCrtDarIfYIopyHipiE5RZ50Guk3s6332nUO1O1DsYzQPpTUW89nq0w=
+    secure: dr5caFZ1Vv5wiSnusBEpD8yrUO4JfbILT52itfzInG/VXmCxvfkpvhPshmwFAaHdKaGJTqshfMQwvBkL2GRwTP1D1rRzS113I6XlxaX1MXU1yUR7QDoujYndri915Vraw5LnXT9GsMjsKIr9WSFyV7XxYMqMklZIWbuTbwDnlF/2+2RxLqSuC8My647Ff+OZwAXdGgeebI7zJX+q8TiwaHXWTX2qoiuP33VwPGxaD7hKkkyIqW2XTpqWEP61t5K5M+bqoCvaOPaYHNsNspQLG/pGqvQ/epbfinBWZC/JaB+Qg1dsFz0tDws5lwLkNxNWmVC6jf/WFcLxH15fDumBh14DHbw6mZfYdICxBBj98c24nBFw14/aVVPEOKVpaTvp1AyQa8flpCbFjhi+/sibuqigP9Pw1C6YtrWUHVJzG6gcrvk+KLYp8vT3eNvI75rkUdXB8ZM1NQPMxlhJ9UWj8fW1FJmeACAeGK3gB1tKumwz1EqtljrXfEiTwCTh/Ntc/+9g37+QrxTkBSSZ0um/lihRtYb+NLIlz5WOn7n81BeMl54HkWyBmfvedc74skgNKRHYDcQFkoriqckLOq9Jz+iZWNporUP2JlJ8a78mSEQ92JWqIGP8+FtB/vBDc7bzdUh9hOOKkfCRIukKrTDPWaO7XzVLcZ8aKAeG8D+IISs=
   file_glob: true
   file: 'dist/*.tar.gz'
   skip_cleanup: true
