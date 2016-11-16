@@ -1,0 +1,6 @@
+#!/bin/bash
+
+VERSION="$(git describe --tags --always --dirty)"
+LDFLAGS="-X main.VersionString=$VERSION -X main.RevisionString=$(git rev-parse --sq HEAD)"
+
+exec go install -ldflags "$LDFLAGS" $(go list ./... | grep -v '/vendor/')

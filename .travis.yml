@@ -1,19 +1,16 @@
 sudo: false
 language: go
 go:
-- 1.7.1
+- 1.7.3
 install:
-- go get github.com/mitchellh/gox
-- git clone https://github.com/sstephenson/bats.git /tmp/bats && /tmp/bats/install.sh $HOME
+- scripts/bootstrap
 before_script:
 - export PATH="$PATH:$HOME/bin:$GOPATH/bin:$TRAVIS_BUILD_DIR/bin"
-- go install $(go list ./... | grep -v '/vendor/')
+- scripts/install
 script:
-- go test $(go list ./... | grep -v '/vendor/')
-- bats -t test
+- scripts/test
 before_deploy:
-- GOPATH=$PWD:$PWD/vendor gox -os 'linux windows darwin' -arch '386 amd64' -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' git-duet/...
-- for build in $(find dist/* -type d) ; do tar cvzf $build.tar.gz -C $build . ; done
+- scripts/dist
 deploy:
   provider: releases
   api_key:

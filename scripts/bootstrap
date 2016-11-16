@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+go get github.com/mitchellh/gox
+git clone https://github.com/sstephenson/bats.git /tmp/bats && /tmp/bats/install.sh $HOME
