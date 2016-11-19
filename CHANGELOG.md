@@ -1,3 +1,9 @@
+## 0.5.0
+
+IMPROVEMENTS:
+
+* Added a `--version` flag
+
 ## 0.4.0
 
 IMPROVEMENTS:
