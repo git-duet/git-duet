@@ -9,17 +9,30 @@ import (
 	"github.com/git-duet/git-duet"
 )
 
+var (
+	// VersionString is the git tag this binary is associated with
+	VersionString string
+	// RevisionString is the git rev this binary is associated with
+	RevisionString string
+)
+
 func main() {
 	var (
-		quiet  = getopt.BoolLong("quiet", 'q', "Silence output")
-		global = getopt.BoolLong("global", 'g', "Change global config")
-		help   = getopt.BoolLong("help", 'h', "Help")
+		quiet   = getopt.BoolLong("quiet", 'q', "Silence output")
+		global  = getopt.BoolLong("global", 'g', "Change global config")
+		help    = getopt.BoolLong("help", 'h', "Help")
+		version = getopt.BoolLong("version", 'v', "Version")
 	)
 
 	getopt.Parse()
 
 	if *help {
 		getopt.Usage()
+		os.Exit(0)
+	}
+
+	if *version {
+		fmt.Fprintf(os.Stderr, "%s (%s)\n", VersionString, RevisionString)
 		os.Exit(0)
 	}
 

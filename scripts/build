@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+VERSION="$(git describe --tags --always --dirty)"
+LDFLAGS="-X main.VersionString=$VERSION -X main.RevisionString=$(git rev-parse --sq HEAD)"
+
+exec go build -ldflags "$LDFLAGS" $(go list ./... | grep -v '/vendor/')

@@ -2,6 +2,13 @@
 
 load test_helper
 
+@test "version is displayed" {
+  run git duet -v
+  if ! echo "$output" | grep -o -E "^[0-9]\.[0-9]\.[0-9].* \('[a-f0-9]{40}'\)$" ; then
+    echo "expected '$output' to match version spec" | flunk
+  fi
+}
+
 @test "requires 2 or more users" {
   run git duet jd
   assert_failure 'must specify at least two sets of initials'
