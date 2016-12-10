@@ -3,6 +3,9 @@
 set -o errexit
 set -o nounset
 
-gox -os 'linux windows darwin' -arch '386 amd64' -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' git-duet/...
+VERSION="$(git describe --tags --always --dirty)"
+LDFLAGS="-X main.VersionString=$VERSION -X main.RevisionString=$(git rev-parse --sq HEAD)"
+
+gox -ldflags "$LDFLAGS" -os 'linux windows darwin' -arch '386 amd64' -output 'dist/{{.OS}}_{{.Arch}}/{{.Dir}}' $(go list ./... | grep -v '/vendor/')
 
 for build in $(find dist/* -type d) ; do tar cvzf $build.tar.gz -C $build . ; done
