@@ -32,7 +32,7 @@ func main() {
 	}
 
 	if *version {
-		fmt.Fprintf(os.Stderr, "%s (%s)\n", VersionString, RevisionString)
+		fmt.Printf("%s (%s)\n", VersionString, RevisionString)
 		os.Exit(0)
 	}
 
