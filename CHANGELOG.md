@@ -1,3 +1,9 @@
+## 0.5.1
+
+BUG FIXES:
+
+* Send `--version` to stdout
+
 ## 0.5.0
 
 IMPROVEMENTS:
