@@ -1,9 +1,8 @@
 package cmdrunner
 
 import (
-	"github.com/git-duet/git-duet/internal/cmd"
-
 	"github.com/git-duet/git-duet"
+	"github.com/git-duet/git-duet/internal/cmd"
 )
 
 func Execute(commands ...cmd.Command) error {

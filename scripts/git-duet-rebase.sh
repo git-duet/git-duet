@@ -3,18 +3,18 @@
 # courtesy of @pivotaljohn
 
 function usage_and_quit() {
-   echo "Reset author for specified ref through to HEAD to the current duet pair."
-   echo ""
-   echo "Usage:"
-   echo " $0 (base ref)"
-   exit 1
+  echo "Reset author for specified ref through to HEAD to the current duet pair."
+  echo ""
+  echo "Usage:"
+  echo " $0 (base ref)"
+  exit 1
 }
 
 function confirm_or_quit() {
   read -p "Are you sure (y/N)? " -n 1 -r; echo
   if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-      echo "Aborting."
-      exit 1
+    echo "Aborting."
+    exit 1
   fi
 }
 

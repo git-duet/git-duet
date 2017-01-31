@@ -2,15 +2,18 @@
 	"version": 0,
 	"dependencies": [
 		{
-			"importpath": "code.google.com/p/getopt",
-			"repository": "https://code.google.com/p/getopt",
-			"revision": "b23bed28ee5c",
-			"branch": "default"
+			"importpath": "github.com/pborman/getopt",
+			"repository": "https://github.com/pborman/getopt",
+			"vcs": "git",
+			"revision": "7148bc3a4c3008adfcab60cbebfd0576018f330b",
+			"branch": "master",
+			"notests": true
 		},
 		{
 			"importpath": "gopkg.in/yaml.v2",
 			"repository": "https://gopkg.in/yaml.v2",
-			"revision": "f7716cbe52baa25d2e9b0d0da546fcf909fc16b4",
+			"vcs": "git",
+			"revision": "4c78c975fe7c825c6d1466c42be594d1d6f3aba6",
 			"branch": "v2"
 		}
 	]

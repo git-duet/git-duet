@@ -55,7 +55,7 @@ func New() *Set {
 	}
 
 	s.usage = func() {
-		s.PrintUsage(os.Stderr)
+		s.PrintUsage(stderr)
 	}
 	return s
 }
@@ -259,7 +259,7 @@ func Reset() {
 	CommandLine.Reset()
 }
 
-// Reset resets all the options int s to the initial state so it
+// Reset resets all the options in s to the initial state so it
 // appears none of them have been seen.
 func (s *Set) Reset() {
 	for _, opt := range s.options {

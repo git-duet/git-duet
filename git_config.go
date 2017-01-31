@@ -44,8 +44,8 @@ type GitConfig struct {
 // GetAuthorConfig returns the config source for git author information.
 func GetAuthorConfig(namespace string, setUserConfig bool) (config *GitConfig, err error) {
 	configs := []*GitConfig{
-		&GitConfig{Namespace: namespace, SetUserConfig: setUserConfig, Scope: Local},
-		&GitConfig{Namespace: namespace, SetUserConfig: setUserConfig, Scope: Global},
+		{Namespace: namespace, SetUserConfig: setUserConfig, Scope: Local},
+		{Namespace: namespace, SetUserConfig: setUserConfig, Scope: Global},
 	}
 
 	for _, config := range configs {
