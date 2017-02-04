@@ -6,7 +6,6 @@ package getopt
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 )
 
@@ -94,16 +93,16 @@ func SignedVarLong(p *int64, name string, short rune, l *SignedLimit, helpvalue 
 func (s *Set) SignedVarLong(p *int64, name string, short rune, l *SignedLimit, helpvalue ...string) Option {
 	opt := s.VarLong((*signed)(p), name, short, helpvalue...)
 	if l.Base > 36 || l.Base == 1 || l.Base < 0 {
-		fmt.Fprintf(os.Stderr, "invalid base for %s: %d\n", opt.Name(), l.Base)
-		os.Exit(1)
+		fmt.Fprintf(stderr, "invalid base for %s: %d\n", opt.Name(), l.Base)
+		exit(1)
 	}
 	if l.Bits < 0 || l.Bits > 64 {
-		fmt.Fprintf(os.Stderr, "invalid bit size for %s: %d\n", opt.Name(), l.Bits)
-		os.Exit(1)
+		fmt.Fprintf(stderr, "invalid bit size for %s: %d\n", opt.Name(), l.Bits)
+		exit(1)
 	}
 	if l.Min > l.Max {
-		fmt.Fprintf(os.Stderr, "min greater than max for %s\n", opt.Name())
-		os.Exit(1)
+		fmt.Fprintf(stderr, "min greater than max for %s\n", opt.Name())
+		exit(1)
 	}
 	lim := *l
 	signedLimits[(*signed)(p)] = &lim

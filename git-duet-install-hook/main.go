@@ -8,7 +8,7 @@ import (
 	"path"
 	"strings"
 
-	"code.google.com/p/getopt"
+	"github.com/pborman/getopt"
 )
 
 const hook = `

@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"code.google.com/p/getopt"
-
 	"github.com/git-duet/git-duet"
+	"github.com/pborman/getopt"
 )
 
 var (
