@@ -8,13 +8,13 @@
 
 ## Building
 
-Requires Go 1.5 (using `GOVENDOREXPERIMENT=1`).
+Requires Go 1.7
 
 Using [`gvt`](https://github.com/FiloSottile/gvt) to manage dependencies.
 
 To run tests locally:
 
-0. `GOVENDOREXPERIMENT=1 go test ./...`
 0. Install [`bats`](https://github.com/sstephenson/bats.git)
-0. `GOVENDOREXPERIMENT=1 go install ./...` (make sure the artifacts end up in your `$PATH`)
-0. `bats test`
+0. `./scripts/build`
+0. `./scripts/install`
+0. `./scripts/test`

@@ -81,6 +81,25 @@ create_branch_commit() {
   git checkout master
 }
 
+setup_root_git_author() {
+  unset GIT_DUET_AUTHORS_FILE
+  cat > ".git-authors" <<EOF
+---
+authors:
+  dj: Dane Joe
+  fc: Frances Car
+
+email:
+  domain: banana.info.local
+
+email_addresses:
+  dj: dane@bananas.biz.local
+  fc: f.car@banana.info.local
+EOF
+  mkdir new_dir
+  cd new_dir
+}
+
 assert_head_is_merge () {
     msha=$(git rev-list --merges HEAD~1..HEAD)
     [ -z "$msha" ] && return 1
