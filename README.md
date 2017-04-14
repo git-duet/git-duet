@@ -377,7 +377,7 @@ executions of `git commit`.  Such an executable is available in the Git
 Duet repository, and may be installed somewhere in your `$PATH` like so:
 
 ``` bash
-\curl -Ls -o ~/scripts/rubymine-git-wrapper https://raw.github.com/git-duet/git-duet/master/scripts/rubymine-git-wrapper
+curl -Ls -o ~/bin/rubymine-git-wrapper https://raw.github.com/git-duet/git-duet/master/scripts/rubymine-git-wrapper
 chmod +x ~/bin/rubymine-git-wrapper
 ```
 
