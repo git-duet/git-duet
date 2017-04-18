@@ -60,7 +60,9 @@ Options:
 
 Make an authors file with email domain, or if you're already using
 [git pair](https://github.com/pivotal/git_scripts), just symlink your
-`~/.pairs` file over to `~/.git-authors`.
+`~/.pairs` file over to `~/.git-authors`. You can also set a repository
+specific authors file by placing a `.git-authors` file at the root
+of your `git` repository.
 
 ``` yaml
 authors:

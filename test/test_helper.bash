@@ -96,8 +96,6 @@ email_addresses:
   dj: dane@bananas.biz.local
   fc: f.car@banana.info.local
 EOF
-  mkdir new_dir
-  cd new_dir
 }
 
 assert_head_is_merge () {
