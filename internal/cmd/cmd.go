@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -69,7 +70,7 @@ func (duetcmd Command) Execute() error {
 	}
 
 	if author == nil {
-		return err
+		return errors.New("git-author not set")
 	}
 
 	committers, err := gitConfig.GetCommitters()
