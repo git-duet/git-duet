@@ -1,3 +1,11 @@
+## 0.5.2
+
+BUG FIXES:
+
+* Fix Rubymine `git` wrapper script to match what Rubymine now passes
+* Return an actual error when the `git-author` is not set and using the global
+  git-duet configuration
+
 ## 0.5.1
 
 BUG FIXES:
