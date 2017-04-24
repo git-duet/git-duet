@@ -112,6 +112,7 @@ load test_helper
   run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-committer-email"
   assert_success ""
 }
+
 @test "reads configuration globally" {
   git solo -g -q jd
   git solo fb
@@ -155,4 +156,14 @@ load test_helper
   echo "output $output"
   echo "expected output $expected_output"
   assert_line "$expected_output"
+}
+
+@test "respects git root level .git-authors configuration" {
+  setup_root_git_author
+
+  GIT_DUET_SET_GIT_USER_CONFIG=1 git solo -q fc
+  run git config "user.name"
+  assert_success 'Frances Car'
+  run git config "user.email"
+  assert_success 'f.car@banana.info.local'
 }

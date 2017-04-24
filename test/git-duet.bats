@@ -174,3 +174,17 @@ load test_helper
   assert_line "GIT_COMMITTER_NAME='Frances Bar'"
   assert_line "GIT_COMMITTER_EMAIL='f.bar@hamster.info.local'"
 }
+
+@test "respects git root level .git-authors configuration" {
+  setup_root_git_author
+  mkdir new_dir
+  cd new_dir
+
+  git duet -q dj fc
+  run git duet
+
+  assert_line "GIT_AUTHOR_NAME='Dane Joe'"
+  assert_line "GIT_AUTHOR_EMAIL='dane@bananas.biz.local'"
+  assert_line "GIT_COMMITTER_NAME='Frances Car'"
+  assert_line "GIT_COMMITTER_EMAIL='f.car@banana.info.local'"
+}
