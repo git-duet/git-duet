@@ -290,3 +290,33 @@ load test_helper
   assert_failure
   assert_line "your git duet settings are stale"
 }
+
+@test "respects GIT_DUET_CO_AUTHORED_BY" {
+  create_branch_commit
+  git duet -q jd fb
+  add_file another_commit.txt
+  git commit -q -m 'Avoid fast-forward'
+  GIT_DUET_CO_AUTHORED_BY=1 git duet-merge new_branch
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  run grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  assert_success
+}
+
+@test "respects GIT_DUET_CO_AUTHORED_BY with three contributors" {
+  create_branch_commit
+  git duet -q jd fb zs
+  add_file another_commit.txt
+  git commit -q -m 'Avoid fast-forward'
+  GIT_DUET_CO_AUTHORED_BY=1 git duet-merge new_branch
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  run grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  assert_success
+  run grep 'Co-authored-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
+  assert_success 
+}

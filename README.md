@@ -153,6 +153,15 @@ script uses `git filter-branch` to update the names of all of the
 authors/committers to the currently set pair. It acts on your active branch
 (using the passed ref as the start point).
 
+### "Co-authored-by" trailer support
+
+Set the environment variable `GIT_DUET_CO_AUTHORED_BY` to `1` if you want
+to have a "Co-authored-by" trailer for each co-author in your commit message
+rather than having a "Signed-off-by" trailer for the committer.
+
+This gives every contributor attribution in their Github's contribution graph
+as described [here](https://github.com/blog/2496-commit-together-with-co-authors).
+
 ### Global Config Support
 
 If you're jumping between projects and don't want to think about

@@ -157,3 +157,27 @@ load test_helper
   run git duet-revert --no-edit HEAD
   assert_line "git-author not set"
 }
+
+@test "respects GIT_DUET_CO_AUTHORED_BY" {
+  git duet -q jd fb
+  GIT_DUET_CO_AUTHORED_BY=1 git duet-revert --no-edit HEAD
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  run grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  assert_success
+}
+
+@test "respects GIT_DUET_CO_AUTHORED_BY with three contributors" {
+  git duet -q jd fb zs
+  GIT_DUET_CO_AUTHORED_BY=1 git duet-revert --no-edit HEAD
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  run grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  assert_success
+  run grep 'Co-authored-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
+  assert_success
+}

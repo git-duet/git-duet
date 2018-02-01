@@ -12,9 +12,10 @@ import (
 )
 
 type Command struct {
-	Signoff    bool
-	Subcommand string
-	Args       []string
+	Signoff      bool
+	CoAuthoredBy bool
+	Subcommand   string
+	Args         []string
 }
 
 func New(subcommand string, args ...string) Command {
@@ -35,6 +36,13 @@ func New(subcommand string, args ...string) Command {
 func NewWithSignoff(subcommand string, args ...string) Command {
 	cmd := New(subcommand, args...)
 	cmd.Signoff = true
+
+	return cmd
+}
+
+func NewWithCoAuthoredBy(subcommand string, args ...string) Command {
+	cmd := New(subcommand, args...)
+	cmd.CoAuthoredBy = true
 
 	return cmd
 }
@@ -82,6 +90,10 @@ func (duetcmd Command) Execute() error {
 	if committers != nil && len(committers) > 0 && duetcmd.Signoff {
 		duetcmd.Args = append([]string{"--signoff"}, duetcmd.Args...)
 		committer = committers[0]
+	} else if committers != nil && len(committers) > 0 && duetcmd.CoAuthoredBy {
+		// output only the amended commit
+		duetcmd.Args = append([]string{"--quiet"}, duetcmd.Args...)
+		committer = committers[0]
 	} else {
 		committer = author
 	}
@@ -99,6 +111,29 @@ func (duetcmd Command) Execute() error {
 	err = cmd.Run()
 	if err != nil {
 		return err
+	}
+
+	if committers != nil && len(committers) > 0 && duetcmd.CoAuthoredBy {
+		cmd = exec.Command("git", "log", "-1", "--pretty=%B")
+		commitMsg, err := cmd.Output()
+		if err != nil {
+			return err
+		}
+		var coAuthorsTrailer string
+		for _, c := range committers {
+			coAuthorsTrailer += "Co-authored-by: " + c.Name + " <" + c.Email + ">\n"
+		}
+		cmd = exec.Command("git", "commit", "--amend", fmt.Sprintf("--message=%s%s", commitMsg, coAuthorsTrailer))
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		cmd.Env = append(os.Environ(),
+			fmt.Sprintf("GIT_COMMITTER_NAME=%s", committer.Name),
+			fmt.Sprintf("GIT_COMMITTER_EMAIL=%s", committer.Email),
+		)
+		err = cmd.Run()
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
