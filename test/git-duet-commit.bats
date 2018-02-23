@@ -184,7 +184,7 @@ load test_helper
   fi
 
   git solo -q jd
-  git duet-install-hook -q
+  git duet-install-hook -q pre-commit
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
   add_file
   run git duet-commit -q -m 'Testing stale hook fire'
@@ -201,37 +201,11 @@ load test_helper
   fi
 
   git duet -q jd fb
-  git duet-install-hook -q
+  git duet-install-hook -q pre-commit
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
   add_file
   run git duet-commit -q -m 'Testing stale hook fire'
 
   assert_failure
   assert_line "your git duet settings are stale"
-}
-
-@test "respects GIT_DUET_CO_AUTHORED_BY" {
-  git duet -q jd fb
-  add_file first.txt
-  GIT_DUET_CO_AUTHORED_BY=1 git duet-commit -q -m 'Testing jd as author, fb as committer and co-author'
-  run git log -1 --format='%an <%ae>'
-  assert_success 'Jane Doe <jane@hamsters.biz.local>'
-  run git log -1 --format='%cn <%ce>'
-  assert_success 'Frances Bar <f.bar@hamster.info.local>'
-  run grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
-  assert_success
-}
-
-@test "respects GIT_DUET_CO_AUTHORED_BY with three contributors" {
-  git duet -q jd fb zs
-  add_file first.txt
-  GIT_DUET_CO_AUTHORED_BY=1 git duet-commit -q -m 'Testing jd as author, fb as committer and co-author, zs as co-author'
-  run git log -1 --format='%an <%ae>'
-  assert_success 'Jane Doe <jane@hamsters.biz.local>'
-  run git log -1 --format='%cn <%ce>'
-  assert_success 'Frances Bar <f.bar@hamster.info.local>'
-  run grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
-  assert_success
-  run grep 'Co-authored-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
-  assert_success
 }

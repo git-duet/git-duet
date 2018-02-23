@@ -188,3 +188,26 @@ load test_helper
   assert_line "GIT_COMMITTER_NAME='Frances Car'"
   assert_line "GIT_COMMITTER_EMAIL='f.car@banana.info.local'"
 }
+
+@test "installs prepare-commit-msg hook file if GIT_DUET_CO_AUTHORED_BY is set" {
+  GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd fb
+  assert_success
+  [ -f .git/hooks/prepare-commit-msg ]
+}
+
+@test "writes Co-authored-by trailer for commits if GIT_DUET_CO_AUTHORED_BY is set" {
+  GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd fb
+  add_file first.txt
+  git commit -q -m 'Testing jd as author, fb as co-author'
+  grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  assert_success
+}
+
+@test "writes Co-authored-by trailers for multiple authors if GIT_DUET_CO_AUTHORED_BY is set" {
+  GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd fb zs
+  add_file first.txt
+  git commit -q -m 'Testing jd as author, fb and zs as co-authors'
+  grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  grep 'Co-authored-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
+  assert_success
+}

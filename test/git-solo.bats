@@ -167,3 +167,11 @@ load test_helper
   run git config "user.email"
   assert_success 'f.car@banana.info.local'
 }
+
+@test "does not write Co-authored-by trailer if GIT_DUET_CO_AUTHORED_BY is set" {
+  GIT_DUET_CO_AUTHORED_BY=1 git solo -q jd
+  add_file first.txt
+  git commit -q -m 'Testing jd as author'
+  run grep 'Co-authored-by:' .git/COMMIT_EDITMSG
+  assert_failure
+}

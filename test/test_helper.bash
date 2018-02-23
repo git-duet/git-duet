@@ -6,6 +6,7 @@ setup() {
   unset GIT_DUET_GLOBAL
   unset GIT_DUET_ROTATE_AUTHOR
   unset GIT_DUET_SET_GIT_USER_CONFIG
+  unset GIT_DUET_CO_AUTHORED_BY
 
   export GIT_DUET_CONFIG_NAMESPACE='foo.bar'
   export GIT_DUET_AUTHORS_FILE="${GIT_DUET_TEST_DIR}/.git-authors"

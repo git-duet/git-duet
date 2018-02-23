@@ -57,7 +57,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = ioutil.WriteFile(commitMsgFile, []byte(fmt.Sprintf("\n\n%s%s", coAuthorsTrailer, string(commitMsg))), 0644)
+	err = ioutil.WriteFile(commitMsgFile, []byte(fmt.Sprintf("%s\n%s", string(commitMsg), coAuthorsTrailer)), 0644)
 	if err != nil {
 		fmt.Print(err)
 		os.Exit(1)
