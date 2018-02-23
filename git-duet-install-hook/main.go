@@ -6,9 +6,11 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"os/user"
 	"path"
 	"strings"
 
+	duet "github.com/git-duet/git-duet"
 	"github.com/pborman/getopt"
 )
 
@@ -52,15 +54,43 @@ func main() {
 		os.Exit(1)
 	}
 
-	output := new(bytes.Buffer)
-	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
-	cmd.Stdout = output
-	if err := cmd.Run(); err != nil {
+	config, err := duet.NewConfiguration()
+	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	hookPath := path.Join(strings.TrimSpace(output.String()), ".git", "hooks", hookFileName)
+	var hooksDir string
+	if config.Global {
+		gitConfig := &duet.GitConfig{Namespace: config.Namespace, SetUserConfig: config.SetGitUserConfig}
+		gitConfig.Scope = duet.Global
+		templateDir, err := gitConfig.GetInitTemplateDir()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		if templateDir == "" {
+			usr, err := user.Current()
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			templateDir = path.Join(usr.HomeDir, ".git-template")
+			if err := gitConfig.SetInitTemplateDir(templateDir); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
+		if err := os.MkdirAll(path.Join(templateDir, "hooks"), os.ModePerm); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		hooksDir = path.Join(templateDir, "hooks")
+	} else {
+		hooksDir = getLocalHooksDir()
+	}
+
+	hookPath := path.Join(hooksDir, hookFileName)
 
 	hookFile, err := os.OpenFile(hookPath, os.O_CREATE|os.O_RDWR, os.ModePerm)
 	if err != nil {
@@ -93,4 +123,16 @@ func main() {
 	if !*quiet {
 		fmt.Printf("git-duet-install-hook: Installed hook to %s\n", hookPath)
 	}
+
+}
+
+func getLocalHooksDir() string {
+	output := new(bytes.Buffer)
+	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
+	cmd.Stdout = output
+	if err := cmd.Run(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	return path.Join(strings.TrimSpace(output.String()), ".git", "hooks")
 }

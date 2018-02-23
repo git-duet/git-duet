@@ -44,3 +44,22 @@ exec git duet-prepare-commit-msg "$1"' > .git/hooks/prepare-commit-msg
   assert_failure
   assert_line "Usage: git-duet-install-hook [-hq] { pre-commit | prepare-commit-msg }"
 }
+
+@test "writes global prepare-commit-msg hook file if GIT_DUET_GLOBAL is set" {
+  GIT_DUET_GLOBAL=1 git duet-install-hook -q prepare-commit-msg
+  assert_success
+  [ -f $HOME/.git-template/hooks/prepare-commit-msg ]
+}
+
+@test "writes global pre-commit hook file if GIT_DUET_GLOBAL is set" {
+  GIT_DUET_GLOBAL=1 git duet-install-hook -q pre-commit
+  assert_success
+  [ -f $HOME/.git-template/hooks/pre-commit ]
+}
+
+@test "writes global prepare-commit-msg hook file if GIT_DUET_GLOBAL is set respecting current init.templatedir" {
+  git config --global init.templatedir .
+  GIT_DUET_GLOBAL=1 git duet-install-hook -q prepare-commit-msg
+  assert_success
+  [ -f ./hooks/prepare-commit-msg ]
+}

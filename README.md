@@ -162,6 +162,21 @@ rather than having a "Signed-off-by" trailer for the committer.
 This gives every contributor attribution in their Github's contribution graph
 as described [here](https://github.com/blog/2496-commit-together-with-co-authors).
 
+If `GIT_DUET_CO_AUTHORED_BY` is set, `git duet` will install a prepare-commit-msg
+hook file into the local repository by default. If, in addition, `GIT_DUET_GLOBAL` is set,
+`git-duet` will instead install the prepare-commit-msg hook file into `git config --global init.templatedir`.
+If the value `git config --global init.templatedir` is not set, `git-duet` will set it
+to `$HOME/.git-template`.
+
+The common workflow is as follows:
+- set `GIT_DUET_SET_GIT_USER_CONFIG` so that `git duet` sets the author for normal git commands
+- run `git duet` (which will install the prepare-commit-msg hook)
+- if you have `GIT_DUET_GLOBAL` set, run `git init` once in existing repos
+so that the hook file gets copied from the `init.templatedir`
+- thereafter, use the normal git commands (and not the git-duet-subcommands
+like `git duet-commit`, `git duet-merge` etc.)
+- The prepare-commit-msg hook will append a `Co-authored-by` trailer for each co-author.
+
 ### Global Config Support
 
 If you're jumping between projects and don't want to think about
@@ -374,11 +389,11 @@ If you want to use the default hook (as shown above), install it while
 in your repo like so:
 
 ``` bash
-git duet-install-hook
+git duet-install-hook pre-commit
 ```
 
 Don't worry if you forgot you already had a `pre-commit` hook installed.
-The `git duet-install-hook` command will refuse to overwrite it.
+The `git duet-install-hook pre-commit` command will refuse to overwrite it.
 
 ### RubyMine integration
 
