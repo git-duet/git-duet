@@ -47,11 +47,15 @@ func NewConfiguration() (config *Configuration, err error) {
 		return nil, err
 	}
 
-	if config.SetGitUserConfig, err = strconv.ParseBool(getenvDefault("GIT_DUET_SET_GIT_USER_CONFIG", "0")); err != nil {
+	if config.CoAuthoredBy, err = strconv.ParseBool(getenvDefault("GIT_DUET_CO_AUTHORED_BY", "0")); err != nil {
 		return nil, err
 	}
 
-	if config.CoAuthoredBy, err = strconv.ParseBool(getenvDefault("GIT_DUET_CO_AUTHORED_BY", "0")); err != nil {
+	defaultSetGitUserConfig := "0"
+	if config.CoAuthoredBy {
+		defaultSetGitUserConfig = "1"
+	}
+	if config.SetGitUserConfig, err = strconv.ParseBool(getenvDefault("GIT_DUET_SET_GIT_USER_CONFIG", defaultSetGitUserConfig)); err != nil {
 		return nil, err
 	}
 

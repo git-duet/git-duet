@@ -143,6 +143,15 @@ load test_helper
   assert_success 'jane@hamsters.biz.local'
 }
 
+@test "sets git user.name and user.email if GIT_DUET_CO_AUTHORED_BY" {
+  # since GIT_DUET_CO_AUTHORED_BY implicitly sets GIT_DUET_SET_GIT_USER_CONFIG
+  GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd fb
+  run git config "user.name"
+  assert_success 'Jane Doe'
+  run git config "user.email"
+  assert_success 'jane@hamsters.biz.local'
+}
+
 @test "output is displayed" {
   run git duet jd fb
   assert_line "GIT_AUTHOR_NAME='Jane Doe'"
@@ -189,25 +198,86 @@ load test_helper
   assert_line "GIT_COMMITTER_EMAIL='f.car@banana.info.local'"
 }
 
-@test "installs prepare-commit-msg hook file if GIT_DUET_CO_AUTHORED_BY is set" {
+@test "installs prepare-commit-msg hook file if GIT_DUET_CO_AUTHORED_BY" {
   GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd fb
   assert_success
   [ -f .git/hooks/prepare-commit-msg ]
 }
 
-@test "writes Co-authored-by trailer for commits if GIT_DUET_CO_AUTHORED_BY is set" {
+@test "without args installs the hook and sets git user.name and user.email if GIT_DUET_CO_AUTHORED_BY" {
+  git duet -q jd fb
+  run git config "user.name"
+  assert_success 'Test User'
+  run git config "user.email"
+  assert_success 'test@example.com'
+  [ ! -f .git/hooks/prepare-commit-msg ]
+
+  GIT_DUET_CO_AUTHORED_BY=1 git duet -q
+  run git config "user.name"
+  assert_success 'Jane Doe'
+  run git config "user.email"
+  assert_success 'jane@hamsters.biz.local'
+  [ -f .git/hooks/prepare-commit-msg ]
+}
+
+@test "writes Co-authored-by trailer for commits if GIT_DUET_CO_AUTHORED_BY" {
   GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd fb
   add_file first.txt
   git commit -q -m 'Testing jd as author, fb as co-author'
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
   grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
   assert_success
 }
 
-@test "writes Co-authored-by trailers for multiple authors if GIT_DUET_CO_AUTHORED_BY is set" {
+@test "writes Co-authored-by trailers for multiple authors if GIT_DUET_CO_AUTHORED_BY" {
   GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd fb zs
   add_file first.txt
   git commit -q -m 'Testing jd as author, fb and zs as co-authors'
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
   grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
   grep 'Co-authored-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
   assert_success
+}
+
+@test "writes Co-authored-by trailer for merge-commits if GIT_DUET_CO_AUTHORED_BY" {
+  create_branch_commit
+  GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd fb
+  git merge -q --no-ff new_branch
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --pretty=%B
+  [[ $output = *"Co-authored-by: Frances Bar <f.bar@hamster.info.local>"* ]]
+}
+
+@test "writes Co-authored-by trailer for reverts if GIT_DUET_CO_AUTHORED_BY" {
+  GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd fb
+  git revert --no-edit HEAD
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+}
+
+@test "does not write Co-authored-by trailer when rebasing if GIT_DUET_CO_AUTHORED_BY" {
+  add_file first.txt
+  git commit -q -m 'I get rebased'
+  GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd fb
+  git rebase --force-rebase HEAD~1
+
+  # rebasing modifies only the committer, but not the author(s)
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Test User <test@example.com>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --pretty=%B
+  [[ ! $output = *"Co-authored-by:"* ]]
 }

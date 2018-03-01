@@ -155,12 +155,12 @@ authors/committers to the currently set pair. It acts on your active branch
 
 ### "Co-authored-by" trailer support
 
+This feature is experimental.
+Please open an issue if you find a bug or if you have suggestions how usability could be improved.
+
 Set the environment variable `GIT_DUET_CO_AUTHORED_BY` to `1` if you want
 to have a "Co-authored-by" trailer for each co-author in your commit message
 rather than having a "Signed-off-by" trailer for the committer.
-
-This gives every contributor attribution in their Github's contribution graph
-as described [here](https://github.com/blog/2496-commit-together-with-co-authors).
 
 If `GIT_DUET_CO_AUTHORED_BY` is set, `git duet` will install a prepare-commit-msg
 hook file into the local repository by default. If, in addition, `GIT_DUET_GLOBAL` is set,
@@ -168,14 +168,24 @@ hook file into the local repository by default. If, in addition, `GIT_DUET_GLOBA
 If the value `git config --global init.templatedir` is not set, `git-duet` will set it
 to `$HOME/.git-template`.
 
+`GIT_DUET_CO_AUTHORED_BY` implicitly sets `GIT_DUET_SET_GIT_USER_CONFIG`
+so that `git duet` and `git solo` set the author for normal git commands.
+
 The common workflow is as follows:
-- set `GIT_DUET_SET_GIT_USER_CONFIG` so that `git duet` sets the author for normal git commands
 - run `git duet` (which will install the prepare-commit-msg hook)
 - if you have `GIT_DUET_GLOBAL` set, run `git init` once in existing repos
 so that the hook file gets copied from the `init.templatedir`
-- thereafter, use the normal git commands (and not the git-duet-subcommands
-like `git duet-commit`, `git duet-merge` etc.)
-- The prepare-commit-msg hook will append a `Co-authored-by` trailer for each co-author.
+- thereafter, use the normal git commands (i.e. `git commit`, `git merge` rather than
+the git-duet-subcommands `git duet-commit`, `git duet-merge`)
+- the prepare-commit-msg hook will append a `Co-authored-by` trailer for each co-author
+
+The above workflow ignores `GIT_DUET_ROTATE_AUTHOR` since there is no need to rotate authors
+because all authors get attribution in their Github's contribution graph
+as described [here](https://github.com/blog/2496-commit-together-with-co-authors).
+If you do care about rotating author and co-author, you need to call `git duet` with the respective author initials.
+
+If you want to opt out of this feature, unsetting `GIT_DUET_CO_AUTHORED_BY` is not sufficient.
+You also need to manually delete the prepare-commit-msg hook file in your repo.
 
 ### Global Config Support
 

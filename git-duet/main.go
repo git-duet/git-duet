@@ -67,6 +67,10 @@ func main() {
 		printNextComitter(committers)
 		if configuration.CoAuthoredBy {
 			installPrepareCommitMsgHook()
+			if err = gitConfig.SetAuthor(author); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
 		}
 		os.Exit(0)
 	}
