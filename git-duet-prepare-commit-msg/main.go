@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"regexp"
-	"strings"
 
 	"github.com/git-duet/git-duet"
 	"github.com/pborman/getopt"
@@ -52,7 +52,7 @@ func main() {
 
 	commitMsg, err := ioutil.ReadFile(commitMsgFile)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
@@ -61,30 +61,42 @@ func main() {
 	if trailerExists && commitMsgSource != "commit" {
 		/* The goal here is to not add trailers in interactive rebasing or cherry-picking
 		   since authorship doesn't get changed. Since this hook doesn't know whether it is invoked
-		   as part of rebasing or cherry-picking, at the very least, we check for existing trailers,
-		   and if there is at least one, no new trailers will be appended.
-		   Note that, non-duplicate trailers will still be appended for "git commit --amend" in which
-		   case the commitMsgSource's value is "commit". */
+		   as part of rebasing or cherry-picking, at the very least, it checks for existing trailers,
+		   and if there is one, no new trailers will be appended.
+		   Trailers will still be appended for "git commit --amend" in which case the
+		   commitMsgSource's value is "commit". */
 		os.Exit(0)
 	}
 
-	var coAuthorsTrailer string
+	// override the default "addIfDifferentNeighbor" so that no duplicate trailers will get appended
+	err = gitConfig.SetUnnamespacedKey("trailer.ifexists", "addIfDifferent")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	for _, c := range committers {
-		trailer := "Co-authored-by: " + c.Name + " <" + c.Email + ">\n"
-		trailerRegexp := regexp.MustCompile(trailer)
-		if !trailerRegexp.Match(commitMsg) {
-			coAuthorsTrailer += trailer
+		trailer := "Co-authored-by: " + c.Name + " <" + c.Email + ">"
+		cmd := exec.Command("git", "interpret-trailers", "--in-place", "--trailer", trailer, commitMsgFile)
+		err := cmd.Run()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
 		}
 	}
-	coAuthorsTrailer = strings.TrimSuffix(coAuthorsTrailer, "\n")
 
-	commitMsgFormat := "%s\n%s"
-	if trailerExists {
-		commitMsgFormat = "%s%s"
+	// prepend an empty line to the trailers block if there aren't trailers yet
+	if trailerExists || commitMsgSource == "commit" {
+		os.Exit(0)
 	}
-	err = ioutil.WriteFile(commitMsgFile, []byte(fmt.Sprintf(commitMsgFormat, string(commitMsg), coAuthorsTrailer)), 0644)
+	commitMsg, err = ioutil.ReadFile(commitMsgFile)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	err = ioutil.WriteFile(commitMsgFile, []byte(fmt.Sprintf("\n%s", string(commitMsg))), 0644)
+	if err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
 }
