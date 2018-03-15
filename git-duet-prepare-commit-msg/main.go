@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/git-duet/git-duet"
@@ -45,17 +46,24 @@ func main() {
 		os.Exit(0)
 	}
 
-	var coAuthorsTrailer string
-	for _, c := range committers {
-		coAuthorsTrailer += "Co-authored-by: " + c.Name + " <" + c.Email + ">\n"
-	}
-	coAuthorsTrailer = strings.TrimSuffix(coAuthorsTrailer, "\n")
-
 	commitMsg, err := ioutil.ReadFile(commitMsgFile)
 	if err != nil {
 		fmt.Print(err)
 		os.Exit(1)
 	}
+
+	coAuthorTrailerRegexp := regexp.MustCompile(`Co-authored-by:\s.+\s<.+>`)
+	if coAuthorTrailerRegexp.Match(commitMsg) {
+		// don't append further trailers if there are already trailers
+		// this avoids duplicate trailers when interactively rebasing or cherry-picking
+		os.Exit(0)
+	}
+
+	var coAuthorsTrailer string
+	for _, c := range committers {
+		coAuthorsTrailer += "Co-authored-by: " + c.Name + " <" + c.Email + ">\n"
+	}
+	coAuthorsTrailer = strings.TrimSuffix(coAuthorsTrailer, "\n")
 
 	err = ioutil.WriteFile(commitMsgFile, []byte(fmt.Sprintf("%s\n%s", string(commitMsg), coAuthorsTrailer)), 0644)
 	if err != nil {

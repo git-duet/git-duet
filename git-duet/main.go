@@ -67,6 +67,7 @@ func main() {
 		printNextComitter(committers)
 		if configuration.CoAuthoredBy {
 			installPrepareCommitMsgHook()
+			// SetAuthor is needed in case neither GIT_DUET_CO_AUTHORED_BY nor GIT_DUET_SET_GIT_USER_CONFIG was set previously
 			if err = gitConfig.SetAuthor(author); err != nil {
 				fmt.Println(err)
 				os.Exit(1)

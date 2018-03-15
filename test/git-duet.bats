@@ -281,3 +281,13 @@ load test_helper
   run git log -1 --pretty=%B
   [[ ! $output = *"Co-authored-by:"* ]]
 }
+
+@test "does not add duplicate Co-authored-by trailers when amending a commit if GIT_DUET_CO_AUTHORED_BY" {
+  GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd fb
+  add_file first.txt
+  git commit -q -m 'I get amended'
+  [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 1 ]]
+
+  git commit -q --amend --no-edit
+  [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 1 ]]
+}
