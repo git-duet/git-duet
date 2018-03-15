@@ -20,7 +20,7 @@ const preCommitHook = `#!/usr/bin/env bash
 exec git duet-pre-commit "$@"
 `
 const prepareCommitMsgHook = `#!/usr/bin/env bash
-exec git duet-prepare-commit-msg "$1"
+exec git duet-prepare-commit-msg "$@"
 `
 
 func main() {

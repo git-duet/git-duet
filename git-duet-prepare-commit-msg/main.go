@@ -15,6 +15,10 @@ func main() {
 
 	getopt.Parse()
 	commitMsgFile := getopt.Args()[0]
+	var commitMsgSource string
+	if len(getopt.Args()) > 1 {
+		commitMsgSource = getopt.Args()[1]
+	}
 
 	configuration, err := duet.NewConfiguration()
 	if err != nil {
@@ -53,19 +57,32 @@ func main() {
 	}
 
 	coAuthorTrailerRegexp := regexp.MustCompile(`Co-authored-by:\s.+\s<.+>`)
-	if coAuthorTrailerRegexp.Match(commitMsg) {
-		// don't append further trailers if there are already trailers
-		// this avoids duplicate trailers when interactively rebasing or cherry-picking
+	trailerExists := coAuthorTrailerRegexp.Match(commitMsg)
+	if trailerExists && commitMsgSource != "commit" {
+		/* The goal here is to not add trailers in interactive rebasing or cherry-picking
+		   since authorship doesn't get changed. Since this hook doesn't know whether it is invoked
+		   as part of rebasing or cherry-picking, at the very least, we check for existing trailers,
+		   and if there is at least one, no new trailers will be appended.
+		   Note that, non-duplicate trailers will still be appended for "git commit --amend" in which
+		   case the commitMsgSource's value is "commit". */
 		os.Exit(0)
 	}
 
 	var coAuthorsTrailer string
 	for _, c := range committers {
-		coAuthorsTrailer += "Co-authored-by: " + c.Name + " <" + c.Email + ">\n"
+		trailer := "Co-authored-by: " + c.Name + " <" + c.Email + ">\n"
+		trailerRegexp := regexp.MustCompile(trailer)
+		if !trailerRegexp.Match(commitMsg) {
+			coAuthorsTrailer += trailer
+		}
 	}
 	coAuthorsTrailer = strings.TrimSuffix(coAuthorsTrailer, "\n")
 
-	err = ioutil.WriteFile(commitMsgFile, []byte(fmt.Sprintf("%s\n%s", string(commitMsg), coAuthorsTrailer)), 0644)
+	commitMsgFormat := "%s\n%s"
+	if trailerExists {
+		commitMsgFormat = "%s%s"
+	}
+	err = ioutil.WriteFile(commitMsgFile, []byte(fmt.Sprintf(commitMsgFormat, string(commitMsg), coAuthorsTrailer)), 0644)
 	if err != nil {
 		fmt.Print(err)
 		os.Exit(1)

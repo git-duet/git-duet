@@ -34,7 +34,7 @@ load test_helper
 
 @test "does not write anything if hook file with desired content already exists" {
   echo '#!/usr/bin/env bash
-exec git duet-prepare-commit-msg "$1"' > .git/hooks/prepare-commit-msg
+exec git duet-prepare-commit-msg "$@"' > .git/hooks/prepare-commit-msg
   run git duet-install-hook -q prepare-commit-msg
   assert_success
 }

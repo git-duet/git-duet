@@ -240,7 +240,6 @@ load test_helper
   assert_success 'Jane Doe <jane@hamsters.biz.local>'
   grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
   grep 'Co-authored-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
-  assert_success
 }
 
 @test "writes Co-authored-by trailer for merge-commits if GIT_DUET_CO_AUTHORED_BY" {
@@ -290,4 +289,17 @@ load test_helper
 
   git commit -q --amend --no-edit
   [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 1 ]]
+}
+
+@test "adds Co-authored-by trailer when new co-author amends a commit if GIT_DUET_CO_AUTHORED_BY" {
+  GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd fb
+  add_file first.txt
+  git commit -q -m 'I get amended'
+  [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 1 ]]
+
+  GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd zs
+  git commit -q --amend --no-edit
+  [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 2 ]]
+  grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  grep 'Co-authored-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
 }
