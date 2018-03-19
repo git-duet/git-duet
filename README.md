@@ -184,6 +184,10 @@ because all authors get attribution in their Github's contribution graph
 as described [here](https://github.com/blog/2496-commit-together-with-co-authors).
 If you do care about rotating author and co-author, you need to call `git duet` with the respective author initials.
 
+When amending a commit and the co-author has changed, a new `Co-authored-by` trailer will get appended for
+that co-author. In order to avoid duplicate `Co-authored-by` trailers (i.e. trailers with the same co-author),
+set `git config [--global] trailer.ifexists addIfDifferent` to  override the default value `addIfDifferentNeighbor`.
+
 If you want to opt out of this feature, unsetting `GIT_DUET_CO_AUTHORED_BY` is not sufficient.
 You also need to manually delete the prepare-commit-msg hook file in your repo.
 

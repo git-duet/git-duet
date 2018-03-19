@@ -68,13 +68,6 @@ func main() {
 		os.Exit(0)
 	}
 
-	// override the default "addIfDifferentNeighbor" so that no duplicate trailers will get appended
-	err = gitConfig.SetUnnamespacedKey("trailer.ifexists", "addIfDifferent")
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
 	for _, c := range committers {
 		trailer := "Co-authored-by: " + c.Name + " <" + c.Email + ">"
 		cmd := exec.Command("git", "interpret-trailers", "--in-place", "--trailer", trailer, commitMsgFile)

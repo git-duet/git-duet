@@ -138,10 +138,10 @@ func (gc *GitConfig) RotateAuthor() (err error) {
 
 func (gc *GitConfig) setAuthor(author *Pair) (err error) {
 	if gc.SetUserConfig {
-		if err = gc.SetUnnamespacedKey("user.name", author.Name); err != nil {
+		if err = gc.setUnnamespacedKey("user.name", author.Name); err != nil {
 			return err
 		}
-		if err = gc.SetUnnamespacedKey("user.email", author.Email); err != nil {
+		if err = gc.setUnnamespacedKey("user.email", author.Email); err != nil {
 			return err
 		}
 	}
@@ -275,29 +275,10 @@ func (gc *GitConfig) GetInitTemplateDir() (templateDir string, err error) {
 }
 
 func (gc *GitConfig) SetInitTemplateDir(path string) (err error) {
-	if err = gc.SetUnnamespacedKey("init.templatedir", path); err != nil {
+	if err = gc.setUnnamespacedKey("init.templatedir", path); err != nil {
 		return err
 	}
 	return nil
-}
-
-func (gc *GitConfig) SetUnnamespacedKey(key, value string) (err error) {
-	if err = gc.configCommand(key, value).Run(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (gc *GitConfig) getUnnamespacedKey(key string) (value string, err error) {
-	output := new(bytes.Buffer)
-	cmd := gc.configCommand(key)
-	cmd.Stdout = output
-
-	err = newIgnorableCommand(cmd, 1).Run()
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(output.String()), nil
 }
 
 func (gc *GitConfig) getKey(key string) (value string, err error) {
@@ -312,10 +293,30 @@ func (gc *GitConfig) getKey(key string) (value string, err error) {
 	return strings.TrimSpace(output.String()), nil
 }
 
+func (gc *GitConfig) getUnnamespacedKey(key string) (value string, err error) {
+	output := new(bytes.Buffer)
+	cmd := gc.configCommand(key)
+	cmd.Stdout = output
+
+	err = newIgnorableCommand(cmd, 1).Run()
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(output.String()), nil
+}
+
 func (gc *GitConfig) unsetKey(key string) (err error) {
 	if err = newIgnorableCommand(
 		gc.configCommand("--unset-all", fmt.Sprintf("%s.%s", gc.Namespace, key)),
 		5).Run(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (gc *GitConfig) setUnnamespacedKey(key, value string) (err error) {
+	if err = gc.configCommand(key, value).Run(); err != nil {
 		return err
 	}
 
