@@ -266,9 +266,36 @@ func (gc *GitConfig) GetMtime() (mtime time.Time, err error) {
 	return time.Unix(mtimeUnix, 0), nil
 }
 
+func (gc *GitConfig) GetInitTemplateDir() (templateDir string, err error) {
+	templateDir, err = gc.getUnnamespacedKey("init.templatedir")
+	if err != nil {
+		return "", err
+	}
+	return templateDir, err
+}
+
+func (gc *GitConfig) SetInitTemplateDir(path string) (err error) {
+	if err = gc.setUnnamespacedKey("init.templatedir", path); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (gc *GitConfig) getKey(key string) (value string, err error) {
 	output := new(bytes.Buffer)
 	cmd := gc.configCommand(fmt.Sprintf("%s.%s", gc.Namespace, key))
+	cmd.Stdout = output
+
+	err = newIgnorableCommand(cmd, 1).Run()
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(output.String()), nil
+}
+
+func (gc *GitConfig) getUnnamespacedKey(key string) (value string, err error) {
+	output := new(bytes.Buffer)
+	cmd := gc.configCommand(key)
 	cmd.Stdout = output
 
 	err = newIgnorableCommand(cmd, 1).Run()

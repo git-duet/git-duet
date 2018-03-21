@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/git-duet/git-duet"
 	"github.com/pborman/getopt"
@@ -64,6 +65,14 @@ func main() {
 
 		printAuthor(author)
 		printNextComitter(committers)
+		if configuration.CoAuthoredBy {
+			installPrepareCommitMsgHook()
+			// SetAuthor is needed in case neither GIT_DUET_CO_AUTHORED_BY nor GIT_DUET_SET_GIT_USER_CONFIG was set previously
+			if err = gitConfig.SetAuthor(author); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
 		os.Exit(0)
 	}
 
@@ -109,6 +118,10 @@ func main() {
 		printAuthor(author)
 		printNextComitter(committers)
 	}
+
+	if configuration.CoAuthoredBy {
+		installPrepareCommitMsgHook()
+	}
 }
 
 func printAuthor(author *duet.Pair) {
@@ -127,4 +140,16 @@ func printNextComitter(committers []*duet.Pair) {
 
 	fmt.Printf("GIT_COMMITTER_NAME='%s'\n", committers[0].Name)
 	fmt.Printf("GIT_COMMITTER_EMAIL='%s'\n", committers[0].Email)
+}
+
+func installPrepareCommitMsgHook() {
+	cmd := exec.Command("git-duet-install-hook", "prepare-commit-msg")
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }

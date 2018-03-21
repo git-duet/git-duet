@@ -138,6 +138,15 @@ load test_helper
   assert_success 'jane@hamsters.biz.local'
 }
 
+@test "sets git user.name and user.email if GIT_DUET_CO_AUTHORED_BY" {
+  # since GIT_DUET_CO_AUTHORED_BY implicitly sets GIT_DUET_SET_GIT_USER_CONFIG
+  GIT_DUET_CO_AUTHORED_BY=1 git solo -q jd
+  run git config "user.name"
+  assert_success 'Jane Doe'
+  run git config "user.email"
+  assert_success 'jane@hamsters.biz.local'
+}
+
 @test "prints current config" {
   git solo -q al
   run git solo
@@ -166,4 +175,12 @@ load test_helper
   assert_success 'Frances Car'
   run git config "user.email"
   assert_success 'f.car@banana.info.local'
+}
+
+@test "does not write Co-authored-by trailer if GIT_DUET_CO_AUTHORED_BY is set" {
+  GIT_DUET_CO_AUTHORED_BY=1 git solo -q jd
+  add_file first.txt
+  git commit -q -m 'I do not have a co-author'
+  run grep 'Co-authored-by:' .git/COMMIT_EDITMSG
+  assert_failure
 }

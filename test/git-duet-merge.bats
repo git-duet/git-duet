@@ -261,7 +261,7 @@ load test_helper
   git commit -q -m 'Avoid fast-forward'
 
   git solo -q jd
-  git duet-install-hook -q
+  git duet-install-hook -q pre-commit
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
 
   run git duet-merge branch_one -q
@@ -282,7 +282,7 @@ load test_helper
   git commit -q -m 'Avoid fast-forward'
 
   git duet -q jd fb
-  git duet-install-hook -q
+  git duet-install-hook -q pre-commit
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
 
   run git duet-merge branch_one -q

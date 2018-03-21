@@ -3,17 +3,24 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
+	"os/user"
 	"path"
 	"strings"
 
+	duet "github.com/git-duet/git-duet"
 	"github.com/pborman/getopt"
 )
 
-const hook = `
-#!/usr/bin/env bash
+const preCommit = "pre-commit"
+const prepareCommitMsg = "prepare-commit-msg"
+const preCommitHook = `#!/usr/bin/env bash
 exec git duet-pre-commit "$@"
+`
+const prepareCommitMsgHook = `#!/usr/bin/env bash
+exec git duet-prepare-commit-msg "$@"
 `
 
 func main() {
@@ -23,28 +30,90 @@ func main() {
 	)
 
 	getopt.Parse()
+	getopt.SetParameters(fmt.Sprintf("{ %s | %s }", preCommit, prepareCommitMsg))
 
 	if *help {
 		getopt.Usage()
 		os.Exit(0)
 	}
 
-	output := new(bytes.Buffer)
-	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
-	cmd.Stdout = output
-	if err := cmd.Run(); err != nil {
+	args := getopt.Args()
+	if len(args) != 1 {
+		getopt.Usage()
+		os.Exit(1)
+	}
+	hookFileName := args[0]
+
+	var hook string
+	if hookFileName == preCommit {
+		hook = preCommitHook
+	} else if hookFileName == prepareCommitMsg {
+		hook = prepareCommitMsgHook
+	} else {
+		getopt.Usage()
+		os.Exit(1)
+	}
+
+	config, err := duet.NewConfiguration()
+	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	hookPath := path.Join(strings.TrimSpace(output.String()), ".git", "hooks", "pre-commit")
+	var hooksDir string
+	if config.Global {
+		gitConfig := &duet.GitConfig{Namespace: config.Namespace, SetUserConfig: config.SetGitUserConfig}
+		gitConfig.Scope = duet.Global
+		templateDir, err := gitConfig.GetInitTemplateDir()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		if templateDir == "" {
+			usr, err := user.Current()
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			templateDir = path.Join(usr.HomeDir, ".git-template")
+			if err := gitConfig.SetInitTemplateDir(templateDir); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
+		if err := os.MkdirAll(path.Join(templateDir, "hooks"), os.ModePerm); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		hooksDir = path.Join(templateDir, "hooks")
+	} else {
+		hooksDir = getLocalHooksDir()
+	}
 
-	hookFile, err := os.OpenFile(hookPath, os.O_CREATE|os.O_EXCL|os.O_WRONLY, os.ModePerm)
+	hookPath := path.Join(hooksDir, hookFileName)
+
+	hookFile, err := os.OpenFile(hookPath, os.O_CREATE|os.O_RDWR, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 	defer hookFile.Close()
+
+	b, err := ioutil.ReadAll(hookFile)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	contents := strings.TrimSpace(string(b))
+	if contents != "" {
+		if hook == preCommitHook && contents != strings.TrimSpace(preCommitHook) ||
+			hook == prepareCommitMsgHook && contents != strings.TrimSpace(prepareCommitMsgHook) {
+			fmt.Printf("can't install hook: file %s already exists\n", hookPath)
+			os.Exit(1)
+		}
+		os.Exit(0) // hook file with the desired content already exists
+	}
 
 	if _, err = hookFile.WriteString(hook); err != nil {
 		fmt.Println(err)
@@ -54,4 +123,16 @@ func main() {
 	if !*quiet {
 		fmt.Printf("git-duet-install-hook: Installed hook to %s\n", hookPath)
 	}
+
+}
+
+func getLocalHooksDir() string {
+	output := new(bytes.Buffer)
+	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
+	cmd.Stdout = output
+	if err := cmd.Run(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	return path.Join(strings.TrimSpace(output.String()), ".git", "hooks")
 }

@@ -184,7 +184,7 @@ load test_helper
   fi
 
   git solo -q jd
-  git duet-install-hook -q
+  git duet-install-hook -q pre-commit
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
   add_file
   run git duet-commit -q -m 'Testing stale hook fire'
@@ -201,7 +201,7 @@ load test_helper
   fi
 
   git duet -q jd fb
-  git duet-install-hook -q
+  git duet-install-hook -q pre-commit
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
   add_file
   run git duet-commit -q -m 'Testing stale hook fire'
