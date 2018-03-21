@@ -1,3 +1,10 @@
+## 0.6.0
+
+IMPROVEMENTS:
+
+* Experimental support for alternative workflow added using trailers rather than setting the author/commiter
+  (https://github.com/git-duet/git-duet/pull/57) via `$GIT_DUET_CO_AUTHORED_BY`. See README documentation for usage.
+
 ## 0.5.2
 
 BUG FIXES:
