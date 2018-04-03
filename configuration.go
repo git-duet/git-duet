@@ -34,7 +34,7 @@ func NewConfiguration() (config *Configuration, err error) {
 		return nil, err
 	}
 
-	cutoff, err := strconv.Atoi(getenvDefault("'GIT_DUET_SECONDS_AGO_STALE'", "1200"))
+	cutoff, err := strconv.Atoi(getenvDefault("GIT_DUET_SECONDS_AGO_STALE", "1200"))
 	if err != nil {
 		return nil, err
 	}
