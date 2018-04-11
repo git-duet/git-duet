@@ -185,8 +185,9 @@ load test_helper
 
   git solo -q jd
   git duet-install-hook -q pre-commit
-  git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
+  git config "$GIT_DUET_CONFIG_NAMESPACE.mtime" "$(( $(date +%s) - 10))"
   add_file
+  export GIT_DUET_SECONDS_AGO_STALE=9
   run git duet-commit -q -m 'Testing stale hook fire'
 
   assert_failure
@@ -202,8 +203,9 @@ load test_helper
 
   git duet -q jd fb
   git duet-install-hook -q pre-commit
-  git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
+  git config "$GIT_DUET_CONFIG_NAMESPACE.mtime" "$(( $(date +%s) - 10))"
   add_file
+  export GIT_DUET_SECONDS_AGO_STALE=9
   run git duet-commit -q -m 'Testing stale hook fire'
 
   assert_failure
