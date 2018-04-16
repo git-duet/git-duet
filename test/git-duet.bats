@@ -192,10 +192,27 @@ load test_helper
   git duet -q dj fc
   run git duet
 
+  assert_success
   assert_line "GIT_AUTHOR_NAME='Dane Joe'"
   assert_line "GIT_AUTHOR_EMAIL='dane@bananas.biz.local'"
   assert_line "GIT_COMMITTER_NAME='Frances Car'"
   assert_line "GIT_COMMITTER_EMAIL='f.car@banana.info.local'"
+}
+
+@test "does not error when run outside of a git repository" {
+  run git duet -g jd fb
+  assert_success
+
+  mkdir ${GIT_DUET_TEST_DIR}/no-repo
+  cd ${GIT_DUET_TEST_DIR}/no-repo
+
+  unset GIT_DUET_AUTHORS_FILE
+  run git duet
+  assert_success
+  assert_line "GIT_AUTHOR_NAME='Jane Doe'"
+  assert_line "GIT_AUTHOR_EMAIL='jane@hamsters.biz.local'"
+  assert_line "GIT_COMMITTER_NAME='Frances Bar'"
+  assert_line "GIT_COMMITTER_EMAIL='f.bar@hamster.info.local'"
 }
 
 @test "installs prepare-commit-msg hook file if GIT_DUET_CO_AUTHORED_BY" {

@@ -1,6 +1,7 @@
 package duet
 
 import (
+	"bytes"
 	"os"
 	"os/exec"
 	"path"
@@ -65,16 +66,19 @@ func NewConfiguration() (config *Configuration, err error) {
 }
 
 func getPairsFile() (value string, err error) {
-
 	authorsFile := ".git-authors"
+	defaultAuthorsFile := path.Join(os.Getenv("HOME"), authorsFile)
 
 	if os.Getenv("GIT_DUET_AUTHORS_FILE") != "" {
 		return os.Getenv("GIT_DUET_AUTHORS_FILE"), nil
 	}
 
-	gitDirectory, err := exec.Command("git", "rev-parse", "--show-toplevel").Output()
+	gitDirectory, err := exec.Command("git", "rev-parse", "--show-toplevel").CombinedOutput()
 	if err != nil {
-		return "", err
+		if !bytes.Contains(gitDirectory, []byte("Not a git repository")) {
+			return "", err
+		}
+		return defaultAuthorsFile, nil
 	}
 
 	gitDirectoryAuthors := path.Join(strings.TrimSpace(string(gitDirectory)), authorsFile)
@@ -82,7 +86,7 @@ func getPairsFile() (value string, err error) {
 		return gitDirectoryAuthors, nil
 	}
 
-	return path.Join(os.Getenv("HOME"), authorsFile), nil
+	return defaultAuthorsFile, nil
 }
 
 func getenvDefault(key, defaultValue string) (value string) {
