@@ -158,6 +158,9 @@ authors/committers to the currently set pair. It acts on your active branch
 This feature is experimental.
 Please open an issue if you find a bug or if you have suggestions how usability could be improved.
 
+:warning: If you use `git commit -v` with `git < 2.14.0` you'll find that the `Co-authored-by` trailer is mistakenly
+added after the verbose commit output. Please upgrade `git` if you encounter this issue.
+
 Set the environment variable `GIT_DUET_CO_AUTHORED_BY` to `1` if you want
 to have a "Co-authored-by" trailer for each co-author in your commit message
 rather than having a "Signed-off-by" trailer for the committer.
