@@ -177,6 +177,21 @@ load test_helper
   assert_success 'f.car@banana.info.local'
 }
 
+@test "does not error when run outside of a git repository" {
+  run git solo -g jd
+  assert_success
+
+  mkdir ${GIT_DUET_TEST_DIR}/no-repo
+  cd ${GIT_DUET_TEST_DIR}/no-repo
+
+  unset GIT_DUET_AUTHORS_FILE
+  git solo
+  run git solo
+  assert_success
+  assert_line "GIT_AUTHOR_NAME='Jane Doe'"
+  assert_line "GIT_AUTHOR_EMAIL='jane@hamsters.biz.local'"
+}
+
 @test "does not write Co-authored-by trailer if GIT_DUET_CO_AUTHORED_BY is set" {
   GIT_DUET_CO_AUTHORED_BY=1 git solo -q jd
   add_file first.txt
