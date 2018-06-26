@@ -431,6 +431,10 @@ above, you would then update your RubyMine setting in
  `~/bin/rubymine-git-wrapper` (with the `~` expanded).
 See issue #8 for more details.
 
+### VSCode extention
+
+[git-duet for VSCode](https://marketplace.visualstudio.com/items?itemName=PhilAlsford.git-duet-vscode), has been created by a member of the comunity. Please see the README for instructions/limitations. Please direct any issues to the extentions [GitHub repo](https://github.com/philals/git-duet-vscode). 
+
 ## Differences from ruby [`git-duet`](http://github.com/meatballhat/git-duet)
 - Running `git solo` or `git duet` with no initials outputs configuration in
   same format as when setting (env variables)
