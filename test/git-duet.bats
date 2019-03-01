@@ -320,3 +320,154 @@ load test_helper
   grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
   grep 'Co-authored-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
 }
+
+@test "does not rotate author by default" {
+  export GIT_DUET_CO_AUTHORED_BY=1
+  git duet -q jd fb
+
+  add_file first.txt
+  git commit -q -m 'Testing jd as author, fb as co-author'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 1 ]]
+  grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+
+
+  add_file second.txt
+  git commit -q -m 'Testing jd remains author, fb remains co-author'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 1 ]]
+  grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+}
+
+@test "respects GIT_DUET_ROTATE_AUTHOR" {
+  export GIT_DUET_CO_AUTHORED_BY=1
+  export GIT_DUET_ROTATE_AUTHOR=1
+  git duet -q jd fb
+
+  add_file first.txt
+  git commit -q -m 'Testing jd as author, fb as co-author'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 1 ]]
+  grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+
+  add_file second.txt
+  git commit -q -m 'Testing fb as author, jd as co-author'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 1 ]]
+  grep 'Co-authored-by: Jane Doe <jane@hamsters.biz.local>' .git/COMMIT_EDITMSG
+}
+
+@test "respects GIT_DUET_ROTATE_AUTHOR with three contributors" {
+  export GIT_DUET_CO_AUTHORED_BY=1
+  export GIT_DUET_ROTATE_AUTHOR=1
+  git duet -q jd fb zs
+
+  add_file first.txt
+  git commit -q -m 'Testing jd as author, fb and zs as co-authors'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 2 ]]
+  grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  grep 'Co-authored-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
+
+  add_file second.txt
+  git commit -q -m 'Testing fb as author, jd and zs as co-authors'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 2 ]]
+  grep 'Co-authored-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
+  grep 'Co-authored-by: Jane Doe <jane@hamsters.biz.local>' .git/COMMIT_EDITMSG
+
+  add_file third.txt
+  git commit -q -m 'Testing za as author, jd and fb as co-authors'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
+  [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 2 ]]
+  grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  grep 'Co-authored-by: Jane Doe <jane@hamsters.biz.local>' .git/COMMIT_EDITMSG
+}
+
+@test "GIT_DUET_ROTATE_AUTHOR updates the correct config" {
+  export GIT_DUET_CO_AUTHORED_BY=1
+  export GIT_DUET_ROTATE_AUTHOR=1
+  git duet -q -g jd fb
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
+  assert_success 'jane@hamsters.biz.local'
+
+  add_file first.txt
+  git commit -q -m 'Testing jd as author, fb as co-author'
+
+  run git config --global "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
+  assert_success 'f.bar@hamster.info.local'
+}
+
+@test "GIT_DUET_ROTATE_AUTHOR respects GIT_DUET_SET_GIT_USER_CONFIG" {
+  export GIT_DUET_CO_AUTHORED_BY=1
+  export GIT_DUET_ROTATE_AUTHOR=1
+  export GIT_DUET_SET_GIT_USER_CONFIG=1
+  git duet -g jd fb
+  run git config --global "user.name"
+  assert_success 'Jane Doe'
+  run git config --global "user.email"
+  assert_success 'jane@hamsters.biz.local'
+
+  add_file first.txt
+  git commit -q -m 'Testing jd as author, fb as co-author'
+
+  run git config --global "user.name"
+  assert_success 'Frances Bar'
+  run git config --global "user.email"
+  assert_success 'f.bar@hamster.info.local'
+}
+
+@test "does not update mtime when rotating co-author" {
+  export GIT_DUET_CO_AUTHORED_BY=1
+  export GIT_DUET_ROTATE_AUTHOR=1
+  git duet -q jd fb
+  git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
+  add_file
+  git commit -q -m 'Testing mtime not set'
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.mtime"
+  assert_equal 1 $status
+}
+
+@test "rotates committer and adds Co-authored-by trailer for new author when amending a commit and GIT_DUET_CO_AUTHORED_BY and GIT_DUET_ROTATE_AUTHOR" {
+  export GIT_DUET_CO_AUTHORED_BY=1
+  export GIT_DUET_ROTATE_AUTHOR=1
+  git duet -q jd fb
+  add_file first.txt
+  git commit -q -m 'I get amended'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 1 ]]
+  grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+
+  git commit -q --amend --no-edit
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  [[ $(grep -o 'Co-authored-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 2 ]]
+  grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  grep 'Co-authored-by: Jane Doe <jane@hamsters.biz.local>' .git/COMMIT_EDITMSG
+}

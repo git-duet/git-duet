@@ -7,7 +7,8 @@ setup() {
   unset GIT_DUET_ROTATE_AUTHOR
   unset GIT_DUET_SET_GIT_USER_CONFIG
   unset GIT_DUET_CO_AUTHORED_BY
-  git config --global --unset init.templatedir || true
+  git config --global --unset init.templateDir || true
+  git config --global --unset core.hooksPath || true
 
   export GIT_DUET_CONFIG_NAMESPACE='foo.bar'
   export GIT_DUET_AUTHORS_FILE="${GIT_DUET_TEST_DIR}/.git-authors"
@@ -53,7 +54,7 @@ EOF
 
 teardown() {
   git config --global --remove-section $GIT_DUET_CONFIG_NAMESPACE || true
-  git config --global --unset init.templatedir || true
+  git config --global --unset init.templateDir || true
   rm -rf "$GIT_DUET_TEST_DIR"
 }
 

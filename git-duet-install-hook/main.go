@@ -16,11 +16,16 @@ import (
 
 const preCommit = "pre-commit"
 const prepareCommitMsg = "prepare-commit-msg"
+const postCommit = "post-commit"
+
 const preCommitHook = `#!/usr/bin/env bash
 exec git duet-pre-commit "$@"
 `
 const prepareCommitMsgHook = `#!/usr/bin/env bash
 exec git duet-prepare-commit-msg "$@"
+`
+const postCommitHook = `#!/usr/bin/env bash
+exec git duet-post-commit "$@"
 `
 
 func main() {
@@ -30,7 +35,7 @@ func main() {
 	)
 
 	getopt.Parse()
-	getopt.SetParameters(fmt.Sprintf("{ %s | %s }", preCommit, prepareCommitMsg))
+	getopt.SetParameters(fmt.Sprintf("{ %s | %s | %s }", preCommit, prepareCommitMsg, postCommit))
 
 	if *help {
 		getopt.Usage()
@@ -49,6 +54,8 @@ func main() {
 		hook = preCommitHook
 	} else if hookFileName == prepareCommitMsg {
 		hook = prepareCommitMsgHook
+	} else if hookFileName == postCommit {
+		hook = postCommitHook
 	} else {
 		getopt.Usage()
 		os.Exit(1)
@@ -108,7 +115,8 @@ func main() {
 	contents := strings.TrimSpace(string(b))
 	if contents != "" {
 		if hook == preCommitHook && contents != strings.TrimSpace(preCommitHook) ||
-			hook == prepareCommitMsgHook && contents != strings.TrimSpace(prepareCommitMsgHook) {
+			hook == prepareCommitMsgHook && contents != strings.TrimSpace(prepareCommitMsgHook) ||
+			hook == postCommitHook && contents != strings.TrimSpace(postCommitHook) {
 			fmt.Printf("can't install hook: file %s already exists\n", hookPath)
 			os.Exit(1)
 		}

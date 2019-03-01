@@ -155,9 +155,6 @@ authors/committers to the currently set pair. It acts on your active branch
 
 ### "Co-authored-by" trailer support
 
-This feature is experimental.
-Please open an issue if you find a bug or if you have suggestions how usability could be improved.
-
 :warning: If you use `git commit -v` with `git < 2.14.0` you'll find that the `Co-authored-by` trailer is mistakenly
 added after the verbose commit output. Please upgrade `git` if you encounter this issue.
 
@@ -182,17 +179,15 @@ so that the hook file gets copied from the `init.templatedir`
 the git-duet-subcommands `git duet-commit`, `git duet-merge`)
 - the prepare-commit-msg hook will append a `Co-authored-by` trailer for each co-author
 
-The above workflow ignores `GIT_DUET_ROTATE_AUTHOR` since there is no need to rotate authors
-because all authors get attribution in their Github's contribution graph
-as described [here](https://github.com/blog/2496-commit-together-with-co-authors).
-If you do care about rotating author and co-author, you need to call `git duet` with the respective author initials.
+If `GIT_DUET_ROTATE_AUTHOR` is set in addition to `GIT_DUET_CO_AUTHORED_BY`, `git-duet` will install a post-commit hook file
+which will swap author and co-author after every commit.
 
 When amending a commit and the co-author has changed, a new `Co-authored-by` trailer will get appended for
 that co-author. In order to avoid duplicate `Co-authored-by` trailers (i.e. trailers with the same co-author),
 set `git config [--global] trailer.ifexists addIfDifferent` to  override the default value `addIfDifferentNeighbor`.
 
 If you want to opt out of this feature, unsetting `GIT_DUET_CO_AUTHORED_BY` is not sufficient.
-You also need to manually delete the prepare-commit-msg hook file in your repo.
+You also need to manually delete the prepare-commit-msg (and post-commit) hook file in your repo.
 
 ### Global Config Support
 
