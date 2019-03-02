@@ -30,7 +30,6 @@ load test_helper
 
   add_file second.txt
   git duet-commit -q -m 'Testing jd remains author, fb remains committer'
-  git log -1 --format='%an <%ae>'
   run git log -1 --format='%an <%ae>'
   assert_success 'Jane Doe <jane@hamsters.biz.local>'
   run git log -1 --format='%cn <%ce>'
