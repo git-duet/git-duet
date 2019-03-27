@@ -7,6 +7,8 @@ setup() {
   unset GIT_DUET_ROTATE_AUTHOR
   unset GIT_DUET_SET_GIT_USER_CONFIG
   unset GIT_DUET_CO_AUTHORED_BY
+  export TEMPLATE_DIR_BAK=$(git config --global init.templateDir)
+  export HOOKS_PATH_BAK=$(git config --global core.hooksPath)
   git config --global --unset init.templateDir || true
   git config --global --unset core.hooksPath || true
 
@@ -55,6 +57,16 @@ EOF
 teardown() {
   git config --global --remove-section $GIT_DUET_CONFIG_NAMESPACE || true
   git config --global --unset init.templateDir || true
+
+  #Reset original git global config. Otherwise tests would potentially change the system config.
+  if [[ -n "$HOOKS_PATH_BAK" ]]; then
+    git config --global core.hooksPath "$HOOKS_PATH_BAK"
+  fi
+
+  if [[ -n "$TEMPLATE_DIR_BAK" ]]; then
+    git config --global init.templateDir "$TEMPLATE_DIR_BAK"
+  fi
+
   rm -rf "$GIT_DUET_TEST_DIR"
 }
 
