@@ -331,3 +331,22 @@ load test_helper
   run git log -1 --format='%cn <%ce>'
   assert_success 'Jane Doe <jane@hamsters.biz.local>'
 }
+
+@test "handles fast-forward check if there is only one commit" {
+  git duet -q fb jd
+
+  git checkout -b branch_one
+
+  run git duet-merge master -q
+  assert_success
+
+  run git log -1 --format='%H' master
+  master_hash=$lines
+  assert_success
+
+  run git log -1 --format='%H' branch_one
+  branch_hash=$lines
+  assert_success
+
+  assert_equal $branch_hash $master_hash
+}
