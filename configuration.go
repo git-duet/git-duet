@@ -75,10 +75,11 @@ func getPairsFile() (value string, err error) {
 
 	gitDirectory, err := exec.Command("git", "rev-parse", "--show-toplevel").CombinedOutput()
 	if err != nil {
-		if !bytes.Contains(gitDirectory, []byte("Not a git repository")) {
-			return "", err
+		if bytes.Contains(gitDirectory, []byte("Not a git repository")) ||
+			bytes.Contains(gitDirectory, []byte("not a git repository")) {
+			return defaultAuthorsFile, nil
 		}
-		return defaultAuthorsFile, nil
+		return "", err
 	}
 
 	gitDirectoryAuthors := path.Join(strings.TrimSpace(string(gitDirectory)), authorsFile)
