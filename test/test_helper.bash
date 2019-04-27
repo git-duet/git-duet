@@ -93,7 +93,7 @@ create_branch_commit() {
     add_file $2
   fi
 
-  git commit -q -m 'Adding a branch commit'
+  git duet-commit -q -m 'Adding a branch commit'
   git checkout master
 }
 

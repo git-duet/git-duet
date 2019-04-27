@@ -3,8 +3,8 @@
 load test_helper
 
 @test "lists the alpha of the duet as author in the log" {
-  create_branch_commit
   git duet -q jd fb
+  create_branch_commit
   add_file another_commit.txt
   git commit -q -m 'Avoid fast-forward'
   git duet-merge new_branch
@@ -14,8 +14,8 @@ load test_helper
 }
 
 @test "lists the omega of the duet as committer in the log" {
-  create_branch_commit
   git duet -q jd fb
+  create_branch_commit
   add_file another_commit.txt
   git commit -q -m 'Avoid fast-forward'
   git duet-merge new_branch -q
@@ -25,8 +25,8 @@ load test_helper
 }
 
 @test "is a merge commit" {
-  create_branch_commit
   git duet -q jd fb
+  create_branch_commit
   add_file another_commit.txt
   git commit -q -m 'Avoid fast-forward'
   git duet-merge new_branch -q
@@ -217,10 +217,12 @@ load test_helper
 }
 
 @test "rejects commits with no author" {
+  git duet jd fb
   create_branch_commit branch_one branch_file_one
   add_file another_commit.txt
   git commit -q -m 'Avoid fast-forward'
 
+  git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.git-author-initials"
   run git duet-merge branch_one -q
 
   assert_failure
@@ -239,13 +241,15 @@ load test_helper
 }
 
 @test "does not panic if no duet pair set" {
+  git duet -q jd fb
   create_branch_commit branch_one branch_file_one
   add_file another_commit.txt
   git commit -q -m 'Avoid fast-forward'
 
+  git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.git-author-initials"
   run git duet-merge branch_one -q
 
-  assert_line "git-author not set"
+  assert_failure "git-author not set"
 }
 
 @test "rejects commits with stale soloists with hook" {
@@ -254,6 +258,8 @@ load test_helper
   if [ -n "$CI" ] ; then
     skip "cannot test commit hook on CI without sudo"
   fi
+
+  git duet -q jd fb
 
   create_branch_commit branch_one branch_file_one
 
@@ -277,16 +283,51 @@ load test_helper
     skip "cannot test commit hook on CI without sudo"
   fi
 
+  git duet -q jd fb
+
   create_branch_commit branch_one branch_file_one
   add_file another_commit.txt
   git commit -q -m 'Avoid fast-forward'
 
   git duet -q jd fb
   git duet-install-hook -q pre-commit
+
   git config --unset-all "$GIT_DUET_CONFIG_NAMESPACE.mtime"
 
   run git duet-merge branch_one -q
 
   assert_failure
   assert_line "your git duet settings are stale"
+}
+
+@test "does not ammend the commit for fast-forward merges" {
+  git duet -q jd fb
+
+  create_branch_commit branch_one branch_file_one
+
+  run git duet-merge branch_one -q
+  assert_success
+
+  run git log -1 --format='%H' master
+  master_hash=$lines
+  assert_success
+
+  run git log -1 --format='%H' branch_one
+  branch_hash=$lines
+  assert_success
+
+  assert_equal $branch_hash $master_hash
+}
+
+@test "does not rotate author for fast-forward merges" {
+  git duet -q fb jd
+
+  create_branch_commit branch_one branch_file_one
+
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-merge branch_one -q
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
 }
