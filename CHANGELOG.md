@@ -1,3 +1,15 @@
+## 0.7.0
+
+IMPROVEMENTS:
+* Better error messages if authors file is invalid YAML
+
+BUG FIXES:
+
+* Fix reading of `$GIT_DUET_SECONDS_AGO_STALE`. This value was previously ignored.
+* Running `git-(solo|duet)` outside of a git repo (regression in 0.6.0)
+* `$GIT_DUET_CO_AUTHORED_BY` respects `$GIT_DUET_ROTATE_AUTHOR`
+* `git-duet-merge` now correctly handles fast-forward merges now by not rewriting
+
 ## 0.6.0
 
 IMPROVEMENTS:
