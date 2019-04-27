@@ -63,7 +63,7 @@ func NewPairsFromFile(filename string, emailLookup string) (a *Pairs, err error)
 
 	err = yaml.Unmarshal(contents, &af)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not parse %s: %+v", filename, err)
 	}
 
 	return &Pairs{
