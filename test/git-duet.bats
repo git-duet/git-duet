@@ -260,8 +260,8 @@ load test_helper
 }
 
 @test "writes Co-authored-by trailer for merge-commits if GIT_DUET_CO_AUTHORED_BY" {
-  create_branch_commit
   GIT_DUET_CO_AUTHORED_BY=1 git duet -q jd fb
+  create_branch_commit
   git merge -q --no-ff new_branch
 
   run git log -1 --format='%an <%ae>'
