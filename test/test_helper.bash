@@ -37,12 +37,9 @@ email_addresses:
 EOF
 
   cat > "$GIT_DUET_TEST_LOOKUP" <<EOF
-#!/usr/bin/env ruby
-addr = {
-  'jd' => 'jane_doe@lookie.me.local',
-  'fb' => 'fb9000@dalek.info.local'
-}[ARGV.first]
-puts addr
+#!/usr/bin/env bash
+echo "jd: jane_doe@lookie.me.local
+fb: fb9000@dalek.info.local" | grep \$1 | sed 's/[a-z]\\{2\\}: \\(.*\\)/\\1/'
 EOF
   chmod +x "$GIT_DUET_TEST_LOOKUP"
   git init -q "$GIT_DUET_TEST_REPO"
