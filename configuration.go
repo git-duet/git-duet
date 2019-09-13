@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -20,6 +21,7 @@ type Configuration struct {
 	RotateAuthor     bool
 	SetGitUserConfig bool
 	StaleCutoff      time.Duration
+	IsCurrentWorkingDirGitRepo	bool
 }
 
 // NewConfiguration initializes Configuration from the environment
@@ -62,6 +64,8 @@ func NewConfiguration() (config *Configuration, err error) {
 
 	config.StaleCutoff = time.Duration(cutoff) * time.Second
 
+	config.IsCurrentWorkingDirGitRepo, err = checkCwdGitDir()
+
 	return config, nil
 }
 
@@ -97,4 +101,24 @@ func getenvDefault(key, defaultValue string) (value string) {
 	}
 
 	return value
+}
+
+func checkCwdGitDir() (hasGitDir bool, err error) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return false, err
+	}
+	return checkGitDir(cwd), nil
+}
+
+func checkGitDir(path string) (hasGitDir bool) {
+	if _, err := os.Stat(path + ".git"); os.IsNotExist(err) {
+		parent := filepath.Dir(path)
+		if parent == "/" {
+			return false
+		} else {
+			return checkGitDir(parent)
+		}
+	}
+	return true;
 }
