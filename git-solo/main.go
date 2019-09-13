@@ -53,6 +53,11 @@ func main() {
 			os.Exit(1)
 		}
 
+		if err = gitConfig.ClearCommitter(); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
 		printAuthor(author)
 		os.Exit(0)
 	}
