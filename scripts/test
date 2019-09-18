@@ -3,6 +3,8 @@
 set -o errexit
 set -o nounset
 
+ARGS=${@:-test}
+
 go vet $(go list ./... | grep -v '/vendor/')
 go test $(go list ./... | grep -v '/vendor/')
-bats -t test
+bats -t $ARGS
