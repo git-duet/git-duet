@@ -111,7 +111,12 @@ func main() {
 		if hook == preCommitHook && !strings.Contains(contents, preCommitHook) ||
 			hook == prepareCommitMsgHook && !strings.Contains(contents, prepareCommitMsgHook) ||
 			hook == postCommitHook && !strings.Contains(contents, postCommitHook) {
-			fmt.Printf("can't install hook: file %s already exists\n", hookPath)
+			fmt.Printf(`It seems you already have a "%s" hook.
+To enable the git-duet hook, please append:
+
+  %s
+
+to your %s file.`, hookFileName, hook, hookPath)
 			os.Exit(1)
 		}
 		os.Exit(0) // hook file with the desired content already exists
