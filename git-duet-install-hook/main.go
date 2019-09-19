@@ -17,16 +17,10 @@ import (
 const preCommit = "pre-commit"
 const prepareCommitMsg = "prepare-commit-msg"
 const postCommit = "post-commit"
-
-const preCommitHook = `#!/usr/bin/env bash
-exec git duet-pre-commit "$@"
-`
-const prepareCommitMsgHook = `#!/usr/bin/env bash
-exec git duet-prepare-commit-msg "$@"
-`
-const postCommitHook = `#!/usr/bin/env bash
-exec git duet-post-commit "$@"
-`
+const sheBangBash = "#!/usr/bin/env bash\n"
+const preCommitHook = `exec git duet-pre-commit "$@"`
+const prepareCommitMsgHook = `exec git duet-prepare-commit-msg "$@"`
+const postCommitHook = `exec git duet-post-commit "$@"`
 
 func main() {
 	var (
@@ -114,16 +108,21 @@ func main() {
 
 	contents := strings.TrimSpace(string(b))
 	if contents != "" {
-		if hook == preCommitHook && contents != strings.TrimSpace(preCommitHook) ||
-			hook == prepareCommitMsgHook && contents != strings.TrimSpace(prepareCommitMsgHook) ||
-			hook == postCommitHook && contents != strings.TrimSpace(postCommitHook) {
-			fmt.Printf("can't install hook: file %s already exists\n", hookPath)
+		if hook == preCommitHook && !strings.Contains(contents, preCommitHook) ||
+			hook == prepareCommitMsgHook && !strings.Contains(contents, prepareCommitMsgHook) ||
+			hook == postCommitHook && !strings.Contains(contents, postCommitHook) {
+			fmt.Printf(`It seems you already have a "%s" hook.
+To enable the git-duet hook, please append:
+
+  %s
+
+to your %s file.`, hookFileName, hook, hookPath)
 			os.Exit(1)
 		}
 		os.Exit(0) // hook file with the desired content already exists
 	}
 
-	if _, err = hookFile.WriteString(hook); err != nil {
+	if _, err = hookFile.WriteString(sheBangBash + hook); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}

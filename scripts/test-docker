@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-docker build -t test-git-duet -f Dockerfile-tests "$SCRIPT_DIR"/.. && docker run --rm test-git-duet ./scripts/test
+docker build -t test-git-duet -f Dockerfile-tests "$SCRIPT_DIR"/.. && docker run --rm test-git-duet ./scripts/test "$@"

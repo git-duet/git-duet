@@ -25,16 +25,73 @@ load test_helper
   [ -x .git/hooks/pre-commit ]
 }
 
+@test "does not overwrite existing pre-commit hook file with other contents" {
+  echo "Some content" > .git/hooks/pre-commit
+  local EXPECTED_HELP_MESSAGE=$(cat << EOM
+It seems you already have a "pre-commit" hook.
+To enable the git-duet hook, please append:
+
+  exec git duet-pre-commit "\$@"
+
+to your $PWD/.git/hooks/pre-commit file.
+EOM
+)
+  run git duet-install-hook -q pre-commit
+  assert_output "$EXPECTED_HELP_MESSAGE"
+  assert_failure
+}
+
 @test "does not overwrite existing prepare-commit-msg hook file with other contents" {
   echo "Some content" > .git/hooks/prepare-commit-msg
+  local EXPECTED_HELP_MESSAGE=$(cat << EOM
+It seems you already have a "prepare-commit-msg" hook.
+To enable the git-duet hook, please append:
+
+  exec git duet-prepare-commit-msg "\$@"
+
+to your $PWD/.git/hooks/prepare-commit-msg file.
+EOM
+)
   run git duet-install-hook -q prepare-commit-msg
+  assert_output "$EXPECTED_HELP_MESSAGE"
   assert_failure
 }
 
 @test "does not overwrite existing post-commit hook file with other contents" {
   echo "Some content" > .git/hooks/post-commit
+  local EXPECTED_HELP_MESSAGE=$(cat << EOM
+It seems you already have a "post-commit" hook.
+To enable the git-duet hook, please append:
+
+  exec git duet-post-commit "\$@"
+
+to your $PWD/.git/hooks/post-commit file.
+EOM
+)
   run git duet-install-hook -q post-commit
+  assert_output "$EXPECTED_HELP_MESSAGE"
   assert_failure
+}
+
+@test "does not fail when pre-commit-msg contains the correct command" {
+  echo "Some content" > .git/hooks/pre-commit
+  echo 'exec git duet-pre-commit "$@"' >> .git/hooks/pre-commit
+  run git duet-install-hook -q pre-commit
+  assert_success
+}
+
+@test "does not fail when prepare-commit-msg contains the correct command" {
+  echo "Some content" > .git/hooks/prepare-commit-msg
+  echo 'exec git duet-prepare-commit-msg "$@"' >> .git/hooks/prepare-commit-msg
+  run git duet-install-hook -q prepare-commit-msg
+  assert_success
+}
+
+@test "does not fail when post-commit-msg contains the correct command" {
+  echo "Some content" > .git/hooks/post-commit
+  echo 'exec git duet-post-commit "$@"' >> .git/hooks/post-commit
+  run git duet-install-hook -q post-commit
+  assert_success
 }
 
 @test "overwrites existing prepare-commit-msg hook file with empty contents" {
