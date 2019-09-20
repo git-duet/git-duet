@@ -53,7 +53,17 @@ func main() {
 			os.Exit(1)
 		}
 
+		committers, err := gitConfig.GetCommitters()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		if committers == nil && author != nil {
+			committers = []*duet.Pair{author}
+		}
+
 		printAuthor(author)
+		printNextCommitter(committers)
 		os.Exit(0)
 	}
 
@@ -91,4 +101,13 @@ func printAuthor(author *duet.Pair) {
 
 	fmt.Printf("GIT_AUTHOR_NAME='%s'\n", author.Name)
 	fmt.Printf("GIT_AUTHOR_EMAIL='%s'\n", author.Email)
+}
+
+func printNextCommitter(committers []*duet.Pair) {
+	if committers == nil || len(committers) == 0 {
+		return
+	}
+
+	fmt.Printf("GIT_COMMITTER_NAME='%s'\n", committers[0].Name)
+	fmt.Printf("GIT_COMMITTER_EMAIL='%s'\n", committers[0].Email)
 }
