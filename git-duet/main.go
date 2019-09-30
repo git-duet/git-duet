@@ -22,6 +22,7 @@ func main() {
 		global  = getopt.BoolLong("global", 'g', "Change global config")
 		help    = getopt.BoolLong("help", 'h', "Help")
 		version = getopt.BoolLong("version", 'v', "Version")
+		show 	= getopt.BoolLong("show", 's', "Show")
 	)
 
 	getopt.Parse()
@@ -47,7 +48,12 @@ func main() {
 		gitConfig.Scope = duet.Global
 	}
 
-	if getopt.NArgs() == 0 {
+	if (configuration.PrecedingUpdateRequireInitials && getopt.NArgs() == 0) || (getopt.NArgs() != 0 && getopt.NArgs() < 2) {
+		fmt.Println("must specify at least two sets of initials")
+		os.Exit(1)
+	}
+
+	if getopt.NArgs() == 0 || *show {
 		author, err := gitConfig.GetAuthor()
 		if err != nil {
 			fmt.Println(err)
@@ -77,11 +83,6 @@ func main() {
 			}
 		}
 		os.Exit(0)
-	}
-
-	if getopt.NArgs() < 2 {
-		fmt.Println("must specify at least two sets of initials")
-		os.Exit(1)
 	}
 
 	pairs, err := duet.NewPairsFromFile(configuration.PairsFile, configuration.EmailLookup)

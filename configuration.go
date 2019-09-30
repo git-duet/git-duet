@@ -22,6 +22,7 @@ type Configuration struct {
 	SetGitUserConfig bool
 	StaleCutoff      time.Duration
 	IsCurrentWorkingDirGitRepo	bool
+	PrecedingUpdateRequireInitials	bool
 }
 
 // NewConfiguration initializes Configuration from the environment
@@ -51,6 +52,10 @@ func NewConfiguration() (config *Configuration, err error) {
 	}
 
 	if config.CoAuthoredBy, err = strconv.ParseBool(getenvDefault("GIT_DUET_CO_AUTHORED_BY", "0")); err != nil {
+		return nil, err
+	}
+
+	if config.PrecedingUpdateRequireInitials, err = strconv.ParseBool(getenvDefault("GIT_DUET_PRECEDING_UPDATE_REQUIRE_INITIALS", "0")); err != nil {
 		return nil, err
 	}
 
@@ -112,7 +117,7 @@ func checkCwdGitDir() (hasGitDir bool, err error) {
 }
 
 func checkGitDir(path string) (hasGitDir bool) {
-	if _, err := os.Stat(path + ".git"); os.IsNotExist(err) {
+	if _, err := os.Stat(path + "/.git"); os.IsNotExist(err) {
 		parent := filepath.Dir(path)
 		if parent == "/" {
 			return false

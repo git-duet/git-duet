@@ -80,6 +80,26 @@ func (gc *GitConfig) ClearCommitter() (err error) {
 	return nil
 }
 
+// ClearAuthor removes duet author name/email from config
+func (gc *GitConfig) ClearAuthor() (err error) {
+	if err = gc.unsetKey("git-author-initials"); err != nil {
+		return err
+	}
+
+	if err = gc.unsetKey("git-author-name"); err != nil {
+		return err
+	}
+
+	if err = gc.unsetKey("git-author-email"); err != nil {
+		return err
+	}
+	if err = gc.updateMtime(); err != nil {
+		return err
+	}
+	return nil
+}
+
+
 // SetAuthor sets the configuration for author name and email
 func (gc *GitConfig) SetAuthor(author *Pair) (err error) {
 	if err = gc.setAuthor(author); err != nil {
