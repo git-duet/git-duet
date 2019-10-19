@@ -471,3 +471,17 @@ load test_helper
   grep 'Co-authored-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
   grep 'Co-authored-by: Jane Doe <jane@hamsters.biz.local>' .git/COMMIT_EDITMSG
 }
+
+@test "--show option prints current author and committer if set" {
+  git duet jd fb
+  run git duet --show
+  assert_line "GIT_AUTHOR_NAME='Jane Doe'"
+  assert_line "GIT_AUTHOR_EMAIL='jane@hamsters.biz.local'"
+  assert_line "GIT_COMMITTER_NAME='Frances Bar'"
+  assert_line "GIT_COMMITTER_EMAIL='f.bar@hamster.info.local'"
+}
+
+@test "When GIT_DUET_DEFAULT_UPDATE is set, git duet with no args shows message to require initials" {
+  GIT_DUET_DEFAULT_UPDATE=1 run git duet
+  assert_line "must specify at least two sets of initials"
+}

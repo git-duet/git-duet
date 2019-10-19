@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -12,14 +13,16 @@ import (
 
 // Configuration represents package configuration (shared by commands)
 type Configuration struct {
-	Namespace        string
-	PairsFile        string
-	EmailLookup      string
-	CoAuthoredBy     bool
-	Global           bool
-	RotateAuthor     bool
-	SetGitUserConfig bool
-	StaleCutoff      time.Duration
+	Namespace                  string
+	PairsFile                  string
+	EmailLookup                string
+	CoAuthoredBy               bool
+	Global                     bool
+	RotateAuthor               bool
+	SetGitUserConfig           bool
+	StaleCutoff                time.Duration
+	IsCurrentWorkingDirGitRepo bool
+	DefaultUpdate              bool
 }
 
 // NewConfiguration initializes Configuration from the environment
@@ -52,6 +55,10 @@ func NewConfiguration() (config *Configuration, err error) {
 		return nil, err
 	}
 
+	if config.DefaultUpdate, err = strconv.ParseBool(getenvDefault("GIT_DUET_DEFAULT_UPDATE", "0")); err != nil {
+		return nil, err
+	}
+
 	defaultSetGitUserConfig := "0"
 	if config.CoAuthoredBy {
 		defaultSetGitUserConfig = "1"
@@ -61,6 +68,8 @@ func NewConfiguration() (config *Configuration, err error) {
 	}
 
 	config.StaleCutoff = time.Duration(cutoff) * time.Second
+
+	config.IsCurrentWorkingDirGitRepo, err = checkCwdGitDir()
 
 	return config, nil
 }
@@ -97,4 +106,24 @@ func getenvDefault(key, defaultValue string) (value string) {
 	}
 
 	return value
+}
+
+func checkCwdGitDir() (hasGitDir bool, err error) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return false, err
+	}
+	return checkGitDir(cwd), nil
+}
+
+func checkGitDir(path string) (hasGitDir bool) {
+	if _, err := os.Stat(path + "/.git"); os.IsNotExist(err) {
+		parent := filepath.Dir(path)
+		if parent == "/" {
+			return false
+		} else {
+			return checkGitDir(parent)
+		}
+	}
+	return true;
 }

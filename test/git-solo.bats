@@ -199,3 +199,21 @@ load test_helper
   run grep 'Co-authored-by:' .git/COMMIT_EDITMSG
   assert_failure
 }
+
+@test "--show option prints current author and committer if set" {
+  git duet jd fb
+  run git solo --show
+  assert_line "GIT_AUTHOR_NAME='Jane Doe'"
+  assert_line "GIT_AUTHOR_EMAIL='jane@hamsters.biz.local'"
+  assert_line "GIT_COMMITTER_NAME='Frances Bar'"
+  assert_line "GIT_COMMITTER_EMAIL='f.bar@hamster.info.local'"
+}
+
+@test "When GIT_DUET_DEFAULT_UPDATE is set, git-solo with no args removes the duet configuration" {
+  git duet jd fb
+  GIT_DUET_DEFAULT_UPDATE=1 git solo
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
+  assert_failure
+  run git config "$GIT_DUET_CONFIG_NAMESPACE.git-committer-email"
+  assert_success ""
+}
