@@ -430,6 +430,13 @@ See issue #8 for more details.
 
 [git-duet for VSCode](https://marketplace.visualstudio.com/items?itemName=PhilAlsford.git-duet-vscode), has been created by a member of the comunity. Please see the README for instructions/limitations. Please direct any issues to the extentions [GitHub repo](https://github.com/philals/git-duet-vscode). 
 
+### Incompatible future updates
+When adding incompatible changes to `git-duet`, its major version will be raised. 
+
+However, you can try such future changes before updating the major version by setting the environment variable `GIT_DUET_DEFAULT_UPDATE`
+- `git solo` without arguments removes the duet configuration. 
+- `git duet` without arguments indicates that you must specify two or more initials.
+
 ## Differences from ruby [`git-duet`](http://github.com/meatballhat/git-duet)
 - Running `git solo` or `git duet` with no initials outputs configuration in
   same format as when setting (env variables)
