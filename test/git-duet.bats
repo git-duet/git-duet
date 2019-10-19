@@ -481,7 +481,7 @@ load test_helper
   assert_line "GIT_COMMITTER_EMAIL='f.bar@hamster.info.local'"
 }
 
-@test "When GIT_DUET_PRECEDING_UPDATE_REQUIRE_INITIALS is set, git duet with no args shows message to require initials" {
-  GIT_DUET_PRECEDING_UPDATE_REQUIRE_INITIALS=1 run git duet
+@test "When GIT_DUET_DEFAULT_UPDATE is set, git duet with no args shows message to require initials" {
+  GIT_DUET_DEFAULT_UPDATE=1 run git duet
   assert_line "must specify at least two sets of initials"
 }

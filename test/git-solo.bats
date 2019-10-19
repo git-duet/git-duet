@@ -209,9 +209,9 @@ load test_helper
   assert_line "GIT_COMMITTER_EMAIL='f.bar@hamster.info.local'"
 }
 
-@test "When GIT_DUET_PRECEDING_UPDATE_REQUIRE_INITIALS is set, git-solo with no args removes the duet configuration" {
+@test "When GIT_DUET_DEFAULT_UPDATE is set, git-solo with no args removes the duet configuration" {
   git duet jd fb
-  GIT_DUET_PRECEDING_UPDATE_REQUIRE_INITIALS=1 git solo
+  GIT_DUET_DEFAULT_UPDATE=1 git solo
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-author-email"
   assert_failure
   run git config "$GIT_DUET_CONFIG_NAMESPACE.git-committer-email"

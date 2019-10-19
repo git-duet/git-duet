@@ -13,16 +13,16 @@ import (
 
 // Configuration represents package configuration (shared by commands)
 type Configuration struct {
-	Namespace        string
-	PairsFile        string
-	EmailLookup      string
-	CoAuthoredBy     bool
-	Global           bool
-	RotateAuthor     bool
-	SetGitUserConfig bool
-	StaleCutoff      time.Duration
-	IsCurrentWorkingDirGitRepo	bool
-	PrecedingUpdateRequireInitials	bool
+	Namespace                  string
+	PairsFile                  string
+	EmailLookup                string
+	CoAuthoredBy               bool
+	Global                     bool
+	RotateAuthor               bool
+	SetGitUserConfig           bool
+	StaleCutoff                time.Duration
+	IsCurrentWorkingDirGitRepo bool
+	DefaultUpdate              bool
 }
 
 // NewConfiguration initializes Configuration from the environment
@@ -55,7 +55,7 @@ func NewConfiguration() (config *Configuration, err error) {
 		return nil, err
 	}
 
-	if config.PrecedingUpdateRequireInitials, err = strconv.ParseBool(getenvDefault("GIT_DUET_PRECEDING_UPDATE_REQUIRE_INITIALS", "0")); err != nil {
+	if config.DefaultUpdate, err = strconv.ParseBool(getenvDefault("GIT_DUET_DEFAULT_UPDATE", "0")); err != nil {
 		return nil, err
 	}
 

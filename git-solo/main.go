@@ -53,7 +53,7 @@ func main() {
 	}
 
 	if getopt.NArgs() == 0 {
-		if configuration.PrecedingUpdateRequireInitials && (*global || configuration.Global || configuration.IsCurrentWorkingDirGitRepo) {
+		if configuration.DefaultUpdate && (*global || configuration.Global || configuration.IsCurrentWorkingDirGitRepo) {
 			if err = gitConfig.ClearCommitter(); err != nil {
 				fmt.Println(err)
 				os.Exit(1)
@@ -62,7 +62,7 @@ func main() {
 				fmt.Println(err)
 				os.Exit(1)
 			}
-		} else if configuration.PrecedingUpdateRequireInitials && !configuration.IsCurrentWorkingDirGitRepo {
+		} else if configuration.DefaultUpdate && !configuration.IsCurrentWorkingDirGitRepo {
 			fmt.Println("must run on a git repository. No git configuration to reset.")
 			os.Exit(1)
 		}

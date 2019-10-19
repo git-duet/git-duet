@@ -48,7 +48,7 @@ func main() {
 		gitConfig.Scope = duet.Global
 	}
 
-	if (configuration.PrecedingUpdateRequireInitials && getopt.NArgs() == 0) || (getopt.NArgs() != 0 && getopt.NArgs() < 2) {
+	if (configuration.DefaultUpdate && getopt.NArgs() == 0) || (getopt.NArgs() != 0 && getopt.NArgs() < 2) {
 		fmt.Println("must specify at least two sets of initials")
 		os.Exit(1)
 	}
