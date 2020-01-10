@@ -50,9 +50,9 @@ index 0000000..e69de29
 
 Options:
 
-0. See releases page for binary downloads, place in your `$PATH`.
-0. Install using Homebrew from the [git-duet homebrew tap](https://github.com/git-duet/homebrew-tap) (`brew install git-duet/tap/git-duet`)
-0. Build from source: `GOVENDOREXPERIMENT=1 go get github.com/git-duet/git-duet/...`
+1. See releases page for binary downloads, place in your `$PATH`.
+1. Install using Homebrew from the [git-duet homebrew tap](https://github.com/git-duet/homebrew-tap) (`brew install git-duet/tap/git-duet`)
+1. Build from source: `GOVENDOREXPERIMENT=1 go get github.com/git-duet/git-duet/...`
 
 ## Usage
 
