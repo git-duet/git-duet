@@ -5,6 +5,6 @@ set -o nounset
 
 ARGS=${@:-test}
 
-go vet $(go list ./... | grep -v '/vendor/')
-go test $(go list ./... | grep -v '/vendor/')
+go vet ./...
+go test ./...
 bats -t $ARGS
