@@ -1,0 +1,6 @@
+# github.com/pborman/getopt v0.0.0-20170112200414-7148bc3a4c30
+## explicit
+github.com/pborman/getopt
+# gopkg.in/yaml.v2 v2.0.0-20170125143719-4c78c975fe7c
+## explicit
+gopkg.in/yaml.v2

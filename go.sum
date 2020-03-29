@@ -1,0 +1,4 @@
+github.com/pborman/getopt v0.0.0-20170112200414-7148bc3a4c30 h1:BHT1/DKsYDGkUgQ2jmMaozVcdk+sVfz0+1ZJq4zkWgw=
+github.com/pborman/getopt v0.0.0-20170112200414-7148bc3a4c30/go.mod h1:85jBQOZwpVEaDAr341tbn15RS4fCAsIst0qp7i8ex1o=
+gopkg.in/yaml.v2 v2.0.0-20170125143719-4c78c975fe7c h1:Enh9ERF41kGycrO8CFIQa7oFmVuZNUXTNYe3bzcUatw=
+gopkg.in/yaml.v2 v2.0.0-20170125143719-4c78c975fe7c/go.mod h1:JAlM8MvJe8wmxCU4Bli9HhUf9+ttbYbLASfIpnQbh74=
