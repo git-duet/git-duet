@@ -4,3 +4,5 @@ RUN apt update && apt install -y git bats
 ADD . /go/src/github.com/git-duet/git-duet
 WORKDIR /go/src/github.com/git-duet/git-duet
 RUN ./scripts/install
+
+# vim:ft=dockerfile
