@@ -1,0 +1,17 @@
+---
+# vim:ft=yaml
+version: 1 # this is required, or your Bobfile may be parsed incorrectly
+
+docker:
+  build_opts: [ "--rm" ]
+  tag_opts: [ "--force" ]
+
+container_globals:
+  registry: "git-duet"
+  project: "git-duet"
+  tags: [ "latest" ]
+  skip_push: true
+
+container:
+- name: "base"
+  Dockerfile: "Dockerfile-tests"
