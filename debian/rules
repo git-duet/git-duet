@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+
+GIT_DUET_VERSION := $(shell git describe --tags --always --dirty)
+GIT_DUET_REV := $(shell git rev-parse --sq HEAD)
+GO_LDFLAGS := -X main.VersionString=$(GIT_DUET_VERSION) -X main.RevisionString=$(GIT_DUET_REV)
+export DH_VERBOSE := 1
+export DEB_BUILD_OPTIONS := nostrip
+export GOFLAGS := -mod=vendor -tags=static
+
+%:
+	dh $@ --builddirectory=_build --buildsystem=golang --with=golang
+
+override_dh_auto_build:
+	dh_auto_build -O--buildsystem=golang -- -ldflags '$(GO_LDFLAGS)'
+
+override_dh_auto_install:
+	dh_auto_install -- --no-source

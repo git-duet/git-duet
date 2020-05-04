@@ -1,0 +1,15 @@
+Source: git-duet
+Section: misc
+Priority: optional
+Maintainer: nobody <nobody@example.com>
+Build-Depends: debhelper (>= 11)
+Standards-Version: 4.1.3
+Homepage: https://github.com/git-duet/git-duet
+XS-Go-Import-Path: github.com/git-duet/git-duet
+
+Package: git-duet
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Built-Using: ${misc:Built-Using},
+Description: git-duet

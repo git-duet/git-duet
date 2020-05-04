@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+GIT_DUET_VERSION=$(git describe --tags --always --dirty)
+DEB_VERSION="${GIT_DUET_VERSION}"-1
+# Remove any existing changelog and generate a stub changelog so Debian's
+# packaging can determine the version
+rm -f debian/changelog
+DEBFULLNAME=nobody DEBEMAIL=nobody@example.com dch --create --distribution stable --package git-duet -v "${DEB_VERSION}" "new version"
+dpkg-buildpackage -us -uc -b
