@@ -407,23 +407,23 @@ git duet-install-hook pre-commit
 Don't worry if you forgot you already had a `pre-commit` hook installed.
 The `git duet-install-hook pre-commit` command will refuse to overwrite it.
 
-### RubyMine integration
+### JetBrains IDE integration
 
 In order to have the author and committer properly set when committing
-via RubyMine, a git wrapper executable may be used to override any
+via JetBrains IDEs (RubyMine, Intellij, WebStorm, etc.), a git wrapper executable may be used to override any
 executions of `git commit`.  Such an executable is available in the Git
 Duet repository, and may be installed somewhere in your `$PATH` like so:
 
 ``` bash
-curl -Ls -o ~/bin/rubymine-git-wrapper https://raw.github.com/git-duet/git-duet/master/scripts/rubymine-git-wrapper
-chmod +x ~/bin/rubymine-git-wrapper
+curl -Ls -o ~/bin/jetbrains-git-wrapper https://raw.github.com/git-duet/git-duet/master/scripts/jetbrains-git-wrapper
+chmod +x ~/bin/jetbrains-git-wrapper
 ```
 
-Given an install location of `~/bin/rubymine-git-wrapper` as shown
-above, you would then update your RubyMine setting in
+Given an install location of `~/bin/jetbrains-git-wrapper` as shown
+above, you would then update your JetBrains IDE setting in
 *Preferences* =&gt; *Version Control* =&gt; *Git* to set
 **Path to Git executable** to the full path of
- `~/bin/rubymine-git-wrapper` (with the `~` expanded).
+ `~/bin/jetbrains-git-wrapper` (with the `~` expanded).
 See issue #8 for more details.
 
 ### VSCode extention
