@@ -1,6 +1,6 @@
 FROM golang:latest
 
-RUN apt update && apt install -y git bats
+RUN apt update && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A1715D88E1DF1F24 && apt install -y git bats software-properties-common && add-apt-repository ppa:git-core/ppa -y && apt update && apt install git -y
 ADD . /go/src/github.com/git-duet/git-duet
 WORKDIR /go/src/github.com/git-duet/git-duet
 RUN ./scripts/install
