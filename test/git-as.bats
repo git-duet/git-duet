@@ -486,6 +486,7 @@ load test_helper
 }
 
 @test "as duet: does not write Co-authored-by trailer when rebasing if GIT_DUET_CO_AUTHORED_BY" {
+  git config rebase.backend apply
   add_file first.txt
   git commit -q -m 'I get rebased'
   GIT_DUET_CO_AUTHORED_BY=1 git as -q jd fb

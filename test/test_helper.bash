@@ -9,6 +9,7 @@ setup() {
   unset GIT_DUET_CO_AUTHORED_BY
   export TEMPLATE_DIR_BAK=$(git config --global init.templateDir)
   export HOOKS_PATH_BAK=$(git config --global core.hooksPath)
+  export REBASE_BACKEND_BAK=$(git config rebase.backend)
   git config --global --unset init.templateDir || true
   git config --global --unset core.hooksPath || true
 
@@ -62,6 +63,12 @@ teardown() {
 
   if [[ -n "$TEMPLATE_DIR_BAK" ]]; then
     git config --global init.templateDir "$TEMPLATE_DIR_BAK"
+  fi
+
+  if [[ -n "$REBASE_BACKEND_BAK" ]]; then
+    git config rebase.backend "$REBASE_BACKEND_BAK"
+  else
+    git config --unset rebase.backend
   fi
 
   rm -rf "$GIT_DUET_TEST_DIR"
