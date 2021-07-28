@@ -1,7 +1,7 @@
 sudo: false
 language: go
 go:
-- 1.14.1
+- 1.16.6
 install:
 - scripts/bootstrap
 before_script:
