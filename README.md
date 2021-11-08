@@ -107,6 +107,13 @@ Set one author (soloing):
 git solo jd
 ```
 
+Set arbitrary number of authors:
+
+```bash
+git as jd # works
+git as jd fb rb # also works
+```
+
 Committing (needed to set `--signoff` and export environment variables):
 
 ``` bash
