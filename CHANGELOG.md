@@ -1,3 +1,21 @@
+## 0.8.0
+
+IMPROVEMENTS:
+
+* A `--show` flag was added to `git solo` and `git duet` that can be used to
+  show the currently configured authors
+* A `git as` subcommand was added that can be used instead of `git solo` and
+  `git duet` to modify the pairing configuration. It takes a list of initials.
+  If only one set is passed, this is effectively the same as `git solo`,
+  otherwise it is effectively the same as `git duet`.
+
+BUG FIXES:
+
+* `git solo` now clears the duet committer if no args are passed
+* `git duet install-hook` no longer fails if the commit hooks already have the right
+  command
+* Works on MacOS Monterey now via building with a newer version of Go
+
 ## 0.7.0
 
 IMPROVEMENTS:
