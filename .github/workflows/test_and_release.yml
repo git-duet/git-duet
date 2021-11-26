@@ -5,6 +5,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          # for PRs, checkout head commit rather than detached commit to pass
+          # version tests
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch_depth: 0
+        if: ${{ github.event_name == "pull_request" }}
+      - uses: actions/checkout@v2
+        with:
+          fetch_depth: 0
+        if: ${{ github.event_name != "pull_request" }}
       - uses: actions/setup-go@v2
         with:
           go-version: '1.16'
@@ -14,8 +24,6 @@ jobs:
           echo "$HOME/bin" >> $GITHUB_PATH
       - name: install git-duet for testing
         run: scripts/install
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
       - name: test
         run: scripts/test
 
