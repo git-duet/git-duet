@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           # for PRs, checkout head commit rather than detached commit to pass
-          # version tests
+          # version tests which assume commit is relative to a tag
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
         if: github.event_name == 'pull_request'
