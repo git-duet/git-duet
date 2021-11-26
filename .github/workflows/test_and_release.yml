@@ -13,11 +13,11 @@ jobs:
           # for PRs, checkout head commit rather than detached commit to pass
           # version tests
           ref: ${{ github.event.pull_request.head.sha }}
-          fetch_depth: 0
+          fetch-depth: 0
         if: github.event_name == 'pull_request'
       - uses: actions/checkout@v2
         with:
-          fetch_depth: 0
+          fetch-depth: 0
         if: github.event_name != 'pull_request'
       - uses: actions/setup-go@v2
         with:
