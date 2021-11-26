@@ -3,6 +3,5 @@
 set -o errexit
 set -o nounset
 
-# disable modules so running `go get` does not update `go.mod` and `go.sum
-GO111MODULE=off go get github.com/mitchellh/gox
+go install github.com/mitchellh/gox@latest
 git clone https://github.com/bats-core/bats-core.git /tmp/bats-core && /tmp/bats-core/install.sh $HOME
