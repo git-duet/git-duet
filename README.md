@@ -52,7 +52,9 @@ Options:
 
 1. See releases page for binary downloads, place in your `$PATH`.
 1. Install using Homebrew from the [git-duet homebrew tap](https://github.com/git-duet/homebrew-tap) (`brew install git-duet/tap/git-duet`)
-1. Build from source: `GOVENDOREXPERIMENT=1 go get github.com/git-duet/git-duet/...`
+1. Build from source: `go install github.com/git-duet/git-duet/...@latest`.
+   This will put the binaries in `$GOBIN`, if set, or `$GOPATH/bin` (see `go
+   help install` for more details).
 
 ## Usage
 
