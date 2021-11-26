@@ -1,0 +1,52 @@
+name: Test and (maybe) Release
+on:
+  push:
+    branches:
+      - master
+  pull_request: {}
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # for PRs, checkout head commit rather than detached commit to pass
+          # version tests which assume commit is relative to a tag
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+        if: github.event_name == 'pull_request'
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+        if: github.event_name != 'pull_request'
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.16'
+      - name: install needed dependencies
+        run: |
+          scripts/bootstrap
+          echo "$HOME/bin" >> $GITHUB_PATH
+      - name: install git-duet for testing
+        run: scripts/install
+      - name: test
+        run: scripts/test
+
+  # I had wanted to separate this workflow, but it doesn't seem possible to do
+  # that _and_ check for tags, yet
+  # https://stackoverflow.com/a/68078768
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: [test]
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.16'
+      - name: Build release assets
+        run: scripts/dist
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: 'dist/*.tar.gz'
