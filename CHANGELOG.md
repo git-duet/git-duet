@@ -1,3 +1,9 @@
+## 0.9.0
+
+IMPROVEMENTS:
+
+* Support added for `darwin/arm64` for new M1 Macs
+
 ## 0.8.0
 
 IMPROVEMENTS:
