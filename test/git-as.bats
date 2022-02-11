@@ -369,13 +369,25 @@ load test_helper
   assert_success ""
 }
 
-@test "as duet: prints current config" {
+@test "as duet: prints current config for 2 commiters" {
   git as -q jd fb
   run git as
   assert_line "GIT_AUTHOR_NAME='Jane Doe'"
   assert_line "GIT_AUTHOR_EMAIL='jane@hamsters.biz.local'"
   assert_line "GIT_COMMITTER_NAME='Frances Bar'"
   assert_line "GIT_COMMITTER_EMAIL='f.bar@hamster.info.local'"
+}
+
+@test "as duet: prints current config for 3 commiters" {
+  git as -q jd fb zs
+  run git as
+  assert_line "GIT_AUTHOR_NAME='Jane Doe'"
+  assert_line "GIT_AUTHOR_EMAIL='jane@hamsters.biz.local'"
+  assert_line "GIT_COMMITTER_NAME='Frances Bar'"
+  assert_line "GIT_COMMITTER_EMAIL='f.bar@hamster.info.local'"
+  assert_line "# Co-authored-by:"
+  assert_line "#  Frances Bar <f.bar@hamster.info.local>"
+  assert_line "#  Zubaz Shirts <z.shirts@pika.info.local>"
 }
 
 @test "as duet: honors source when printing config" {

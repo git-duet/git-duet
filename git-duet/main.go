@@ -70,7 +70,7 @@ func main() {
 		}
 
 		printAuthor(author)
-		printNextComitter(committers)
+		duet.PrintCommitters(committers)
 		if configuration.CoAuthoredBy {
 			installHook("prepare-commit-msg")
 			// SetAuthor is needed in case neither GIT_DUET_CO_AUTHORED_BY nor GIT_DUET_SET_GIT_USER_CONFIG was set previously
@@ -120,7 +120,7 @@ func main() {
 
 	if !*quiet {
 		printAuthor(author)
-		printNextComitter(committers)
+		duet.PrintCommitters(committers)
 	}
 
 	if configuration.CoAuthoredBy {
@@ -138,15 +138,6 @@ func printAuthor(author *duet.Pair) {
 
 	fmt.Printf("GIT_AUTHOR_NAME='%s'\n", author.Name)
 	fmt.Printf("GIT_AUTHOR_EMAIL='%s'\n", author.Email)
-}
-
-func printNextComitter(committers []*duet.Pair) {
-	if committers == nil || len(committers) == 0 {
-		return
-	}
-
-	fmt.Printf("GIT_COMMITTER_NAME='%s'\n", committers[0].Name)
-	fmt.Printf("GIT_COMMITTER_EMAIL='%s'\n", committers[0].Email)
 }
 
 func installHook(hookType string) {
