@@ -4,7 +4,7 @@
 
 Pair harmoniously!  Working in a pair doesn't mean you've both lost your
 identity.  `git-duet` helps with blaming/praising by using stuff that's already
-in `git` without littering your repo history with fictitous user identities. It
+in `git` without littering your repo history with fictitious user identities. It
 does so by utilizing `git`s commit committer attributes to store the identity
 of the second pair.
 
