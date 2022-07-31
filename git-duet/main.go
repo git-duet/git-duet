@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/git-duet/git-duet"
+	duet "github.com/git-duet/git-duet"
 	"github.com/pborman/getopt"
 )
 
@@ -22,7 +22,7 @@ func main() {
 		global  = getopt.BoolLong("global", 'g', "Change global config")
 		help    = getopt.BoolLong("help", 'h', "Help")
 		version = getopt.BoolLong("version", 'v', "Version")
-		show 	= getopt.BoolLong("show", 's', "Show")
+		show    = getopt.BoolLong("show", 's', "Show")
 	)
 
 	getopt.Parse()
@@ -74,9 +74,11 @@ func main() {
 		if configuration.CoAuthoredBy {
 			installHook("prepare-commit-msg")
 			// SetAuthor is needed in case neither GIT_DUET_CO_AUTHORED_BY nor GIT_DUET_SET_GIT_USER_CONFIG was set previously
-			if err = gitConfig.SetAuthor(author); err != nil {
-				fmt.Println(err)
-				os.Exit(1)
+			if author != nil {
+				if err = gitConfig.SetAuthor(author); err != nil {
+					fmt.Println(err)
+					os.Exit(1)
+				}
 			}
 			if configuration.RotateAuthor {
 				installHook("post-commit")

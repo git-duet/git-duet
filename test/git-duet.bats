@@ -486,3 +486,8 @@ load test_helper
   GIT_DUET_DEFAULT_UPDATE=1 run git duet
   assert_line "must specify at least two sets of initials"
 }
+
+@test "When GIT_DUET_CO_AUTHORED_BY is set, with no authors configured, does not panic" {
+  GIT_DUET_CO_AUTHORED_BY=1 run git duet
+  assert_equal 0 $status
+}

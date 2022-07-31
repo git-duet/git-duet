@@ -99,14 +99,18 @@ func (gc *GitConfig) ClearAuthor() (err error) {
 	return nil
 }
 
-
 // SetAuthor sets the configuration for author name and email
 func (gc *GitConfig) SetAuthor(author *Pair) (err error) {
-	if err = gc.setAuthor(author); err != nil {
+	updated, err := gc.setAuthor(author)
+
+	if err != nil {
 		return err
 	}
-	if err = gc.updateMtime(); err != nil {
-		return err
+
+	if updated {
+		if err = gc.updateMtime(); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -143,7 +147,7 @@ func (gc *GitConfig) RotateAuthor() (err error) {
 	}
 
 	if committers != nil && len(committers) > 0 {
-		if err = gitConfig.setAuthor(committers[0]); err != nil {
+		if _, err = gitConfig.setAuthor(committers[0]); err != nil {
 			return err
 		}
 
@@ -156,28 +160,32 @@ func (gc *GitConfig) RotateAuthor() (err error) {
 	return nil
 }
 
-func (gc *GitConfig) setAuthor(author *Pair) (err error) {
+func (gc *GitConfig) setAuthor(author *Pair) (updated bool, err error) {
+	if author == nil {
+		return false, nil
+	}
+
 	if gc.SetUserConfig {
 		if err = gc.setUnnamespacedKey("user.name", author.Name); err != nil {
-			return err
+			return false, err
 		}
 		if err = gc.setUnnamespacedKey("user.email", author.Email); err != nil {
-			return err
+			return false, err
 		}
 	}
 	if err = gc.setKey("git-author-initials", author.Initials); err != nil {
-		return err
+		return false, err
 	}
 	if err = gc.setKey("git-author-initials", author.Initials); err != nil {
-		return err
+		return false, err
 	}
 	if err = gc.setKey("git-author-name", author.Name); err != nil {
-		return err
+		return false, err
 	}
 	if err = gc.setKey("git-author-email", author.Email); err != nil {
-		return err
+		return false, err
 	}
-	return nil
+	return true, nil
 }
 
 func (gc *GitConfig) setCommitters(committers []*Pair) (err error) {
