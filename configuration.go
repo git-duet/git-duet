@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"fmt"
 )
 
 // Configuration represents package configuration (shared by commands)
@@ -126,4 +127,21 @@ func checkGitDir(path string) (hasGitDir bool) {
 		}
 	}
 	return true;
+}
+
+func PrintCommitters(committers []*Pair) {
+	if committers == nil || len(committers) == 0 {
+		return
+	}
+
+	fmt.Printf("GIT_COMMITTER_NAME='%s'\n", committers[0].Name)
+	fmt.Printf("GIT_COMMITTER_EMAIL='%s'\n", committers[0].Email)
+
+	if len(committers) > 1 {
+		fmt.Printf("\n# Co-authored-by:\n")
+
+		for index := 0; index < len(committers); index++ {
+			fmt.Printf("#  %s <%s>\n", committers[index].Name, committers[index].Email)
+		}
+	}
 }

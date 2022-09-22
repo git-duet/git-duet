@@ -18,6 +18,15 @@ load test_helper
   assert_success 'Frances Bar <f.bar@hamster.info.local>'
 }
 
+@test "lists all the authors in the commit message" {
+  git duet -q jd fb zs
+  add_file
+  git duet-commit -q -m 'Testing set of omega as committer'
+  run git log -1 --format='%cn <%ce>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
+}
+
 @test "does not rotate author by default" {
   git duet -q jd fb
 
