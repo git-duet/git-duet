@@ -18,6 +18,40 @@ load test_helper
   assert_success 'Frances Bar <f.bar@hamster.info.local>'
 }
 
+@test "writes Signed-off-by trailer for the commits" {
+  git duet -q jd fb
+  add_file
+  git duet-commit -q -m 'Testing jd as author, fb as committer'
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  grep 'Signed-off-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+}
+
+@test "does not allow multiple committers by default" {
+  git duet -q jd fb zs
+  add_file
+  git duet-commit -q -m 'Testing zs does not appear as a committer'
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  [[ $(grep -o 'Signed-off-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 1 ]]
+  grep 'Signed-off-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+}
+
+@test "allow multiple committers if GIT_DUET_ALLOW_MULTIPLE_COMMITTERS" {
+  export GIT_DUET_ALLOW_MULTIPLE_COMMITTERS=1
+  git duet -q jd fb zs
+  add_file
+  git duet-commit -q -m 'Testing jd as author, fb and zs as committers'
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  [[ $(grep -o 'Signed-off-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 2 ]]
+  grep 'Signed-off-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  grep 'Signed-off-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
+}
+
 @test "does not rotate author by default" {
   git duet -q jd fb
 
@@ -77,6 +111,35 @@ load test_helper
   assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
   run git log -1 --format='%cn <%ce>'
   assert_success 'Jane Doe <jane@hamsters.biz.local>'
+}
+
+@test "respects GIT_DUET_ROTATE_AUTHOR with three contributors and GIT_DUET_ALLOW_MULTIPLE_COMMITTERS" {
+  export GIT_DUET_ALLOW_MULTIPLE_COMMITTERS=1
+  git duet -q jd fb zs
+
+  add_file first.txt
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit -m 'Testing jd as author, fb and zs as committers'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  [[ $(grep -o 'Signed-off-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 2 ]]
+  grep 'Signed-off-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  grep 'Signed-off-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
+
+  add_file second.txt
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit -q -m 'Testing fb as author, zs and jd as committers'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  [[ $(grep -o 'Signed-off-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 2 ]]
+  grep 'Signed-off-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
+  grep 'Signed-off-by: Jane Doe <jane@hamsters.biz.local>' .git/COMMIT_EDITMSG
+
+  add_file third.txt
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-commit -q -m 'Testing zs as author, jd and fb as committers'
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
+  [[ $(grep -o 'Signed-off-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 2 ]]
+  grep 'Signed-off-by: Jane Doe <jane@hamsters.biz.local>' .git/COMMIT_EDITMSG
+  grep 'Signed-off-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
 }
 
 @test "GIT_DUET_ROTATE_AUTHOR updates the correct config" {

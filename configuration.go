@@ -23,6 +23,7 @@ type Configuration struct {
 	StaleCutoff                time.Duration
 	IsCurrentWorkingDirGitRepo bool
 	DefaultUpdate              bool
+	AllowMultipleCommitters    bool
 }
 
 // NewConfiguration initializes Configuration from the environment
@@ -56,6 +57,10 @@ func NewConfiguration() (config *Configuration, err error) {
 	}
 
 	if config.DefaultUpdate, err = strconv.ParseBool(getenvDefault("GIT_DUET_DEFAULT_UPDATE", "0")); err != nil {
+		return nil, err
+	}
+
+	if config.AllowMultipleCommitters, err = strconv.ParseBool(getenvDefault("GIT_DUET_ALLOW_MULTIPLE_COMMITTERS", "0")); err != nil {
 		return nil, err
 	}
 
@@ -125,5 +130,5 @@ func checkGitDir(path string) (hasGitDir bool) {
 			return checkGitDir(parent)
 		}
 	}
-	return true;
+	return true
 }
