@@ -34,6 +34,46 @@ load test_helper
   assert_head_is_merge
 }
 
+@test "writes Signed-off-by trailer for the merge commit" {
+  git duet -q jd fb
+  create_branch_commit
+  add_file another_commit.txt
+  git commit -q -m 'Avoid fast-forward'
+  git duet-merge new_branch -q
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  grep 'Signed-off-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+}
+
+@test "does not allow multiple committers by default" {
+  git duet -q jd fb zs
+  create_branch_commit
+  add_file another_commit.txt
+  git commit -q -m 'Avoid fast-forward'
+  git duet-merge new_branch -q
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  [[ $(grep -o 'Signed-off-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 1 ]]
+  grep 'Signed-off-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+}
+
+@test "allow multiple committers if GIT_DUET_ALLOW_MULTIPLE_COMMITTERS" {
+  export GIT_DUET_ALLOW_MULTIPLE_COMMITTERS=1
+  git duet -q jd fb zs
+  create_branch_commit
+  add_file another_commit.txt
+  git commit -q -m 'Avoid fast-forward'
+  git duet-merge new_branch -q
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  [[ $(grep -o 'Signed-off-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 2 ]]
+  grep 'Signed-off-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  grep 'Signed-off-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
+}
+
 @test "does not rotate author by default" {
   git duet -q jd fb
 
@@ -115,6 +155,44 @@ load test_helper
   assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
   run git log -1 --format='%cn <%ce>'
   assert_success 'Jane Doe <jane@hamsters.biz.local>'
+}
+
+@test "respects GIT_DUET_ROTATE_AUTHOR with three contributors and GIT_DUET_ALLOW_MULTIPLE_COMMITTERS" {
+  export GIT_DUET_ALLOW_MULTIPLE_COMMITTERS=1
+  git duet -q jd fb zs
+
+  create_branch_commit branch_one branch_file_one
+  add_file another_commit.txt
+  git commit -q -m 'Avoid fast-forward'
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-merge branch_one -q
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Jane Doe <jane@hamsters.biz.local>'
+  [[ $(grep -o 'Signed-off-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 2 ]]
+  grep 'Signed-off-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
+  grep 'Signed-off-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
+
+  create_branch_commit branch_two branch_file_two
+  add_file yet_another_commit.txt
+  git commit -q -m 'Avoid fast-forward'
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-merge branch_two -q
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Frances Bar <f.bar@hamster.info.local>'
+  [[ $(grep -o 'Signed-off-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 2 ]]
+  grep 'Signed-off-by: Zubaz Shirts <z.shirts@pika.info.local>' .git/COMMIT_EDITMSG
+  grep 'Signed-off-by: Jane Doe <jane@hamsters.biz.local>' .git/COMMIT_EDITMSG
+
+  create_branch_commit branch_three branch_file_three
+  add_file still_committing.txt
+  git commit -q -m 'Avoid fast-forward'
+  GIT_DUET_ROTATE_AUTHOR=1 git duet-merge branch_three -q
+
+  run git log -1 --format='%an <%ae>'
+  assert_success 'Zubaz Shirts <z.shirts@pika.info.local>'
+  [[ $(grep -o 'Signed-off-by' .git/COMMIT_EDITMSG | wc -l | xargs) = 2 ]]
+  grep 'Signed-off-by: Jane Doe <jane@hamsters.biz.local>' .git/COMMIT_EDITMSG
+  grep 'Signed-off-by: Frances Bar <f.bar@hamster.info.local>' .git/COMMIT_EDITMSG
 }
 
 @test "GIT_DUET_ROTATE_AUTHOR updates the correct config" {

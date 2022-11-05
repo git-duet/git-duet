@@ -244,9 +244,29 @@ as the author and committer respectively. If you have `GIT_DUET_ROTATE_AUTHOR`
 set then git-duet will rotate with each commit. The first commit will have
 jd as the author, and fb as the committer. The second commit will have fb
 as the author and zp as the committer and so on.
+(*Note:* This feature uses `,` as the delimiter which will fail to parse
+properly if the user's name or e-mail address contains a `,`.)
 
-*Note:* This feature uses `,` as the delimiter which will fail to parse
-properly if the user's name or e-mail address contains a `,`.
+Additionally, if you set `GIT_DUET_ALLOW_MULTIPLE_COMMITTERS`, then git-duet
+will add a sign-off trailer in the commit message for every committer that
+is specified after the author:
+
+Example:
+```
+$ git show --format=full
+commit ce7856371e3e3a6d05f1b66af96f086df071e783
+Author: Jane Doe <jane@awesometown.local>
+Commit: Frances Bar <f.bar@awesometown.local>
+
+    initial commit
+
+    Signed-off-by: Frances Bar <f.bar@awesometown.local>
+    Signed-off-by: Zubaz Shirts <z.shirts@pika.info.local>
+
+diff --git a/foo b/foo
+new file mode 100644
+index 0000000..e69de29
+```
 
 ### Email Configuration
 

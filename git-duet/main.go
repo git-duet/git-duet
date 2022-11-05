@@ -122,7 +122,11 @@ func main() {
 
 	if !*quiet {
 		printAuthor(author)
-		printNextComitter(committers)
+		if configuration.AllowMultipleCommitters {
+			printAllCommitters(committers)
+		} else {
+			printNextComitter(committers)
+		}
 	}
 
 	if configuration.CoAuthoredBy {
@@ -149,6 +153,17 @@ func printNextComitter(committers []*duet.Pair) {
 
 	fmt.Printf("GIT_COMMITTER_NAME='%s'\n", committers[0].Name)
 	fmt.Printf("GIT_COMMITTER_EMAIL='%s'\n", committers[0].Email)
+}
+
+func printAllCommitters(committers []*duet.Pair) {
+	if committers == nil || len(committers) == 0 {
+		return
+	}
+
+	for i, p := range committers {
+		fmt.Printf("GIT_COMMITTER_#%d_NAME='%s'\n", i+1, p.Name)
+		fmt.Printf("GIT_COMMITTER_#%d_EMAIL='%s'\n", i+1, p.Email)
+	}
 }
 
 func installHook(hookType string) {

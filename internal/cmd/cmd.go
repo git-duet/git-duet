@@ -80,8 +80,17 @@ func (duetcmd Command) Execute() error {
 
 	var committer *duet.Pair
 	if committers != nil && len(committers) > 0 && duetcmd.Signoff {
-		duetcmd.Args = append([]string{"--signoff"}, duetcmd.Args...)
 		committer = committers[0]
+		if len(committers) > 1 && configuration.AllowMultipleCommitters {
+			// Reverse the iteration because the committers should sign-off in order
+			for i := len(committers) - 1; i >= 0; i-- {
+				var trailer = "\"Signed-off-by: " + committers[i].Name + " <" + committers[i].Email + ">\""
+				duetcmd.Args = append([]string{trailer}, duetcmd.Args...)
+				duetcmd.Args = append([]string{"--trailer"}, duetcmd.Args...)
+			}
+		} else {
+			duetcmd.Args = append([]string{"--signoff"}, duetcmd.Args...)
+		}
 	} else {
 		committer = author
 	}
