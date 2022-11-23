@@ -173,8 +173,20 @@ load test_helper
   assert_line "GIT_COMMITTER_EMAIL='f.bar@hamster.info.local'"
 }
 
-@test "output displays all committers when GIT_DUET_ALLOW_MULTIPLE_COMMITTERS" {
+@test "output for command with initials displays all committers when GIT_DUET_ALLOW_MULTIPLE_COMMITTERS" {
   GIT_DUET_ALLOW_MULTIPLE_COMMITTERS=1 run git duet jd fb zs
+  assert_line "GIT_AUTHOR_NAME='Jane Doe'"
+  assert_line "GIT_AUTHOR_EMAIL='jane@hamsters.biz.local'"
+  assert_line "GIT_COMMITTER_#1_NAME='Frances Bar'"
+  assert_line "GIT_COMMITTER_#1_EMAIL='f.bar@hamster.info.local'"
+  assert_line "GIT_COMMITTER_#2_NAME='Zubaz Shirts'"
+  assert_line "GIT_COMMITTER_#2_EMAIL='z.shirts@pika.info.local'"
+}
+
+@test "output for command without args displays all committers when GIT_DUET_ALLOW_MULTIPLE_COMMITTERS" {
+  export GIT_DUET_ALLOW_MULTIPLE_COMMITTERS=1
+  git duet jd fb zs
+  run git duet
   assert_line "GIT_AUTHOR_NAME='Jane Doe'"
   assert_line "GIT_AUTHOR_EMAIL='jane@hamsters.biz.local'"
   assert_line "GIT_COMMITTER_#1_NAME='Frances Bar'"

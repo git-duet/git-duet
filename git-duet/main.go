@@ -70,7 +70,11 @@ func main() {
 		}
 
 		printAuthor(author)
-		printNextComitter(committers)
+		if configuration.AllowMultipleCommitters {
+			printAllCommitters(committers)
+		} else {
+			printNextComitter(committers)
+		}
 		if configuration.CoAuthoredBy {
 			installHook("prepare-commit-msg")
 			// SetAuthor is needed in case neither GIT_DUET_CO_AUTHORED_BY nor GIT_DUET_SET_GIT_USER_CONFIG was set previously
