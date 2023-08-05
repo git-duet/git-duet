@@ -1,3 +1,13 @@
+## 0.10.0
+
+IMPROVEMENTS:
+
+* Allow multiple committers via `Signed-Off-By` trailers by setting `GIT_DUET_ALLOW_MULTIPLE_COMMITTERS`
+
+BUG FIXES:
+
+* `git duet` no longer panics when `GIT_DUET_CO_AUTHORED_BY` is set and there is no author
+
 ## 0.9.0
 
 IMPROVEMENTS:
