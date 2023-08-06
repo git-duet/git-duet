@@ -4,7 +4,7 @@ load test_helper
 
 @test "as: version is displayed" {
   run git as -v
-  if ! echo "$output" | grep -o -E "^[0-9]\.[0-9]\.[0-9].* \('[a-f0-9]{40}'\)$" ; then
+  if ! echo "$output" | grep -o -E "^[0-9]+\.[0-9]+\.[0-9]+.* \('[a-f0-9]{40}'\)$" ; then
     echo "expected '$output' to match version spec" | flunk
   fi
 }
