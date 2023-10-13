@@ -181,9 +181,9 @@ to `$HOME/.git-template`.
 so that `git duet` and `git solo` set the author for normal git commands.
 
 The common workflow is as follows:
-- run `git duet` (which will install the prepare-commit-msg hook)
 - if you have `GIT_DUET_GLOBAL` set, run `git init` once in existing repos
 so that the hook file gets copied from the `init.templatedir`
+- run `git duet` (which will install the prepare-commit-msg hook)
 - thereafter, use the normal git commands (i.e. `git commit`, `git merge` rather than
 the git-duet-subcommands `git duet-commit`, `git duet-merge`)
 - the prepare-commit-msg hook will append a `Co-authored-by` trailer for each co-author
